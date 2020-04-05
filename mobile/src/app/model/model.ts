@@ -1,0 +1,226 @@
+import { PersistentData } from './common';
+
+export interface RootNode extends PersistentData {
+  dataRegion: DataRegion;
+}
+
+/** The definition a course */
+export interface Course extends RootNode {
+  /** The name of the course */
+  name: string;
+  /** The level of the course */
+  level: number;
+  /** The theme associated with this course */
+  theme: string;
+  /** Flag indicating if the test is enabled. */
+  enabled: boolean;
+  /** The test associated with the course */
+  test: Test;
+}
+
+/** The test of a course */
+export interface Test {
+  /** The version number of the test */
+  version: string;
+  /** Flag indicating if the test is enabled. */
+  enabled: boolean;
+  /** Duration of test in minute */
+  duration: number;
+  /** The list of serie of questions */
+  series: QuestionSerie[];
+}
+
+/** A serie of the test */
+export interface QuestionSerie {
+  /** The name of the question serie. The name is optional. */
+  serieName?: string;
+  /** The list of the question of the serie */
+  questions: Question[];
+  /** Indicate if the question is enabled. */
+  enabled: boolean;
+}
+
+/** A question of the serie of the test */
+export interface Question {
+  /** The identifier of the question */
+  questionId: string;
+  /** the translation identifier of the question */
+  key: string;
+  /** the identifier of the image associated to the question */
+  imageId?: string;
+  /** The list of the possible answer to the question */
+  answers: Answer[];
+  /** Indicate if the question is enabled. */
+  enabled: boolean;
+}
+
+/** An answer of a question. */
+export interface Answer {
+  /** The identifier of the answer */
+  answerId: string;
+  /** the translation identifier of the answer */
+  key?: string;
+  /** the identifier of the image associated to the answer */
+  imageId?: string;
+  /** Flag indicating if the answer is right */
+  right: boolean;
+}
+
+/** A translation of the text. The identifier is the key. */
+export interface Translation extends RootNode {
+  /** An array of the translation
+   * indexes of the array are a LANGUAGES value
+   * values of the array are the translated text into the language associated with the index value.
+   */
+  text: string[];
+}
+
+/** A session of a course */
+export interface Session extends RootNode {
+  /** the key code associated to the session */
+  keyCode: string;
+  /** The begin time of the session */
+  begin: Date;
+  /** The list of the teachers of a session */
+  teachers: User[];
+  /** The list of the participant of the session */
+  participants: SessionParticipant[];
+}
+
+/** A participant of a session */
+export interface SessionParticipant {
+  /** The user */
+  person: User;
+  /** The answerq of the questions */
+  questionAnswers: ParticipantQuestionAnswer[];
+}
+
+export interface ParticipantQuestionAnswer {
+  /** The identifier of the question */
+  questionId: string;
+  /** The identifier of the choosed answer */
+  answerId: string;
+  right: boolean;
+}
+export type AuthProvider = 'EMAIL' | 'GOOGLE' | 'FACEBOOK';
+export type AppRole = 'TEACHER' | 'LEARNER' | 'ADMIN';
+export type AccountStatus = 'VALIDATION_REQUIRED' | 'ACTIVE' | 'LOCKED' | 'DELETED';
+
+/** A user of the application */
+export interface User extends RootNode {
+  /** The password of the user */
+  password?: string;
+  /** The firebase account identifier */
+  accountId: string;
+  /** The token */
+  token?: string;
+  /** the data sharing agrement */
+  dataSharingAgreement: PersonDataSharingAgreement;
+  /** The role of the user */
+  role: AppRole;
+  /** The authentication provider */
+  authProvider?: AuthProvider;
+  /** The status of the account */
+  accountStatus: AccountStatus;
+  /** The email address of the user */
+  email: string;
+  /** The first name of the user */
+  firstName: string;
+  /** The last name of the user */
+  lastName: string;
+  /** The phone number of the user */
+  phone: string;
+  /** The club of the user */
+  club?: Club;
+  /** The speaking languages of the user */
+  speakingLanguages: string[];
+  teacherQualifications: TeacherQualification[];
+}
+
+export interface Nta extends RootNode {
+  name: string;
+  teacherManagers: User[];
+}
+
+export interface Club extends RootNode {
+  nta: Nta;
+  name: string;
+}
+
+export type TeacherQualificationStatus = 'NotQualified' | 'Learner' | 'Qualified';
+
+export interface TeacherQualification {
+  region: DataRegion;
+  level: number;
+  status: TeacherQualificationStatus;
+}
+
+export type Sharing =
+  /** No sharing */ 'NO'
+  | /* sharing with control */ 'LIMITED'
+  | /* Sharing allowed */ 'YES';
+
+export interface PersonDataSharingAgreement  {
+    /* Agrement of sharing about personnal information */
+    personnalInfoSharing: Sharing;
+    /* Agrement of sharing about the photo */
+    photoSharing: Sharing;
+}
+
+export type DataRegion = 'Australia' | 'New Zealand' | 'Europe' | 'South Africa' | 'USA';
+
+/** List of countries [0] is the internal name, [1] is the viewed name. */
+export const CONTRIES: string[][] = [
+  ['Australia	', 'Australia'],
+  ['Austria', 'Austria'],
+  ['Belgium', 'Belgium'],
+  ['Canada', 'Canada'],
+  ['Chile', 'Chile'],
+  ['China', 'China'],
+  ['Chinese Taipei', 'Chinese Taipei'],
+  ['Cook Islands', 'Cook Islands'],
+  ['Czech Republic', 'Czech Republic'],
+  ['England', 'England'],
+  ['Fiji', 'Fiji'],
+  ['France', 'France'],
+  ['Germany', 'Germany'],
+  ['Guernesey', 'Guernesey'],
+  ['HongKong', 'HongKong'],
+  ['Hungary', 'Hungary'],
+  ['India', 'India'],
+  ['Ireland', 'Ireland'],
+  ['Italy', 'Italy'],
+  ['Japan', 'Japan'],
+  ['Jersey', 'Jersey'],
+  ['Luxembourg', 'Luxembourg'],
+  ['Malaysia', 'Malaysia'],
+  ['Mauritius', 'Mauritius'],
+  ['Netherlands', 'Netherlands'],
+  ['New Zealand', 'New Zealand'],
+  ['Pakistan', 'Pakistan'],
+  ['Papua New Guinea', 'Papua New Guinea'],
+  ['Philippines', 'Philippines'],
+  ['Portugal', 'Portugal'],
+  ['Qatar', 'Qatar'],
+  ['Samoa', 'Samoa'],
+  ['Scotland', 'Scotland'],
+  ['Singapore', 'Singapore'],
+  ['South Africa', 'South Africa'],
+  ['Spain', 'Spain'],
+  ['Sweden', 'Sweden'],
+  ['Switzerland', 'Switzerland'],
+  ['United Arab Emirates', 'United Arab Emirates'],
+  ['USA', 'USA'],
+  ['Wales', 'Wales'],
+  ['Other', 'Other']
+];
+
+export const LANGUAGES: string[][] = [
+  ['EN', 'English'],
+  ['FR', 'French'],
+  ['DE', 'Deutsch'],
+  ['ES', 'Spanish'],
+  ['IT', 'Italian'],
+  ['PO', 'Portuguese'],
+  ['CN', 'Chinese']
+];
