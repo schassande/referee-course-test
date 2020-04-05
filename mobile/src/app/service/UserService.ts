@@ -29,7 +29,7 @@ export class UserService  extends RemotePersistentDataService<User> {
     }
 
     getLocalStoragePrefix(): string {
-        return 'user';
+        return 'User';
     }
 
     getPriority(): number {

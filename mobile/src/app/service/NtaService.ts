@@ -22,7 +22,7 @@ export class NtaService extends RemotePersistentDataService<Nta> {
   }
 
   getLocalStoragePrefix(): string {
-      return 'nta';
+      return 'Nta';
   }
 
   getPriority(): number {

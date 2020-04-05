@@ -22,7 +22,7 @@ export class CourseService extends RemotePersistentDataService<Course> {
   }
 
   getLocalStoragePrefix(): string {
-      return 'course';
+      return 'Course';
   }
 
   getPriority(): number {

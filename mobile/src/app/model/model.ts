@@ -24,10 +24,14 @@ export interface Test {
   version: string;
   /** Flag indicating if the test is enabled. */
   enabled: boolean;
-  /** Duration of test in minute */
+  /** Duration of test */
   duration: number;
+  /** unit of the duration time  */
+  durationUnit: string;
   /** The list of serie of questions */
   series: QuestionSerie[];
+  /** The required number of point for the serie */
+  requiredScore: number;
 }
 
 /** A serie of the test */
@@ -38,6 +42,10 @@ export interface QuestionSerie {
   questions: Question[];
   /** Indicate if the question is enabled. */
   enabled: boolean;
+  /** The required number of point for the serie */
+  requiredScore: number;
+  /** indicate if this serie is required to be passed, in order to pass the test */
+  passRequired: boolean;
 }
 
 /** A question of the serie of the test */
@@ -63,7 +71,9 @@ export interface Answer {
   /** the identifier of the image associated to the answer */
   imageId?: string;
   /** Flag indicating if the answer is right */
-  right: boolean;
+  right?: boolean;
+  /** Number of point wan when the user choose the answer */
+  point: number;
 }
 
 /** A translation of the text. The identifier is the key. */
@@ -79,10 +89,12 @@ export interface Translation extends RootNode {
 export interface Session extends RootNode {
   /** the key code associated to the session */
   keyCode: string;
-  /** The begin time of the session */
-  begin: Date;
+  /** The begin time of the test of the session */
+  startDate: Date;
+  /** Duration of test in minute */
+  expireDate: Date;
   /** The list of the teachers of a session */
-  teachers: User[];
+  teachers: string[];
   /** The list of the participant of the session */
   participants: SessionParticipant[];
 }
@@ -90,18 +102,28 @@ export interface Session extends RootNode {
 /** A participant of a session */
 export interface SessionParticipant {
   /** The user */
-  person: User;
+  person: string;
   /** The answerq of the questions */
-  questionAnswers: ParticipantQuestionAnswer[];
+  questionAnswers: string[];
+  /** pass */
+  pass: boolean;
+  /** score */
+  score: number;
 }
 
-export interface ParticipantQuestionAnswer {
+export interface ParticipantQuestionAnswer extends RootNode {
+  /** Identifier of the learner */
+  learnerId: string;
+  /** Identifier of the session */
+  sessionId: string;
   /** The identifier of the question */
   questionId: string;
   /** The identifier of the choosed answer */
   answerId: string;
-  right: boolean;
+  /** time stamp of the response */
+  responseTime: Date;
 }
+
 export type AuthProvider = 'EMAIL' | 'GOOGLE' | 'FACEBOOK';
 export type AppRole = 'TEACHER' | 'LEARNER' | 'ADMIN';
 export type AccountStatus = 'VALIDATION_REQUIRED' | 'ACTIVE' | 'LOCKED' | 'DELETED';
@@ -131,20 +153,19 @@ export interface User extends RootNode {
   /** The phone number of the user */
   phone: string;
   /** The club of the user */
-  club?: Club;
+  club: Club;
   /** The speaking languages of the user */
   speakingLanguages: string[];
+  /** The qualification of the user */
   teacherQualifications: TeacherQualification[];
 }
 
 export interface Nta extends RootNode {
-  name: string;
   teacherManagers: User[];
 }
 
 export interface Club extends RootNode {
   nta: Nta;
-  name: string;
 }
 
 export type TeacherQualificationStatus = 'NotQualified' | 'Learner' | 'Qualified';

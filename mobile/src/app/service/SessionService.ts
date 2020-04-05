@@ -22,7 +22,7 @@ export class SessionService extends RemotePersistentDataService<Session> {
   }
 
   getLocalStoragePrefix(): string {
-      return 'session';
+      return 'Session';
   }
 
   getPriority(): number {

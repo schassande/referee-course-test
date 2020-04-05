@@ -4,12 +4,12 @@ import { AlertController, ToastController } from '@ionic/angular';
 import { ConnectedUserService } from './ConnectedUserService';
 import { Injectable } from '@angular/core';
 import { RemotePersistentDataService } from './RemotePersistentDataService';
-import { Club } from './../model/model';
+import { ParticipantQuestionAnswer } from './../model/model';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ClubService extends RemotePersistentDataService<Club> {
+export class ParticipantQuestionAnswerService extends RemotePersistentDataService<ParticipantQuestionAnswer> {
 
   constructor(
       readonly db: AngularFirestore,
@@ -22,13 +22,13 @@ export class ClubService extends RemotePersistentDataService<Club> {
   }
 
   getLocalStoragePrefix(): string {
-      return 'Club';
+      return 'ParticipantQuestionAnswer';
   }
 
   getPriority(): number {
       return 1;
   }
 
-  protected adjustFieldOnLoad(item: Club) {
+  protected adjustFieldOnLoad(item: ParticipantQuestionAnswer) {
   }
 }

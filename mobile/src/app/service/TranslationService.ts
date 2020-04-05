@@ -22,7 +22,7 @@ export class TranslationService extends RemotePersistentDataService<Translation>
   }
 
   getLocalStoragePrefix(): string {
-      return 'translation';
+      return 'Translation';
   }
 
   getPriority(): number {
