@@ -1,7 +1,7 @@
 import { map } from 'rxjs/operators';
-import { UserService } from './service/UserService';
+import { UserService } from 'src/app/service/UserService';
 import { Observable } from 'rxjs';
-import { ConnectedUserService } from './service/ConnectedUserService';
+import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { NavController } from '@ionic/angular';

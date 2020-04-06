@@ -1,9 +1,9 @@
 import { AppSettingsService } from './AppSettingsService';
-import { Injectable, EventEmitter } from '@angular/core';
+import { Injectable, EventEmitter, Type } from '@angular/core';
 import { User } from './../model/model';
 import * as firebase from 'firebase/app';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ConnectedUserService {
 
   /** The current user */
@@ -28,11 +28,13 @@ export class ConnectedUserService {
       && this.currentUser.token && this.currentUser.token != null;
   }
   public getCurrentUser(): User {
+    // console.log('ConnectedUserService.getCurrentUser()=', this);
     return this.currentUser;
   }
 
   public userConnected(user: User, credential: firebase.auth.UserCredential) {
     this.currentUser = user;
+    // console.log('ConnectedUserService.userConnected', this);
     if (credential !== null || this.credential === null || this.credential.user.email !== user.email) {
       // set the new credential or clean if user is
       this.credential = credential;

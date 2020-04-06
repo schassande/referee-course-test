@@ -1,0 +1,32 @@
+<ion-header>
+    <ion-toolbar>
+        <span slot="start" style="margin-left: 10px;"><img src="assets/imgs/logo.png" height="30" /></span>
+        <ion-title style="text-align: center;">Test Course Referee App</ion-title>
+        <ion-buttons slot="end">
+            <ion-menu-button autoHide="false" menu="main"></ion-menu-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-list>
+        <ion-item detail routerLink="/course">
+            <ion-label class="menu-entry">Courses</ion-label>
+        </ion-item>
+        <ion-item detail routerLink="/session">
+            <ion-label class="menu-entry">Sessions</ion-label>
+        </ion-item>
+        <ion-item detail routerLink="/teacher">
+            <ion-label class="menu-entry">Teachers</ion-label>
+        </ion-item>
+        <ion-item detail routerLink="/settings">
+            <ion-label class="menu-entry">Settings</ion-label>
+        </ion-item>
+        <ion-item detail routerLink="/admin" *ngIf="isLevelAdmin()">
+            <ion-label class="menu-entry">Admin</ion-label>
+        </ion-item>
+        <ion-item (click)="addToHome()" *ngIf="showInstallBtn">
+            <ion-label class="menu-entry">Install on device</ion-label>
+        </ion-item>
+    </ion-list>
+    <div color="light" style="text-align: center; font-size: 0.8em; margin-top: 10px;">Connected as {{currentUser?.firstName}}.</div>
+</ion-content>

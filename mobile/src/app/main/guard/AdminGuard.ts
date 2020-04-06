@@ -3,8 +3,8 @@ import { map } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { UserService } from './service/UserService';
-import { ConnectedUserService } from './service/ConnectedUserService';
+import { UserService } from 'src/app/service/UserService';
+import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
 
 @Injectable({
   providedIn: 'root',

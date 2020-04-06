@@ -11,7 +11,7 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
 import { AngularFireModule } from '@angular/fire';
-import { AngularFireDatabaseModule } from '@angular/fire/database';
+import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFireStorageModule } from '@angular/fire/storage';
 import { AngularFireFunctionsModule } from '@angular/fire/functions';
@@ -21,6 +21,18 @@ import { IonicStorageModule } from '@ionic/storage';
 import { environment } from '../environments/environment';
 import { HammerGestureConfig, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { MainModule } from './main/main.module';
+import { TeacherModule } from './teacher/teacher.module';
+import { SessionModule } from './session/session.module';
+import { CourseModule } from './course/course.module';
+
+// services
+import { UserService } from 'src/app/service/UserService';
+import { TranslationService } from 'src/app/service/TranslationService';
+import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
+import { DateService } from 'src/app/service/DateService';
+import { AppSettingsService } from 'src/app/service/AppSettingsService';
+
 
 export class CustomHammerConfig extends HammerGestureConfig {}
 
@@ -35,13 +47,17 @@ export class CustomHammerConfig extends HammerGestureConfig {}
     IonicModule.forRoot(),
     AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
-    AngularFireDatabaseModule,
+    AngularFirestoreModule,
     AngularFireAuthModule,
     AngularFireFunctionsModule,
     AngularFireStorageModule,
     AngularFireMessagingModule,
     IonicStorageModule.forRoot({ name: '__mydb', driverOrder: ['indexeddb', 'sqlite', 'websql'] }),
-    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
+    MainModule.forRoot(),
+    TeacherModule
+//    SessionModule,
+//    CourseModule,
   ],
   providers: [
     StatusBar,

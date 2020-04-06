@@ -128,6 +128,11 @@ export type AuthProvider = 'EMAIL' | 'GOOGLE' | 'FACEBOOK';
 export type AppRole = 'TEACHER' | 'LEARNER' | 'ADMIN';
 export type AccountStatus = 'VALIDATION_REQUIRED' | 'ACTIVE' | 'LOCKED' | 'DELETED';
 
+export interface Photo {
+  path: string;
+  url: string;
+}
+
 /** A user of the application */
 export interface User extends RootNode {
   /** The password of the user */
@@ -158,6 +163,8 @@ export interface User extends RootNode {
   speakingLanguages: string[];
   /** The qualification of the user */
   teacherQualifications: TeacherQualification[];
+  /** Photo of the user */
+  photo: Photo;
 }
 
 export interface Nta extends RootNode {
@@ -189,9 +196,9 @@ export interface PersonDataSharingAgreement  {
 }
 
 export type DataRegion = 'Australia' | 'New Zealand' | 'Europe' | 'South Africa' | 'USA';
-
+export const REGIONS: DataRegion[] = ['Australia', 'New Zealand',  'Europe', 'South Africa', 'USA'];
 /** List of countries [0] is the internal name, [1] is the viewed name. */
-export const CONTRIES: string[][] = [
+export const COUNTRIES: string[][] = [
   ['Australia	', 'Australia'],
   ['Austria', 'Austria'],
   ['Belgium', 'Belgium'],
@@ -245,3 +252,26 @@ export const LANGUAGES: string[][] = [
   ['PO', 'Portuguese'],
   ['CN', 'Chinese']
 ];
+
+export const CONSTANTES =  {
+  countries: COUNTRIES,
+  languages: LANGUAGES,
+  regions: REGIONS
+};
+
+
+export interface SharedElement {
+  /** List of users */
+  sharedWith: SharedWithIds;
+}
+export interface SharedWithIds {
+  /** List of users id */
+  users: string[];
+  /** List of group id */
+  groups: string[];
+}
+
+export interface SharedWith {
+  /** List of users */
+  users: User[];
+}

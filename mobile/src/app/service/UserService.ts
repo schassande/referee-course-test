@@ -7,11 +7,12 @@ import { ResponseWithData, Response } from './response';
 import { Observable, of, from, Subject } from 'rxjs';
 import { ConnectedUserService } from './ConnectedUserService';
 import { Injectable } from '@angular/core';
-import { User, AuthProvider, CONTRIES } from '../model/model';
+import { User, AuthProvider, COUNTRIES } from '../model/model';
 import { RemotePersistentDataService } from './RemotePersistentDataService';
-import { flatMap, map, catchError } from 'rxjs/operators';
 import * as firebase from 'firebase/app';
+import { flatMap, map, catchError } from 'rxjs/operators';
 import { AngularFirestore } from '@angular/fire/firestore';
+import { AngularFireAuth } from '@angular/fire/auth';
 
 @Injectable()
 export class UserService  extends RemotePersistentDataService<User> {
@@ -23,6 +24,7 @@ export class UserService  extends RemotePersistentDataService<User> {
         appSettingsService: AppSettingsService,
         private alertCtrl: AlertController,
         private loadingController: LoadingController,
+        private auth: AngularFireAuth,
         private angularFireFunctions: AngularFireFunctions
     ) {
         super(appSettingsService, db, toastController);
@@ -53,7 +55,7 @@ export class UserService  extends RemotePersistentDataService<User> {
             if (cred !== null  && (user.authProvider === 'FACEBOOK' || user.authProvider === 'GOOGLE')) {
                 obs = of(cred);
             } else {
-                obs = from(firebase.auth().createUserWithEmailAndPassword(user.email, password));
+                obs = from(this.auth.createUserWithEmailAndPassword(user.email, password));
             }
             return obs.pipe(
                 flatMap((userCred: firebase.auth.UserCredential) => {
@@ -100,7 +102,10 @@ export class UserService  extends RemotePersistentDataService<User> {
                     return of (res);
                 } else {
                     // then delete the user from firestore user auth database
-                    return from(firebase.auth().currentUser.delete()).pipe(
+                    return from(this.auth.currentUser).pipe(
+                        flatMap((user) => {
+                            return from(user.delete());
+                        }),
                         map(() => {
                             return {error: null};
                         }),
@@ -115,16 +120,16 @@ export class UserService  extends RemotePersistentDataService<User> {
     }
 
     public login(email: string, password: string): Observable<ResponseWithData<User>> {
-        console.log('UserService.login(' + email + ', ' + password + ')');
+        // console.log('UserService.login(' + email + ', ' + password + ')');
         let credential = null;
-        return from(firebase.auth().signInWithEmailAndPassword(email, password)).pipe(
+        return from(this.auth.signInWithEmailAndPassword(email, password)).pipe(
             flatMap( (cred: firebase.auth.UserCredential) => {
                 credential = cred;
                 // console.log('login: cred=', JSON.stringify(cred, null, 2));
                 return this.getByEmail(email);
             }),
             catchError((err) => {
-                console.log('UserService.login(' + email + ', ' + password + ') error=', err);
+                // console.log('UserService.login(' + email + ', ' + password + ') error=', err);
                 this.loadingController.dismiss(null);
                 console.error(err);
                 if (err.code !== 'auth/network-request-failed') {
@@ -187,7 +192,7 @@ export class UserService  extends RemotePersistentDataService<User> {
             flatMap((settings: LocalAppSettings) => {
                 const email = settings.lastUserEmail;
                 const password = settings.lastUserPassword;
-                console.log('UserService.autoLogin(): lastUserEmail=' + email + ', lastUserPassword=' + password);
+                // console.log('UserService.autoLogin(): lastUserEmail=' + email + ', lastUserPassword=' + password);
                 if (!email) {
                     loading.dismiss();
                     return of({ error: null, data: null});
@@ -199,7 +204,7 @@ export class UserService  extends RemotePersistentDataService<User> {
                 }
                 if (password) {
                     // password is defined => try to login
-                    console.log('UserService.autoLogin(): login(' + email + ', ' + password + ')');
+                    // console.log('UserService.autoLogin(): login(' + email + ', ' + password + ')');
                     return this.login(email, password).pipe(
                         map((ruser) =>  {
                             loading.dismiss();
@@ -215,7 +220,7 @@ export class UserService  extends RemotePersistentDataService<User> {
 
     public resetPassword(email, sub: Subject<ResponseWithData<User>> = null) {
         // console.log('Reset password of the account', email);
-        firebase.auth().sendPasswordResetEmail(email).then(() => {
+        this.auth.sendPasswordResetEmail(email).then(() => {
             this.alertCtrl.create({message: 'An email has been sent to \'' + email + '\' to reset the password.'})
                 .then((alert) => alert.present());
             if (sub) {
@@ -352,7 +357,6 @@ export class UserService  extends RemotePersistentDataService<User> {
             dataStatus: 'NEW',
             firstName,
             lastName,
-            country: CONTRIES[0][0],
             email: cred.user.email,
             gender: 'M',
             mobilePhones: [ ],
@@ -375,7 +379,8 @@ export class UserService  extends RemotePersistentDataService<User> {
     }
     deleteAccount(user: User) {
         if (user.id ===  this.connectedUserService.getCurrentUser().id) {
-            from(firebase.auth().currentUser.delete()).pipe(
+            from(this.auth.currentUser).pipe(
+                flatMap((u) => from(u.delete())),
                 flatMap(() => this.delete(user.id)),
                 map(() => this.connectedUserService.userDisconnected())
             ).subscribe();
