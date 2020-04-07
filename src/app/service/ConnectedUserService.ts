@@ -31,6 +31,11 @@ export class ConnectedUserService {
     // console.log('ConnectedUserService.getCurrentUser()=', this);
     return this.currentUser;
   }
+  public getLang(): string {
+    return this.currentUser && this.currentUser.speakingLanguages && this.currentUser.speakingLanguages.length
+      ? this.currentUser.speakingLanguages[0].toLowerCase()
+      : 'en';
+  }
 
   public userConnected(user: User, credential: firebase.auth.UserCredential) {
     this.currentUser = user;

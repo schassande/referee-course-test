@@ -40,7 +40,7 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
         if (id == null || id === '-1' || id === '') {
             return of({ error: null, data: null});
         }
-        console.log('DatabaseService[' + this.getLocalStoragePrefix() + '].get(' + id + ')');
+        // console.log('DatabaseService[' + this.getLocalStoragePrefix() + '].get(' + id + ')');
         return this.fireStoreCollection.doc<D>(id).get().pipe(
             catchError((err) => {
                 return of({ error: err, data: null});

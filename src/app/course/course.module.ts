@@ -13,7 +13,6 @@ import { MainModule } from '../main/main.module';
 
 @NgModule({
   imports: [
-    BrowserModule,
     CommonModule,
     FormsModule,
     IonicModule,

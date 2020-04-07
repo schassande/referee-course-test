@@ -49,11 +49,9 @@ export interface QuestionSerie {
 }
 
 /** A question of the serie of the test */
-export interface Question {
+export interface Question extends Translatable {
   /** The identifier of the question */
   questionId: string;
-  /** the translation identifier of the question */
-  key: string;
   /** the identifier of the image associated to the question */
   imageId?: string;
   /** The list of the possible answer to the question */
@@ -63,11 +61,9 @@ export interface Question {
 }
 
 /** An answer of a question. */
-export interface Answer {
+export interface Answer extends Translatable {
   /** The identifier of the answer */
   answerId: string;
-  /** the translation identifier of the answer */
-  key?: string;
   /** the identifier of the image associated to the answer */
   imageId?: string;
   /** Flag indicating if the answer is right */
@@ -76,13 +72,16 @@ export interface Answer {
   point: number;
 }
 
-/** A translation of the text. The identifier is the key. */
+/** A translation of the text. The identifier is the <key>.<lang> */
 export interface Translation extends RootNode {
-  /** An array of the translation
-   * indexes of the array are a LANGUAGES value
-   * values of the array are the translated text into the language associated with the index value.
-   */
-  text: string[];
+  /** the translated text into the language defined in the key. */
+  text: string;
+}
+
+export interface Translatable {
+  /** the translation identifier of the answer */
+  key: string;
+  text?: string;
 }
 
 /** A session of a course */

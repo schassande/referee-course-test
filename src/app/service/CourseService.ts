@@ -1,6 +1,9 @@
+import { map } from 'rxjs/operators';
+import { Observable, forkJoin } from 'rxjs';
 import { AppSettingsService } from './AppSettingsService';
-import { AngularFirestore } from '@angular/fire/firestore';
+import { AngularFirestore, Query } from '@angular/fire/firestore';
 import { AlertController, ToastController } from '@ionic/angular';
+import { ResponseWithData } from './response';
 import { ConnectedUserService } from './ConnectedUserService';
 import { Injectable } from '@angular/core';
 import { RemotePersistentDataService } from './RemotePersistentDataService';
@@ -30,5 +33,23 @@ export class CourseService extends RemotePersistentDataService<Course> {
   }
 
   protected adjustFieldOnLoad(item: Course) {
+  }
+
+  /** Query basis for course limiting access to the course of the region */
+  private getBaseQuery(): Query {
+    return this.getCollectionRef().where('dataRegion', '==', this.connectedUserService.getCurrentUser().dataRegion);
+  }
+
+  public all(options: 'default' | 'server' | 'cache' = 'default'): Observable<ResponseWithData<Course[]>> {
+    return this.query(this.getBaseQuery(), options);
+  }
+
+  public search(text: string, options: 'default' | 'server' | 'cache' = 'default'): Observable<ResponseWithData<Course[]>> {
+    const str = text !== null && text && text.trim().length > 0 ? text.trim() : null;
+    return str ?
+        super.filter(this.all(options), (course: Course) => {
+            return this.stringContains(str, course.name);
+        })
+        : this.all(options);
   }
 }
