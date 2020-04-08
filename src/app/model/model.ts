@@ -95,15 +95,21 @@ export interface Session extends RootNode {
   /** Duration of test in minute */
   expireDate: Date;
   /** The list of the teachers of a session */
-  teachers: string[];
+  teachers: PersonRef[];
   /** The list of the participant of the session */
   participants: SessionParticipant[];
+}
+
+export interface PersonRef {
+  personId: string;
+  firstName: string;
+  lastName: string;
 }
 
 /** A participant of a session */
 export interface SessionParticipant {
   /** The user */
-  personId: string;
+  person: PersonRef;
   /** The answerq of the questions */
   questionAnswerIds: string[];
   /** pass */

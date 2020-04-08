@@ -13,7 +13,7 @@
 </ion-header>
 
 <ion-content *ngIf="session" (swipe)="onSwipe($event)">
-    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab *ngIf="!readonly" vertical="bottom" horizontal="end" slot="fixed">
         <ion-fab-button (click)="addXXX()">
             <ion-icon name="add"></ion-icon>
         </ion-fab-button>
@@ -28,7 +28,7 @@
             </ion-item-divider>
             <ion-item>
                 <ion-label>Course:</ion-label>
-                <ion-input *ngIf="readonly" type="text" [(ngModel)]="courseName" readonly="true"></ion-input>
+                <ion-input *ngIf="readonly" type="text" [(ngModel)]="courseName" readonly="true" style="text-align: right;"></ion-input>
                 <ion-select *ngIf="!readonly" [(ngModel)]="session.courseId" (change)="onCourseIdChange()">
                     <ion-select-option *ngFor="let course of courses" value="{{course.id}}">{{course.name}}</ion-select-option>
                 </ion-select>
@@ -39,12 +39,12 @@
             </ion-item>
             <ion-item>
                 <ion-label>Start Date:</ion-label>
-                <ion-input *ngIf="readonly" type="text" [(ngModel)]="startDate" readonly="true" style="text-align: center;"></ion-input>
+                <ion-input *ngIf="readonly" type="text" [(ngModel)]="startDate" readonly="true" style="text-align: right;"></ion-input>
                 <ion-datetime *ngIf="!readonly" displayFormat="YYYY-MM-DD HH:mm" pickerFormat="YYYY-MM-DD HH:mm" [(ngModel)]="startDate" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" style="text-align: center;"></ion-datetime>
             </ion-item>
             <ion-item>
                 <ion-label>Expire Date:</ion-label>
-                <ion-input *ngIf="readonly" type="text" [(ngModel)]="expireDate" readonly="true" style="text-align: center;"></ion-input>
+                <ion-input *ngIf="readonly" type="text" [(ngModel)]="expireDate" readonly="true" style="text-align: right;"></ion-input>
                 <ion-datetime *ngIf="!readonly" displayFormat="YYYY-MM-DD HH:mm" pickerFormat="YYYY-MM-DD HH:mm" [(ngModel)]="expireDate" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" style="text-align: center;"></ion-datetime>
             </ion-item>
         </ion-item-group>
@@ -52,11 +52,11 @@
             <ion-item-divider color="light" style="text-align: center; font-size: 1.2em; padding: 10px;">
                 <ion-label>Teachers ({{session.teachers.length}})</ion-label>
             </ion-item-divider>
-            <ion-item *ngFor="let teacherId of session.teachers">
+            <ion-item *ngFor="let teacher of session.teachers">
                 <ion-label style="border: none;" class="listItemButton">
-                    <span *ngIf="users.get(teacherId); let person">{{person.firstName}} {{person.lastName}}</span>
+                    {{teacher.firstName}} {{teacher.lastName}}
                 </ion-label>
-                <ion-icon slot="end" name="trash" (click)="deleteItem(session)"></ion-icon>
+                <ion-icon *ngIf="!readonly" slot="end" name="trash" (click)="deleteItem(session)"></ion-icon>
             </ion-item>
         </ion-item-group>
         <ion-item-group style="border-left: 1px solid lightgrey; border-right: 1px solid lightgrey;">
@@ -65,12 +65,10 @@
             </ion-item-divider>
             <ion-item *ngFor="let learner of session.participants">
                 <ion-label style="border: none;" class="listItemButton">
-                    <span *ngIf="users.get(learner.personId); let person">
-                        {{person.firstName}} {{person.lastName}},
-                        <span *ngIf="learner.score >= 0">, score: {{learner.score}}, pass: {{learner.pass}}</span>
-                    </span>
+                    {{learner.person.firstName}} {{learner.person.lastName}},
+                    <span *ngIf="learner.score >= 0">, score: {{learner.score}}, pass: {{learner.pass}}</span>
                 </ion-label>
-                <ion-icon slot="end" name="trash" (click)="deleteItem(session)"></ion-icon>
+                <ion-icon *ngIf="!readonly" slot="end" name="trash" (click)="deleteItem(session)"></ion-icon>
             </ion-item>
         </ion-item-group>
     </ion-list>

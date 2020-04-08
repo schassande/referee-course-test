@@ -57,4 +57,11 @@ export class SessionService extends RemotePersistentDataService<Session> {
         })
         : this.all(options);
   }
+
+  public sortSessionByStartDate(sessions: Session[], reverse: boolean = false): Session[] {
+    if (sessions) {
+      sessions.sort((s1, s2) => (s1.startDate.getTime() - s2.startDate.getTime()) * (reverse ? -1 : 1));
+    }
+    return sessions;
+  }
 }

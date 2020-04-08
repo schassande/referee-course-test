@@ -31,10 +31,10 @@
         <ion-item *ngFor="let session of sessions">
             <!-- #BEF990 style='--color: #D8FFFF;' -->
             <ion-label style="border: none;" class="listItemButton" (click)="sessionSelected(session)">
-                {{dateService.date2string(session.startDate)}} / {{session.courseName}} / {{session.keyCode}}
-                <span *ngFor="let teacher of session.teachers">/ {{teacher}}</span>
+                {{dateService.date2string(session.startDate)}} / {{session.courseName}}
+                <span *ngFor="let teacher of session.teachers">/ {{teacher.firstName}} {{teacher.lastName}}</span> / {{session.keyCode}}
             </ion-label>
-            <ion-icon slot="end" name="trash" (click)="deleteItem(session)"></ion-icon>
+            <ion-icon *ngIf="session.teachers && session.teachers.length && session.teachers[0].personId === currentUser.id" slot="end" name="trash" (click)="deleteItem(session)"></ion-icon>
         </ion-item>
     </ion-list>
     <div style="height: 150px;"></div>

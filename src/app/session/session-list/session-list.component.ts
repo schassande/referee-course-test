@@ -1,8 +1,9 @@
+import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
 import { DateService } from 'src/app/service/DateService';
 import { AlertController, NavController } from '@ionic/angular';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { SessionService } from 'src/app/service/SessionService';
-import { Session } from 'src/app/model/model';
+import { Session, User } from 'src/app/model/model';
 
 @Component({
   selector: 'app-session-list',
@@ -14,10 +15,12 @@ export class SessionListComponent implements OnInit {
   searchInput: string;
   loading = false;
   private sessions: Session[];
+  private currentUser: User;
 
   constructor(
     public alertCtrl: AlertController,
     private changeDetectorRef: ChangeDetectorRef,
+    private connectedUserService: ConnectedUserService,
     private sessionService: SessionService,
     private dateService: DateService,
     // private helpService: helpService,
@@ -26,13 +29,15 @@ export class SessionListComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log('SessionListComponent.ngOnInit()');
     // this.helpService.setHelp('course-list');
+    this.currentUser = this.connectedUserService.getCurrentUser();
     this.searchSessions();
   }
 
   searchSessions(forceServer: boolean = false, event: any = null) {
     this.sessionService.search(this.searchInput, forceServer ? 'server' : 'default').subscribe((rsession) => {
-      this.sessions = rsession.data;
+      this.sessions = this.sessionService.sortSessionByStartDate(rsession.data, true);
     });
   }
 

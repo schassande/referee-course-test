@@ -27,7 +27,6 @@ export class SessionEditComponent implements OnInit {
   private session: Session;
   private courseName: string;
   private courses: Course[];
-  private users: Map<string, User> = new Map<string, User>();
   private readonly = false;
 
   constructor(
@@ -87,7 +86,8 @@ export class SessionEditComponent implements OnInit {
     return this.sessionService.get(this.sessionId).pipe(
       map((rses) => {
         this.session = rses.data;
-        this.readonly = this.session.teachers.indexOf(this.connectedUserService.getCurrentUser().id) >= 0;
+        const currentUserId: string = this.connectedUserService.getCurrentUser().id;
+        this.readonly = this.session.teachers.find(t => t.personId === currentUserId) === null;
 
       }),
       // load course
@@ -95,24 +95,7 @@ export class SessionEditComponent implements OnInit {
       map(() => {
         this.courseName = this.courses.find((course) => course.id === this.session.courseId).name;
       }),
-      // load teachers and learners
-      flatMap(() => {
-        let usersToLoad: string[] = [];
-        usersToLoad = usersToLoad.concat(this.session.teachers, this.session.participants.map(p => p.personId));
-        const obs: Observable<any>[] = [];
-        obs.push(of('')); // at least one
-        usersToLoad.forEach(userId => {
-          obs.push(this.userService.get(userId).pipe(
-            map((ruser) => {
-              if (ruser.data) {
-                this.users.set(ruser.data.id, ruser.data);
-              }
-            }
-          )));
-        });
-        return forkJoin(obs);
-      }),
-      map(() => this.loading = false),
+      map(() => this.loading = false)
     );
   }
 
@@ -123,7 +106,6 @@ export class SessionEditComponent implements OnInit {
     const startDate = now.toDate();
     const expireDate = now.add(1, 'h').toDate();
     const teacher: User = this.connectedUserService.getCurrentUser();
-    this.users.set(teacher.id, teacher);
     const course = this.courses && this.courses.length ? this.courses[0] : null;
     this.session = {
       id: '',
@@ -135,7 +117,7 @@ export class SessionEditComponent implements OnInit {
       keyCode: this.generateKeyCode(),
       startDate,
       expireDate,
-      teachers: [teacher.id],
+      teachers: [this.userToPersonRef(teacher)],
       courseId: course ? course.id : null,
       courseName: course ? course.name : null,
       participants: []
@@ -155,12 +137,16 @@ export class SessionEditComponent implements OnInit {
   }
 
   saveNback() {
-    this.save().pipe(
-      map((rses) => {
-        if (!rses.error) {
-          this.navController.navigateRoot('/session');
-        }
-      })).subscribe();
+    if (this.readonly) {
+      this.navController.navigateRoot('/session');
+    } else {
+      this.save().pipe(
+        map((rses) => {
+          if (!rses.error) {
+            this.navController.navigateRoot('/session');
+          }
+        })).subscribe();
+    }
   }
 
   save(): Observable<ResponseWithData<Session>> {
@@ -192,10 +178,10 @@ export class SessionEditComponent implements OnInit {
       if (sharedWith) {
         if (role === 'Learner') {
           sharedWith.users.forEach((user) => {
-            const participant = this.session.participants.find(p => p.personId === user.id);
+            const participant = this.session.participants.find(p => p.person.personId === user.id);
             if (!participant) {
               this.session.participants.push({
-                personId: user.id,
+                person: this.userToPersonRef(user),
                 questionAnswerIds: [],
                 pass: false,
                 score: -1
@@ -204,12 +190,21 @@ export class SessionEditComponent implements OnInit {
           });
         } else if (role === 'Teacher') {
           sharedWith.users.forEach((user) => {
-            this.addToSet(user.id, this.session.teachers);
+            const teacher = this.session.teachers.find(p => p.personId === user.id);
+            if (!teacher) {
+              this.session.teachers.push(this.userToPersonRef(user));
+            }
           });
         }
       }
     });
     modal.present();
+  }
+
+  private userToPersonRef(user: User) {
+    return { personId: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName};
   }
 
   private addToSet(item: string, list: string[]) {
