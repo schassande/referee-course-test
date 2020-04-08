@@ -26,14 +26,6 @@ import { TeacherModule } from './teacher/teacher.module';
 import { SessionModule } from './session/session.module';
 import { CourseModule } from './course/course.module';
 
-// services
-import { UserService } from 'src/app/service/UserService';
-import { TranslationService } from 'src/app/service/TranslationService';
-import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
-import { DateService } from 'src/app/service/DateService';
-import { AppSettingsService } from 'src/app/service/AppSettingsService';
-
-
 export class CustomHammerConfig extends HammerGestureConfig {}
 
 
@@ -55,9 +47,9 @@ export class CustomHammerConfig extends HammerGestureConfig {}
     IonicStorageModule.forRoot({ name: '__mydb', driverOrder: ['indexeddb', 'sqlite', 'websql'] }),
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
     MainModule.forRoot(),
-    TeacherModule
-//    SessionModule,
-//    CourseModule,
+    TeacherModule,
+    SessionModule,
+    CourseModule
   ],
   providers: [
     StatusBar,

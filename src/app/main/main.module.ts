@@ -41,19 +41,20 @@ import { UserSelectorComponent } from './widget/user-selector-component';
     IonicModule,
     MarkdownModule.forRoot({ loader: HttpClient }),
   ],
-  entryComponents: [HomeComponent]
+  entryComponents: [HomeComponent, UserSelectorComponent]
 })
 export class MainModule {
+  static mod: ModuleWithProviders = {
+    ngModule: MainModule,
+    providers: [
+      AppSettingsService,
+      DateService,
+      ConnectedUserService,
+      TranslationService,
+      UserService
+    ]
+  };
   static forRoot(): ModuleWithProviders {
-    return {
-        ngModule: MainModule,
-        providers: [
-          AppSettingsService,
-          DateService,
-          ConnectedUserService,
-          TranslationService,
-          UserService
-        ]
-    };
-}
+    return this.mod;
+  }
 }

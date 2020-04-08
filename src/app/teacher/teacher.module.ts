@@ -14,8 +14,7 @@ import { MainModule } from '../main/main.module';
     BrowserModule,
     CommonModule,
     FormsModule,
-    IonicModule,
-    MainModule.forRoot()
+    IonicModule
   ]
 })
 export class TeacherModule { }

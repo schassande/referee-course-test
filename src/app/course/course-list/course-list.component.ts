@@ -58,7 +58,6 @@ export class CourseListComponent implements OnInit {
         }
       ]
     }).then( (alert) => alert.present() );
-    this.courseService.delete(course.id).subscribe();
   }
 
   newItem() {

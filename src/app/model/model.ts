@@ -86,6 +86,8 @@ export interface Translatable {
 
 /** A session of a course */
 export interface Session extends RootNode {
+  courseId: string;
+  courseName: string;
   /** the key code associated to the session */
   keyCode: string;
   /** The begin time of the test of the session */
@@ -101,9 +103,9 @@ export interface Session extends RootNode {
 /** A participant of a session */
 export interface SessionParticipant {
   /** The user */
-  person: string;
+  personId: string;
   /** The answerq of the questions */
-  questionAnswers: string[];
+  questionAnswerIds: string[];
   /** pass */
   pass: boolean;
   /** score */

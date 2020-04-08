@@ -49,6 +49,7 @@ export class CourseEditComponent implements OnInit {
   loadCourse(): Observable<any> {
     if (this.courseId) {
       console.log('load course by id: ' + this.courseId);
+      this.loading = true;
       return this.courseService.get(this.courseId).pipe(
         map((rcourse) => this.course = rcourse.data),
         flatMap(() => {
@@ -62,7 +63,8 @@ export class CourseEditComponent implements OnInit {
             });
           });
           return forkJoin(obs);
-        })
+        }),
+        map(() => this.loading = false)
       );
     } else {
       console.log('Create new course');

@@ -19,7 +19,10 @@
             <ion-icon name="attach"></ion-icon>
         </ion-fab-button>
     </ion-fab>
-    <ion-list>
+    <div *ngIf="loading" style="margin-top: 100px; width: 100%; text-align: center;">
+        <ion-spinner></ion-spinner>
+    </div>
+    <ion-list *ngIf="!loading">
         <ion-item-group style="border-left: 1px solid lightgrey; border-right: 1px solid lightgrey;">
             <ion-item-divider color="light" style="text-align: center; font-size: 1.2em; padding: 10px;">
                 <ion-label>General information</ion-label>

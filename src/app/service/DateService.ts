@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
+import * as moment from 'moment';
 
 const DATE_SEP = '-';
+const DATETIME_SEP = ' ';
 const TIME_SEP = ':';
+const ISO_DATE_TIME = 'YYYY-MM-DDTHH:mmZ';
 
 @Injectable()
 export class DateService {
@@ -33,14 +36,26 @@ export class DateService {
       + TIME_SEP + this.to2Digit(aDate.getMinutes());
   }
 
-  public string2date(dateStr: string, aDate: Date): Date {
+  public string2date(dateStr: string, aDate: Date = new Date()): Date {
     const elements = dateStr.split(DATE_SEP);
-    if (!aDate) {
-        aDate = new Date();
-    }
     aDate.setFullYear(Number.parseInt(elements[0], 0));
     aDate.setMonth(Number.parseInt(elements[1], 0) - 1);
     aDate.setDate(Number.parseInt(elements[2], 0));
+    return aDate;
+  }
+  public string2time(dateStr: string, aDate: Date = new Date()): Date {
+    const elements = dateStr.split(TIME_SEP);
+    aDate.setHours(Number.parseInt(elements[0], 0));
+    aDate.setMinutes(Number.parseInt(elements[1], 0));
+    return aDate;
+  }
+  public datetime2string(aDate: Date) {
+    return this.date2string(aDate) + DATETIME_SEP + this.time2string(aDate);
+  }
+  public string2datetime(dateStr: string, aDate: Date = new Date()): Date {
+    const elements = dateStr.split(DATETIME_SEP);
+    this.string2date(elements[0], aDate);
+    this.string2time(elements[1], aDate);
     return aDate;
   }
 

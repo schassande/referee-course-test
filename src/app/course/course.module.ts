@@ -19,9 +19,7 @@ import { MainModule } from '../main/main.module';
     CourseRoutingModule,
     MainModule.forRoot()
   ],
-  declarations: [CourseEditComponent,
-    CourseListComponent],
-    entryComponents: [CourseEditComponent,
-      CourseListComponent]
+  declarations: [CourseEditComponent, CourseListComponent],
+  entryComponents: [CourseEditComponent, CourseListComponent]
 })
 export class CourseModule {}
