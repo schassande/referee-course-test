@@ -87,8 +87,7 @@ export class SessionEditComponent implements OnInit {
       map((rses) => {
         this.session = rses.data;
         const currentUserId: string = this.connectedUserService.getCurrentUser().id;
-        this.readonly = this.session.teachers.find(t => t.personId === currentUserId) === null;
-
+        this.readonly = this.session.teachers.filter(t => t.personId === currentUserId).length === 0;
       }),
       // load course
       flatMap(() => this.courseService.get(this.session.courseId)),
