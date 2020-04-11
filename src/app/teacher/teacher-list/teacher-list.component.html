@@ -36,7 +36,7 @@
                     <li *ngFor="let qual of teacher.teacherQualifications">{{qual.region}} / Level {{qual.level}}:{{qual.status}}</li>
                 </ul>
             </ion-label>
-            <ion-icon *ngIf="!readonly && teacher.role === 'TEACHER'" slot="end" name="trash" (click)="deleteItem(teacher)"></ion-icon>
+            <ion-icon *ngIf="!readonly && teacher.role === 'TEACHER'" slot="end" name="trash" (click)="deleteTeacher(teacher)"></ion-icon>
         </ion-item>
     </ion-list>
     <div style="height: 150px;"></div>
