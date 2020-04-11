@@ -186,7 +186,7 @@ export type TeacherQualificationStatus = 'NotQualified' | 'Learner' | 'Qualified
 
 export interface TeacherQualification {
   region: DataRegion;
-  level: number;
+  level: string;
   status: TeacherQualificationStatus;
 }
 

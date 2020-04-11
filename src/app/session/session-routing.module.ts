@@ -5,7 +5,7 @@ import { SessionListComponent } from './session-list/session-list.component';
 import { SessionEditComponent } from './session-edit/session-edit.component';
 
 const routes: Routes = [
-  { path: '', component: SessionListComponent, canActivate: [AuthGuard], runGuardsAndResolvers: 'always'},
+  { path: '', component: SessionListComponent, canActivate: [AuthGuard]},
   { path: 'edit/:id', component: SessionEditComponent, canActivate: [AuthGuard]},
   { path: 'create', component: SessionEditComponent, canActivate: [AuthGuard]}
 ];

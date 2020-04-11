@@ -179,4 +179,15 @@ export class UserEditPage implements OnInit {
       this.navController.navigateRoot('/home');
     }
   }
+
+  addQual() {
+    if (!this.user.teacherQualifications) {
+      this.user.teacherQualifications = [];
+    }
+    this.user.teacherQualifications.push(
+      { region: this.user.dataRegion, level: '1', status: 'Qualified'});
+  }
+  deleteQual(index: number) {
+    this.user.teacherQualifications.splice(index, 1);
+  }
 }

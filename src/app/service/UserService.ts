@@ -1,17 +1,18 @@
+import { DataRegion } from './../model/model';
 import { AngularFireFunctions } from '@angular/fire/functions';
 import { LocalAppSettings } from './../model/settings';
 import { AppSettingsService } from './AppSettingsService';
 import { AlertController, ToastController, LoadingController } from '@ionic/angular';
 
 import { ResponseWithData, Response } from './response';
-import { Observable, of, from, Subject } from 'rxjs';
+import { Observable, of, from, Subject, forkJoin } from 'rxjs';
 import { ConnectedUserService } from './ConnectedUserService';
 import { Injectable } from '@angular/core';
 import { User, AuthProvider, COUNTRIES } from '../model/model';
 import { RemotePersistentDataService } from './RemotePersistentDataService';
 import * as firebase from 'firebase/app';
 import { flatMap, map, catchError } from 'rxjs/operators';
-import { AngularFirestore } from '@angular/fire/firestore';
+import { AngularFirestore, Query } from '@angular/fire/firestore';
 import { AngularFireAuth } from '@angular/fire/auth';
 
 @Injectable()
@@ -412,5 +413,18 @@ export class UserService  extends RemotePersistentDataService<User> {
             });
         }
         return users;
+    }
+
+    public findTeachers(region: DataRegion): Observable<ResponseWithData<User[]>> {
+        return forkJoin(
+            this.query(this.getCollectionRef()
+                .where('dataRegion', '==', region)
+                .where('role', '==', 'ADMIN'), 'default'),
+            this.query(this.getCollectionRef()
+                .where('dataRegion', '==', region)
+                .where('role', '==', 'TEACHER'), 'default'),
+        ).pipe(
+           map((list) => this.mergeObservables(list))
+        );
     }
 }
