@@ -1,3 +1,4 @@
+import { SettingsPage } from './settings/settings';
 // Modules
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -32,7 +33,7 @@ import { UserSelectorComponent } from './widget/user-selector-component';
     CameraIconComponent,
     HomeComponent, HelpWidgetComponent,
     FolderPage,
-    SharingComponent,
+    SettingsPage, SharingComponent,
     UserLoginComponent, UserEditPage, UserSelectorComponent],
   imports: [
     CommonModule,

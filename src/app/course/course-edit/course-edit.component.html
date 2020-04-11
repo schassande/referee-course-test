@@ -13,7 +13,7 @@
 </ion-header>
 
 <ion-content *ngIf="course" (swipe)="onSwipe($event)">
-    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="!readonly">
         <input type="file" #inputCourse accept="*.csv" style="display: none;" (change)="importCourseFromCsv($event)" />
         <ion-fab-button (click)="loadFile()">
             <ion-icon name="attach"></ion-icon>

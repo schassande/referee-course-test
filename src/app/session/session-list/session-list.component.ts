@@ -16,6 +16,7 @@ export class SessionListComponent implements OnInit {
   loading = false;
   private sessions: Session[];
   private currentUser: User;
+  private readonly = false;
 
   constructor(
     public alertCtrl: AlertController,
@@ -32,6 +33,7 @@ export class SessionListComponent implements OnInit {
     console.log('SessionListComponent.ngOnInit()');
     // this.helpService.setHelp('course-list');
     this.currentUser = this.connectedUserService.getCurrentUser();
+    this.readonly = this.currentUser.role === 'LEARNER';
     this.searchSessions();
   }
 

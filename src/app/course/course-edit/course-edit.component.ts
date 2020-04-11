@@ -1,3 +1,4 @@
+import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
 import { TranslationService } from 'src/app/service/TranslationService';
 import { ResponseWithData } from 'src/app/service/response';
 import { map, flatMap } from 'rxjs/operators';
@@ -20,11 +21,12 @@ export class CourseEditComponent implements OnInit {
   private courseId: string;
   private course: Course;
   @ViewChild('inputCourse', null) inputCourse: ElementRef;
+  private readonly = false;
 
   constructor(
     public alertCtrl: AlertController,
-    private changeDetectorRef: ChangeDetectorRef,
     private courseService: CourseService,
+    private connectedUserService: ConnectedUserService,
     private dateService: DateService,
     // private helpService: helpService,
     private navController: NavController,
@@ -35,6 +37,7 @@ export class CourseEditComponent implements OnInit {
 
   ngOnInit() {
     // this.helpService.setHelp('course-list');
+    this.readonly = this.connectedUserService.getCurrentUser().role === 'LEARNER';
     this.loadParams().pipe(
       flatMap(() => this.loadCourse())
     ).subscribe();
@@ -102,6 +105,9 @@ export class CourseEditComponent implements OnInit {
   }
 
   save(): Observable<ResponseWithData<Course>> {
+    if (this.readonly) {
+      return of({ data: this.course, error: null});
+    }
     return this.courseService.save(this.course).pipe(
       map((rcourse) => {
         if (!rcourse.error) {
@@ -112,11 +118,15 @@ export class CourseEditComponent implements OnInit {
       }));
   }
   loadFile() {
-    this.inputCourse.nativeElement.click();
+    if (!this.readonly) {
+      this.inputCourse.nativeElement.click();
+    }
   }
 
   importCourseFromCsv(event) {
-    this.analayse(event.target.files[0]);
+    if (!this.readonly) {
+      this.analayse(event.target.files[0]);
+    }
   }
 
   private analayse(file) {
