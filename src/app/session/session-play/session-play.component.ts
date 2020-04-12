@@ -119,11 +119,11 @@ export class SessionPlayComponent implements OnInit {
   }
 
   nextNoAnswerQuestion() {
-    console.log('nextNoAnswerQuestion()', this.nbQuestion, this.learnerAnswers.size, this.answerValue);
+    // console.log('nextNoAnswerQuestion()', this.nbQuestion, this.learnerAnswers.size, this.answerValue);
     if (this.nbQuestion > this.learnerAnswers.size) {
       while (this.answerValue !== '') {
         this.incQuestionIdx();
-        console.log('nextNoAnswerQuestion() questionIdx=' + this.questionIdx + ', answerValue=' + this.answerValue);
+        // console.log('nextNoAnswerQuestion() questionIdx=' + this.questionIdx + ', answerValue=' + this.answerValue);
       }
     }
   }
