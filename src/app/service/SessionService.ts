@@ -64,4 +64,13 @@ export class SessionService extends RemotePersistentDataService<Session> {
     }
     return sessions;
   }
+
+  public findTeacherSessions(): Observable<ResponseWithData<Session[]>> {
+    return this.query(this.getBaseQuery()
+      .where('teacherIds', 'array-contains', this.connectedUserService.getCurrentUser().id), 'default');
+  }
+  public findLearnerSessions(): Observable<ResponseWithData<Session[]>> {
+    return this.query(this.getBaseQuery()
+      .where('participantIds', 'array-contains', this.connectedUserService.getCurrentUser().id), 'default');
+  }
 }

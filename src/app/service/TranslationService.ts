@@ -34,8 +34,11 @@ export class TranslationService extends RemotePersistentDataService<Translation>
   protected adjustFieldOnLoad(item: Translation) {
   }
 
-  public translate(item: Translatable): Observable<string> {
-    return this.get(item.key + '.' + this.connectedUserService.getLang().toLowerCase()).pipe(
+  public translate(item: Translatable, lang: string = null): Observable<string> {
+    if (!lang) {
+      lang = this.connectedUserService.getLang();
+    }
+    return this.get(item.key + '.' + lang.toLowerCase()).pipe(
       map((rtrad) => {
         item.text = rtrad.data ? rtrad.data.text : item.key;
         // console.log('translate(' + item.key + '=' + item.text);

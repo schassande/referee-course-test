@@ -18,6 +18,8 @@ export interface Course extends RootNode {
   test: Test;
 }
 
+export type DurationUnit = 'm' | 'h' | 'd';
+
 /** The test of a course */
 export interface Test {
   /** The version number of the test */
@@ -27,11 +29,13 @@ export interface Test {
   /** Duration of test */
   duration: number;
   /** unit of the duration time  */
-  durationUnit: string;
+  durationUnit: DurationUnit;
   /** The list of serie of questions */
   series: QuestionSerie[];
   /** The required number of point for the serie */
   requiredScore: number;
+  /** List of supported languages */
+  supportedLanguages: string[];
 }
 
 /** A serie of the test */
@@ -84,10 +88,17 @@ export interface Translatable {
   text?: string;
 }
 
+export type SessionStatus = 'REGISTRATION' | 'STARTED' | 'STOPPED';
+
+
 /** A session of a course */
 export interface Session extends RootNode {
+  /** identifier of the course */
   courseId: string;
+  /** Name of the course */
   courseName: string;
+  /** Status of the session */
+  status: SessionStatus;
   /** the key code associated to the session */
   keyCode: string;
   /** The begin time of the test of the session */
@@ -96,8 +107,10 @@ export interface Session extends RootNode {
   expireDate: Date;
   /** The list of the teachers of a session */
   teachers: PersonRef[];
+  teacherIds: string[];
   /** The list of the participant of the session */
   participants: SessionParticipant[];
+  participantIds: string[];
 }
 
 export interface PersonRef {

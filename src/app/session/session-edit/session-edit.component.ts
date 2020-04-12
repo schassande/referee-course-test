@@ -1,3 +1,4 @@
+import { DurationUnit } from './../../model/model';
 import { UserService } from 'src/app/service/UserService';
 import { UserSelectorComponent } from './../../main/widget/user-selector-component';
 import { ActivatedRoute } from '@angular/router';
@@ -25,7 +26,7 @@ export class SessionEditComponent implements OnInit {
   loading = false;
   private sessionId: string;
   private session: Session;
-  private courseName: string;
+  private course: Course;
   private courses: Course[];
   private readonly = false;
 
@@ -93,23 +94,28 @@ export class SessionEditComponent implements OnInit {
       // load course
       flatMap(() => this.courseService.get(this.session.courseId)),
       map(() => {
-        this.courseName = this.courses.find((course) => course.id === this.session.courseId).name;
+        this.course = this.courses.find((course) => course.id === this.session.courseId);
       }),
       map(() => this.loading = false)
     );
   }
 
+  private computeExpireDate(d: Date, duration: number, durationUnit: DurationUnit): Date {
+    return moment(d).add(duration, durationUnit).toDate();
+  }
+
   private createNewSession(): Observable<any> {
     console.log('Create new Session ');
+    this.course = this.courses && this.courses.length ? this.courses[0] : null;
     const now = moment();
     now.set('m', Math.round(now.get('m') / 5) * 5);
     const startDate = now.toDate();
-    const expireDate = now.add(1, 'h').toDate();
+    const expireDate = this.computeExpireDate(startDate, this.course.test.duration, this.course.test.durationUnit);
     const teacher: User = this.connectedUserService.getCurrentUser();
-    const course = this.courses && this.courses.length ? this.courses[0] : null;
     this.session = {
       id: '',
       dataRegion: 'Europe',
+      status: 'REGISTRATION',
       creationDate: new Date(),
       lastUpdate: new Date(),
       dataStatus: 'NEW',
@@ -118,9 +124,11 @@ export class SessionEditComponent implements OnInit {
       startDate,
       expireDate,
       teachers: [this.userToPersonRef(teacher)],
-      courseId: course ? course.id : null,
-      courseName: course ? course.name : null,
-      participants: []
+      teacherIds: [teacher.id],
+      courseId: this.course ? this.course.id : null,
+      courseName: this.course ? this.course.name : null,
+      participants: [],
+      participantIds: []
     };
     this.readonly = false;
     return of({ error: null, data: this.session});
@@ -186,6 +194,7 @@ export class SessionEditComponent implements OnInit {
                 pass: false,
                 score: -1
               });
+              this.session.participantIds.push(user.id);
             }
           });
         } else if (role === 'Teacher') {
@@ -193,6 +202,7 @@ export class SessionEditComponent implements OnInit {
             const teacher = this.session.teachers.find(p => p.personId === user.id);
             if (!teacher) {
               this.session.teachers.push(this.userToPersonRef(user));
+              this.session.teacherIds.push(user.id);
             }
           });
         }
@@ -215,11 +225,34 @@ export class SessionEditComponent implements OnInit {
 
   onCourseIdChange() {
     if (this.session.courseId) {
-      const course = this.courses.find(c => c.id === this.session.courseId);
-      this.session.courseName = course ? course.name : null;
+      this.course = this.courses.find(c => c.id === this.session.courseId);
+      this.session.courseName = this.course ? this.course.name : null;
     } else {
       this.session.courseName = null;
+      this.course = null;
     }
     console.log('onCourseIdChange(): ', this.session.courseName);
+  }
+
+  deleteTeacher(teacher: User, index: number) {
+    this.session.teachers.splice(index, 1);
+    this.session.teacherIds.splice(index, 1);
+  }
+  deleteLearner(learner: User, index: number) {
+    this.session.participants.splice(index, 1);
+    this.session.participantIds.splice(index, 1);
+  }
+  start() {
+    this.session.status = 'STARTED';
+    this.session.startDate = new Date();
+    this.session.expireDate = this.computeExpireDate(
+      this.session.startDate,
+      this.course.test.duration,
+      this.course.test.durationUnit);
+    this.save().subscribe();
+    }
+  stop() {
+    this.session.status = 'STOPPED';
+    this.save().subscribe();
   }
 }

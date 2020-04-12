@@ -1,0 +1,68 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-button routerLink="/home" detail>
+                <ion-icon name="arrow-back"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+        <ion-title style="text-align: center;">Sessions</ion-title>
+        <ion-buttons slot="end">
+            <ion-menu-button autoHide="false" menu="main"></ion-menu-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content (swipe)="onSwipe($event)">
+    <div *ngIf="!loading && session">
+        <ion-list *ngIf="course.test.series.length > 1">
+            <ion-item>
+                <ion-icon scope="start" name="arrow-forward-circle-outline"></ion-icon>
+                <ion-label>{{serie.serieName}}</ion-label>
+                <ion-icon scope="end" name="arrow-backward-circle-outline"></ion-icon>
+            </ion-item>
+            <ion-item *ngIf="!serie.enabled">DISABLED</ion-item>
+            <ion-item>
+                <ion-label>Required score: </ion-label>
+                <ion-input style="text-align: right;" readonly="true">{{serie.requiredScore}}
+                    <span *ngIf="serie.passRequired"> *</span>
+                </ion-input>
+            </ion-item>
+        </ion-list>
+        <div class="questionNumberLine">
+            <ion-button shape="round" (click)="decQuestionIdx()" class="questionButton" style="margin-left: 20px;">
+                <ion-icon name="arrow-back-outline"></ion-icon>
+            </ion-button>
+            <div class="questionNumber">Question {{questionIdx + 1}}/{{serie.questions.length}}</div>
+            <ion-button shape="round" (click)="incQuestionIdx()" class="questionButton">
+                <ion-icon name="arrow-forward-outline"></ion-icon>
+            </ion-button>
+            <ion-button shape="round" (click)="nextNoAnswerQuestion()" class="questionButton" [disabled]="nbQuestion === learnerAnswers.size">
+                <ion-icon name="search-outline"></ion-icon>
+            </ion-button>
+        </div>
+        <div style="clear: both;"></div>
+        <ion-list>
+            <ion-item>
+                <ion-label innerHtml="{{question.text}}" class="question"></ion-label>
+            </ion-item>
+            <ion-radio-group name="question" [(ngModel)]="answerValue">
+                <ion-item *ngFor="let answer of question.answers; let index = index;" (click)="answerSelected(index)">
+                    <ion-label class="answer">{{answerLetters[index]}} - {{answer.text}}</ion-label>
+                    <ion-radio slot="end" value="{{index}}" [disabled]="sessionExpired"></ion-radio>
+                </ion-item>
+            </ion-radio-group>
+        </ion-list>
+        <div class="questionNumberLine">
+            <div class="questionNumber">Questions without answer: {{nbQuestion - learnerAnswers.size}}/{{nbQuestion}}</div>
+            <div class="questionNumber">
+                <span *ngIf="sessionExpired" class="expired">Session expired ({{dateService.datetime2string(session.expireDate)}})</span>
+                <span *ngIf="!sessionExpired" class="notExpired">Limit date time: {{dateService.datetime2string(session.expireDate)}}</span>
+            </div>
+            <div>
+                Available languages: <span *ngFor="let lg of course.test.supportedLanguages" [ngClass]="{ 'selectedLang': lg === lang}" style="margin-left: 20px;">
+                     <img src="assets/flags/{{lg.toUpperCase()}}.png" height="30px" (click)="changeLanguage(lg)">
+                </span>
+            </div>
+        </div>
+    </div>
+</ion-content>

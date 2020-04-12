@@ -31,7 +31,11 @@
         <ion-item *ngFor="let course of courses">
             <!-- #BEF990 style='--color: #D8FFFF;' -->
             <ion-label style="border: none;" class="listItemButton" (click)="courseSelected(course)">
-                <p>{{course.name}}</p>
+                <p>{{course.name}}
+                    <span *ngFor="let lg of course.test.supportedLanguages" style="margin-left: 10px;">
+                        <img src="assets/flags/{{lg.toUpperCase()}}.png" height="20px">
+                   </span>
+                </p>
             </ion-label>
             <ion-icon slot="end" name="trash" (click)="deleteItem(course)"></ion-icon>
         </ion-item>

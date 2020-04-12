@@ -1,3 +1,6 @@
+import { ResponseWithData } from './response';
+import { Observable } from 'rxjs';
+import { DateService } from './DateService';
 import { AppSettingsService } from './AppSettingsService';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { AlertController, ToastController } from '@ionic/angular';
@@ -13,6 +16,7 @@ export class ParticipantQuestionAnswerService extends RemotePersistentDataServic
 
   constructor(
       readonly db: AngularFirestore,
+      private dateService: DateService,
       toastController: ToastController,
       appSettingsService: AppSettingsService,
       private connectedUserService: ConnectedUserService,
@@ -30,5 +34,16 @@ export class ParticipantQuestionAnswerService extends RemotePersistentDataServic
   }
 
   protected adjustFieldOnLoad(item: ParticipantQuestionAnswer) {
+    item.responseTime = this.adjustDate(item.responseTime, this.dateService);
+    item.creationDate = this.adjustDate(item.creationDate, this.dateService);
+    item.lastUpdate = this.adjustDate(item.lastUpdate, this.dateService);
+  }
+
+  public findMyAnwsers(sessionId: string, learnerId: string): Observable<ResponseWithData<ParticipantQuestionAnswer[]>> {
+    return this.query(this.getCollectionRef()
+      .where('dataRegion', '==', this.connectedUserService.getCurrentUser().dataRegion)
+      .where('sessionId', '==', sessionId)
+      .where('learnerId', '==', learnerId),
+      'default');
   }
 }

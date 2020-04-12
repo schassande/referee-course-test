@@ -31,8 +31,8 @@
         <ion-item *ngFor="let session of sessions">
             <!-- #BEF990 style='--color: #D8FFFF;' -->
             <ion-label style="border: none;" class="listItemButton" (click)="sessionSelected(session)">
-                {{dateService.date2string(session.startDate)}} / {{session.courseName}}
-                <span *ngFor="let teacher of session.teachers">/ {{teacher.firstName}} {{teacher.lastName}}</span> / {{session.keyCode}}
+                {{dateService.date2string(session.startDate)}} / {{session.courseName}} / {{session.keyCode}} / {{session.status}}
+                <div *ngFor="let teacher of session.teachers" style="margin-left: 100px;">by {{teacher.firstName}} {{teacher.lastName}}</div>
             </ion-label>
             <ion-icon *ngIf="!readonly && session.teachers && session.teachers.length && session.teachers[0].personId === currentUser.id" slot="end" name="trash" (click)="deleteItem(session)"></ion-icon>
         </ion-item>

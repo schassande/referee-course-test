@@ -1,0 +1,39 @@
+.question,
+.answer,
+.questionNumber {
+    line-height: 2em;
+    white-space: normal;
+}
+
+.answer {
+    margin-left: 30px;
+}
+
+.question {
+    font-weight: bold;
+}
+
+.questionNumberLine {
+    margin: 10px auto 0 auto;
+    text-align: center;
+}
+
+.questionNumber {
+    display: inline-block;
+    margin: 0 20px;
+    font-size: 1.3em;
+}
+
+.questionButton {}
+
+.expired {
+    color: red;
+}
+
+.notExpired {
+    color: green;
+}
+
+.selectedLang {
+    border-bottom: 3px solid lightgrey;
+}
