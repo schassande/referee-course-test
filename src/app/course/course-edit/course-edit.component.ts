@@ -88,6 +88,7 @@ export class CourseEditComponent implements OnInit {
           duration: 30,
           durationUnit: 'm',
           requiredScore: 23,
+          nbQuestion: 30,
           supportedLanguages: ['en'],
           series: [ { enabled: true, requiredScore: 27, passRequired: true, questions: [] } ]
         }

@@ -1,6 +1,10 @@
+import { map } from 'rxjs/operators';
+import { ParticipantQuestionAnswerService } from 'src/app/service/ParticipantQuestionAnswerService';
+import { Course, ParticipantQuestionAnswer } from 'src/app/model/model';
+import { ParticipantResult, SessionParticipant, TestParticipantResult } from './../model/model';
 import { DateService } from 'src/app/service/DateService';
 import { ResponseWithData } from 'src/app/service/response';
-import { Observable } from 'rxjs';
+import { Observable, of, forkJoin } from 'rxjs';
 import { AppSettingsService } from './AppSettingsService';
 import { AngularFirestore, Query } from '@angular/fire/firestore';
 import { AlertController, ToastController } from '@ionic/angular';
@@ -20,6 +24,7 @@ export class SessionService extends RemotePersistentDataService<Session> {
       appSettingsService: AppSettingsService,
       private connectedUserService: ConnectedUserService,
       private dateService: DateService,
+      private participantQuestionAnswerService: ParticipantQuestionAnswerService,
       private alertCtrl: AlertController,
     ) {
       super(appSettingsService, db, toastController);
@@ -72,5 +77,72 @@ export class SessionService extends RemotePersistentDataService<Session> {
   public findLearnerSessions(): Observable<ResponseWithData<Session[]>> {
     return this.query(this.getBaseQuery()
       .where('participantIds', 'array-contains', this.connectedUserService.getCurrentUser().id), 'default');
+  }
+
+  public computeLearnerScores(session: Session, course: Course): Observable<any> {
+    const obs: Observable<any>[] = [];
+    session.participants.forEach(participant => {
+      obs.push(this.computeLearnerScoresOfParticipant(session, course, participant));
+    });
+    return forkJoin(obs);
+  }
+
+  public computeLearnerScoresOfParticipant(session: Session,
+                                           course: Course,
+                                           participant: SessionParticipant): Observable<any> {
+    return this.participantQuestionAnswerService.findMyAnwsers(session.id, participant.person.personId).pipe(
+      map((ranswers) => {
+        const learnerAnswers: Map<string, ParticipantQuestionAnswer> = new Map<string, ParticipantQuestionAnswer>();
+        ranswers.data.forEach((answer) => learnerAnswers.set(answer.questionId, answer));
+        this.computeParticipantResult(course, session, learnerAnswers, participant);
+        return participant;
+      })
+    );
+  }
+
+  public computeParticipantResult(course: Course,
+                                  session: Session,
+                                  learnerAnswers: Map<string, ParticipantQuestionAnswer>,
+                                  testResult: TestParticipantResult = null): TestParticipantResult {
+    if (!testResult) {
+      testResult = {
+        score: 0,
+        requiredScore: 0,
+        percent: 0,
+        pass: true,
+        seriesResult: []
+      };
+    }
+    testResult.requiredScore = course.test.requiredScore;
+    course.test.series.forEach(serie => {
+      const serieResult: ParticipantResult = {
+        score: 0,
+        requiredScore: serie.requiredScore,
+        percent: 0,
+        pass: true,
+      };
+      serie.questions.forEach(question => {
+        const pa = learnerAnswers.get(question.questionId);
+        if (pa) {
+          const rightAnswer = question.answers.filter(answer => answer.right);
+          console.log('computeNbRightAnswer: rightAnswer=', rightAnswer, 'pa=', pa);
+          if (rightAnswer
+            && rightAnswer[0].answerId === pa.answerId
+            && pa.responseTime.getTime() < session.expireDate.getTime()) {
+            serieResult.score ++;
+          }
+        } else {
+          console.log('computeNbRightAnswer: no response for question ', question.questionId);
+        }
+      });
+      serieResult.pass = serieResult.score >= serie.requiredScore;
+      serieResult.percent = Math.round(serieResult.score * 100 / serie.requiredScore);
+
+      testResult.score += serieResult.score;
+      testResult.pass = testResult.pass && (serie.passRequired || serieResult.pass);
+    });
+    testResult.pass = testResult.pass && (testResult.score >= course.test.requiredScore);
+    testResult.percent = Math.round(testResult.score * 100 / course.test.requiredScore);
+    return testResult;
   }
 }

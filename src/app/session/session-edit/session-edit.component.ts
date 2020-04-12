@@ -29,20 +29,18 @@ export class SessionEditComponent implements OnInit {
   private course: Course;
   private courses: Course[];
   private readonly = false;
+  private isTeacher = false;
+  private math = Math;
 
   constructor(
     public alertCtrl: AlertController,
-    private changeDetectorRef: ChangeDetectorRef,
     private connectedUserService: ConnectedUserService,
     private courseService: CourseService,
     private dateService: DateService,
-    // private helpService: helpService,
     private modalController: ModalController,
     private navController: NavController,
     private route: ActivatedRoute,
-    private sessionService: SessionService,
-    private translationService: TranslationService,
-    private userService: UserService
+    private sessionService: SessionService
     ) {
   }
 
@@ -88,14 +86,13 @@ export class SessionEditComponent implements OnInit {
       map((rses) => {
         this.session = rses.data;
         const currentUserId: string = this.connectedUserService.getCurrentUser().id;
-        this.readonly = this.connectedUserService.getCurrentUser().role !== 'LEARNER'
-          && this.session.teachers.filter(t => t.personId === currentUserId).length === 0;
+        this.isTeacher = this.connectedUserService.getCurrentUser().role !== 'LEARNER'
+          && this.session.teachers.filter(t => t.personId === currentUserId).length > 0;
+        this.readonly = !this.isTeacher;
       }),
       // load course
       flatMap(() => this.courseService.get(this.session.courseId)),
-      map(() => {
-        this.course = this.courses.find((course) => course.id === this.session.courseId);
-      }),
+      map(() => this.course = this.courses.find((course) => course.id === this.session.courseId)),
       map(() => this.loading = false)
     );
   }
@@ -131,6 +128,7 @@ export class SessionEditComponent implements OnInit {
       participantIds: []
     };
     this.readonly = false;
+    this.isTeacher = true;
     return of({ error: null, data: this.session});
   }
 
@@ -192,7 +190,10 @@ export class SessionEditComponent implements OnInit {
                 person: this.userToPersonRef(user),
                 questionAnswerIds: [],
                 pass: false,
-                score: -1
+                score: -1,
+                requiredScore: -1,
+                percent: -1,
+                seriesResult: []
               });
               this.session.participantIds.push(user.id);
             }
@@ -253,6 +254,19 @@ export class SessionEditComponent implements OnInit {
     }
   stop() {
     this.session.status = 'STOPPED';
+    this.save().subscribe();
+  }
+  correction() {
+    this.session.status = 'CORRECTION';
+    this.save().subscribe();
+  }
+  computeScores() {
+    this.sessionService.computeLearnerScores(this.session, this.course).pipe(
+      flatMap(() => this.save())
+    ).subscribe();
+  }
+  close() {
+    this.session.status = 'CLOSED';
     this.save().subscribe();
   }
 }

@@ -87,7 +87,9 @@
             </ion-radio-group>
         </ion-list>
         <div class="questionNumberLine">
-            <div class="questionNumber" *ngIf="session.status === 'CORRECTION'">Score: {{nbRightAnswer}}/{{nbQuestion}}, {{math.round(nbRightAnswer*100/nbQuestion)}}%</div>
+            <div class="questionNumber" *ngIf="session.status === 'CORRECTION'" [ngClass]="{'testPass': participantResult.pass, 'testFail': !participantResult.pass}">
+                Score: {{participantResult.score}}/{{participantResult.requiredScore}}, {{participantResult.percent}}%
+            </div>
             <div class="questionNumber">Questions without answer: {{nbQuestion - learnerAnswers.size}}/{{nbQuestion}}</div>
             <div class="questionNumber">
                 <span *ngIf="sessionExpired" class="expired">Session expired ({{dateService.datetime2string(session.expireDate)}})</span>

@@ -34,6 +34,7 @@ export interface Test {
   series: QuestionSerie[];
   /** The required number of point for the serie */
   requiredScore: number;
+  nbQuestion: number;
   /** List of supported languages */
   supportedLanguages: string[];
 }
@@ -120,15 +121,24 @@ export interface PersonRef {
 }
 
 /** A participant of a session */
-export interface SessionParticipant {
+export interface SessionParticipant extends TestParticipantResult {
   /** The user */
   person: PersonRef;
   /** The answerq of the questions */
   questionAnswerIds: string[];
+}
+
+export interface ParticipantResult {
   /** pass */
   pass: boolean;
   /** score */
   score: number;
+  requiredScore: number;
+  /** score as percent */
+  percent: number;
+}
+export interface TestParticipantResult extends ParticipantResult {
+  seriesResult: ParticipantResult[];
 }
 
 export interface ParticipantQuestionAnswer extends RootNode {

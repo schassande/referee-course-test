@@ -20,17 +20,32 @@
                     <ion-icon name="recording-outline"></ion-icon>
                 </ion-fab-button>
             </ion-col>
-            <ion-col *ngIf="session.status !== 'STARTED'">
+            <ion-col *ngIf="isTeacher && (session.status === 'REGISTRATION' || session.status === 'STOPPED')">
                 <ion-fab-button (click)="start()">
                     <ion-icon name="play-outline"></ion-icon>
                 </ion-fab-button>
             </ion-col>
-            <ion-col *ngIf="session.status === 'STARTED'">
+            <ion-col *ngIf="isTeacher && (session.status === 'STARTED')">
                 <ion-fab-button (click)="stop()" style='--background:red; font-size: 1.6em; margin-bottom: 10px;'>
                     <ion-icon name="stop-outline"></ion-icon>
                 </ion-fab-button>
             </ion-col>
-            <ion-col>
+            <ion-col *ngIf="isTeacher && session.status === 'STOPPED'">
+                <ion-fab-button (click)="correction()" style='--background:yellow; font-size: 1.6em; margin-bottom: 10px;'>
+                    <ion-icon name="checkmark-done-outline"></ion-icon>
+                </ion-fab-button>
+            </ion-col>
+            <ion-col *ngIf="isTeacher && session.status === 'CORRECTION'">
+                <ion-fab-button (click)="close()" style='--background:red; font-size: 1.6em; margin-bottom: 10px;'>
+                    <ion-icon name="close-outline"></ion-icon>
+                </ion-fab-button>
+            </ion-col>
+            <ion-col *ngIf="isTeacher && (session.status === 'CORRECTION' || session.status === 'CLOSED')">
+                <ion-fab-button (click)="computeScores()" style='--background:green; font-size: 1.6em; margin-bottom: 10px;'>
+                    <ion-icon name="calculator-outline"></ion-icon>
+                </ion-fab-button>
+            </ion-col>
+            <ion-col *ngIf="isTeacher && session.status !== 'CORRECTION' && session.status !== 'CLOSED'">
                 <ion-fab-button (click)="addXXX()" style='--background:green; font-size: 1.6em; margin-bottom: 10px;'>
                     <ion-icon name="add"></ion-icon>
                 </ion-fab-button>
@@ -47,7 +62,7 @@
             </ion-item-divider>
             <ion-item>
                 <ion-label>Course:</ion-label>
-                <ion-input *ngIf="readonly" type="text" [(ngModel)]="courseName" readonly="true" style="text-align: right;"></ion-input>
+                <ion-input *ngIf="readonly" type="text" [(ngModel)]="course.name" readonly="true" style="text-align: right;"></ion-input>
                 <ion-select *ngIf="!readonly" [(ngModel)]="session.courseId" (change)="onCourseIdChange()">
                     <ion-select-option *ngFor="let course of courses" value="{{course.id}}">{{course.name}}</ion-select-option>
                 </ion-select>
@@ -88,8 +103,8 @@
             </ion-item-divider>
             <ion-item *ngFor="let learner of session.participants; let index = index;">
                 <ion-label style="border: none;" class="listItemButton">
-                    {{learner.person.firstName}} {{learner.person.lastName}},
-                    <span *ngIf="learner.score >= 0">, score: {{learner.score}}, pass: {{learner.pass}}</span>
+                    {{learner.person.firstName}} {{learner.person.lastName}}
+                    <span *ngIf="learner.score >= 0" [ngClass]="{'testPass': learner.pass, 'testFail': !learner.pass}">, S:{{learner.score}},R:{{learner.requiredScore}},T:{{course.test.nbQuestion}},({{learner.percent}}%) {{learner.pass ? 'PASS' : 'FAIL'}}</span>
                 </ion-label>
                 <ion-icon *ngIf="!readonly" slot="end" name="trash" (click)="deleteLearner(learner, index)"></ion-icon>
             </ion-item>

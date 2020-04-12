@@ -1,3 +1,4 @@
+import { TestParticipantResult } from './../../model/model';
 import { ResponseWithData } from 'src/app/service/response';
 import { ModalController, NavController, AlertController } from '@ionic/angular';
 import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
@@ -40,8 +41,7 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
   private showRightAnswer = false;
   private intervalId;
   private isTeacher = false;
-  private nbRightAnswer = 0;
-  private math = Math;
+  private participantResult: TestParticipantResult = null;
 
   constructor(
     private alertCtrl: AlertController,
@@ -95,30 +95,13 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
       flatMap(() => this.loadAnswers()),
       map(() => {
         if (this.session.status === 'CORRECTION') {
-          this.computeNbRightAnswer();
+          this.participantResult = this.sessionService.computeParticipantResult(this.course, this.session, this.learnerAnswers);
         }
       }),
       map(() => this.loading = false)
     ).subscribe();
   }
 
-  private computeNbRightAnswer() {
-    this.nbRightAnswer = 0;
-    this.course.test.series.forEach(serie => {
-      serie.questions.forEach(question => {
-        const pa = this.learnerAnswers.get(question.questionId);
-        if (pa) {
-          const rightAnswer = question.answers.filter(answer => answer.right);
-          console.log('computeNbRightAnswer: rightAnswer=', rightAnswer, 'pa=', pa);
-          if (rightAnswer && rightAnswer[0].answerId === pa.answerId) {
-            this.nbRightAnswer++;
-          }
-        } else {
-          console.log('computeNbRightAnswer: no response for question ', question.questionId);
-        }
-      });
-    });
-  }
   public ngOnDestroy() {
     if (this.intervalId) {
       clearInterval(this.intervalId);
