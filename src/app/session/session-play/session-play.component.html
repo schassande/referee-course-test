@@ -13,7 +13,40 @@
 </ion-header>
 
 <ion-content (swipe)="onSwipe($event)">
-    <div *ngIf="!loading && session">
+    <ion-fab *ngIf="session" vertical="bottom" horizontal="end" slot="fixed">
+        <ion-row>
+            <ion-col *ngIf="isTeacher && (session.status === 'REGISTRATION' || session.status === 'STOPPED')">
+                <ion-fab-button (click)="start()">
+                    <ion-icon name="play-outline"></ion-icon>
+                </ion-fab-button>
+            </ion-col>
+            <ion-col *ngIf="isTeacher && (session.status === 'STARTED')">
+                <ion-fab-button (click)="stop()" style='--background:red; font-size: 1.6em; margin-bottom: 10px;'>
+                    <ion-icon name="stop-outline"></ion-icon>
+                </ion-fab-button>
+            </ion-col>
+            <ion-col *ngIf="isTeacher && session.status === 'STOPPED'">
+                <ion-fab-button (click)="correction()" style='--background:yellow; font-size: 1.6em; margin-bottom: 10px;'>
+                    <ion-icon name="checkmark-done-outline"></ion-icon>
+                </ion-fab-button>
+            </ion-col>
+            <ion-col *ngIf="isTeacher && session.status === 'CORRECTION'">
+                <ion-fab-button (click)="close()" style='--background:red; font-size: 1.6em; margin-bottom: 10px;'>
+                    <ion-icon name="close-outline"></ion-icon>
+                </ion-fab-button>
+            </ion-col>
+            <ion-col>
+                <ion-fab-button (click)="loadData()" style='--background:green;'>
+                    <ion-icon name="reload-outline"></ion-icon>
+                </ion-fab-button>
+            </ion-col>
+        </ion-row>
+    </ion-fab>
+    <div *ngIf="loading" style="margin: 20px auto; text-align: center;">
+        <ion-spinner name="bubbles"></ion-spinner>
+    </div>
+
+    <div *ngIf="!loading && session && session.status !== 'CLOSED'">
         <ion-list *ngIf="course.test.series.length > 1">
             <ion-item>
                 <ion-icon scope="start" name="arrow-forward-circle-outline"></ion-icon>
@@ -46,21 +79,23 @@
                 <ion-label innerHtml="{{question.text}}" class="question"></ion-label>
             </ion-item>
             <ion-radio-group name="question" [(ngModel)]="answerValue">
-                <ion-item *ngFor="let answer of question.answers; let index = index;" (click)="answerSelected(index)">
+                <ion-item *ngFor="let answer of question.answers; let index = index;" (click)="answerSelected(index)" [ngClass]="{'rightAnswer': showRightAnswer && answer.right}">
                     <ion-label class="answer">{{answerLetters[index]}} - {{answer.text}}</ion-label>
-                    <ion-radio slot="end" value="{{index}}" [disabled]="sessionExpired"></ion-radio>
+                    <ion-icon *ngIf="sessionExpired && answerValue && answerValue == index" slot="end" name="radio-button-on-outline"></ion-icon>
+                    <ion-radio *ngIf="!sessionExpired" slot="end" value="{{index}}"></ion-radio>
                 </ion-item>
             </ion-radio-group>
         </ion-list>
         <div class="questionNumberLine">
+            <div class="questionNumber" *ngIf="session.status === 'CORRECTION'">Score: {{nbRightAnswer}}/{{nbQuestion}}, {{math.round(nbRightAnswer*100/nbQuestion)}}%</div>
             <div class="questionNumber">Questions without answer: {{nbQuestion - learnerAnswers.size}}/{{nbQuestion}}</div>
             <div class="questionNumber">
                 <span *ngIf="sessionExpired" class="expired">Session expired ({{dateService.datetime2string(session.expireDate)}})</span>
                 <span *ngIf="!sessionExpired" class="notExpired">Limit date time: {{dateService.datetime2string(session.expireDate)}}</span>
             </div>
             <div>
-                Available languages: <span *ngFor="let lg of course.test.supportedLanguages" [ngClass]="{ 'selectedLang': lg === lang}" style="margin-left: 20px;">
-                     <img src="assets/flags/{{lg.toUpperCase()}}.png" height="30px" (click)="changeLanguage(lg)">
+                Available languages: <br><span *ngFor="let lg of course.test.supportedLanguages" [ngClass]="{ 'selectedLang': lg === lang}" style="margin: 0 10px;">
+                     <img src="assets/flags/{{lg.toUpperCase()}}.png" height="30px" (click)="changeLanguage(lg)" style="margin-top: 10px;">
                 </span>
             </div>
         </div>

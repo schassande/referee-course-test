@@ -1,5 +1,6 @@
+import { ResponseWithData } from 'src/app/service/response';
 import { ModalController, NavController, AlertController } from '@ionic/angular';
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, forkJoin, NEVER, of } from 'rxjs';
 import { map, flatMap } from 'rxjs/operators';
@@ -11,14 +12,15 @@ import { DateService } from 'src/app/service/DateService';
 import { CourseService } from 'src/app/service/CourseService';
 import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
 import { ParticipantQuestionAnswerService } from 'src/app/service/ParticipantQuestionAnswerService';
-import { Course, QuestionSerie, Question, Session, Translation, ParticipantQuestionAnswer } from 'src/app/model/model';
+import { Course, DurationUnit, QuestionSerie, Question, Session, Translation, ParticipantQuestionAnswer } from 'src/app/model/model';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-session-play',
   templateUrl: './session-play.component.html',
   styleUrls: ['./session-play.component.scss'],
 })
-export class SessionPlayComponent implements OnInit {
+export class SessionPlayComponent implements OnInit, OnDestroy {
 
   loading = false;
   private sessionId: string;
@@ -35,6 +37,11 @@ export class SessionPlayComponent implements OnInit {
   learnerAnswers: Map<string, ParticipantQuestionAnswer> = new Map<string, ParticipantQuestionAnswer>();
   private nbQuestion = 0;
   private sessionExpired = false;
+  private showRightAnswer = false;
+  private intervalId;
+  private isTeacher = false;
+  private nbRightAnswer = 0;
+  private math = Math;
 
   constructor(
     private alertCtrl: AlertController,
@@ -52,6 +59,10 @@ export class SessionPlayComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.loadData();
+  }
+
+  loadData() {
     this.loading = true;
     // load params
     this.route.paramMap.pipe(
@@ -61,7 +72,8 @@ export class SessionPlayComponent implements OnInit {
       flatMap(() => this.sessionService.get(this.sessionId)),
       flatMap((rses) => {
         this.session = rses.data;
-        this.sessionExpired = this.session.expireDate.getTime() < new Date().getTime();
+        this.checkExpiration();
+        this.intervalId = setInterval(this.checkExpiration.bind(this), 1000);
         return this.checkSession();
       }),
 
@@ -71,8 +83,9 @@ export class SessionPlayComponent implements OnInit {
         this.course = rcourse.data;
         this.nbQuestion = 0;
         this.course.test.series.forEach(s => this.nbQuestion += s.questions.length);
-        // this.connectedUserService.getCurrentUser().speakingLanguages
-        this.lang = this.course.test.supportedLanguages[0];
+        const intersec = this.connectedUserService.getCurrentUser().speakingLanguages
+          .filter(value => -1 !== this.course.test.supportedLanguages.indexOf(value));
+        this.lang = intersec ? intersec[0] : this.course.test.supportedLanguages[0];
         this.setQuestion();
       }),
 
@@ -80,8 +93,41 @@ export class SessionPlayComponent implements OnInit {
       flatMap(() => this.loadTranslation()),
       // load participant answers
       flatMap(() => this.loadAnswers()),
+      map(() => {
+        if (this.session.status === 'CORRECTION') {
+          this.computeNbRightAnswer();
+        }
+      }),
       map(() => this.loading = false)
     ).subscribe();
+  }
+
+  private computeNbRightAnswer() {
+    this.nbRightAnswer = 0;
+    this.course.test.series.forEach(serie => {
+      serie.questions.forEach(question => {
+        const pa = this.learnerAnswers.get(question.questionId);
+        if (pa) {
+          const rightAnswer = question.answers.filter(answer => answer.right);
+          console.log('computeNbRightAnswer: rightAnswer=', rightAnswer, 'pa=', pa);
+          if (rightAnswer && rightAnswer[0].answerId === pa.answerId) {
+            this.nbRightAnswer++;
+          }
+        } else {
+          console.log('computeNbRightAnswer: no response for question ', question.questionId);
+        }
+      });
+    });
+  }
+  public ngOnDestroy() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+  }
+
+  private checkExpiration() {
+    this.sessionExpired = this.session.expireDate.getTime() < new Date().getTime()
+      || this.session.status !== 'STARTED';
   }
 
   private checkSession(): Observable<any> {
@@ -90,14 +136,21 @@ export class SessionPlayComponent implements OnInit {
     if (!this.session) {
       errorMsg = 'The session does not exist.';
       newRoute = '/home';
-    } else if (this.session.status !== 'STARTED') {
+    } else if (this.session.status !== 'STARTED'
+        && this.session.status !== 'STOPPED'
+        && this.session.status !== 'CORRECTION') {
       errorMsg = 'The session is not started.';
       newRoute = '/session/edit/' + this.sessionId;
-    } else if (this.session.participantIds.indexOf(this.connectedUserService.getCurrentUser().id) < 0
-        && this.session.teacherIds.indexOf(this.connectedUserService.getCurrentUser().id) < 0) {
-      errorMsg = 'You are not registered to this session';
-      newRoute = '/session/edit/' + this.sessionId;
+    } else {
+      const isLearner = this.session.participantIds.indexOf(this.connectedUserService.getCurrentUser().id) >= 0;
+      this.isTeacher = this.session.teacherIds.indexOf(this.connectedUserService.getCurrentUser().id) >= 0;
+      if (!isLearner && !this.isTeacher) {
+        errorMsg = 'You are not registered to this session';
+        newRoute = '/session/edit/' + this.sessionId;
+      }
+      this.showRightAnswer = this.isTeacher || this.session.status === 'CORRECTION';
     }
+
     if (newRoute) {
       this.navController.navigateRoot(newRoute);
     }
@@ -197,6 +250,9 @@ export class SessionPlayComponent implements OnInit {
   }
 
   answerSelected(index) {
+    if (this.sessionExpired) {
+      return;
+    }
     // console.log('answerSelected:', index);
     let pa: ParticipantQuestionAnswer = this.learnerAnswers.get(this.getAnswerKey());
     if (pa) {
@@ -246,5 +302,44 @@ export class SessionPlayComponent implements OnInit {
     }
     this.lang = newLang;
     this.loadTranslation().subscribe();
+  }
+  start() {
+    this.session.status = 'STARTED';
+    this.session.startDate = new Date();
+    this.session.expireDate = this.computeExpireDate(
+      this.session.startDate,
+      this.course.test.duration,
+      this.course.test.durationUnit);
+    this.save().subscribe();
+    }
+  stop() {
+    this.session.status = 'STOPPED';
+    this.save().subscribe();
+  }
+
+  correction() {
+    this.session.status = 'CORRECTION';
+    this.save().subscribe();
+  }
+
+  close() {
+    this.session.status = 'CLOSED';
+    this.save().pipe(
+      map(() => this.loadData())
+    ).subscribe();
+  }
+
+  save(): Observable<ResponseWithData<Session>> {
+    return this.sessionService.save(this.session).pipe(
+      map((rses) => {
+        if (!rses.error) {
+          this.session = rses.data;
+        }
+        // console.log('Session saved: ', this.session);
+        return rses;
+      }));
+  }
+  private computeExpireDate(d: Date, duration: number, durationUnit: DurationUnit): Date {
+    return moment(d).add(duration, durationUnit).toDate();
   }
 }

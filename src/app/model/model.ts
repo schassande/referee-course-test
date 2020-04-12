@@ -88,7 +88,7 @@ export interface Translatable {
   text?: string;
 }
 
-export type SessionStatus = 'REGISTRATION' | 'STARTED' | 'STOPPED';
+export type SessionStatus = 'REGISTRATION' | 'STARTED' | 'STOPPED' | 'CORRECTION' | 'CLOSED';
 
 
 /** A session of a course */
@@ -265,7 +265,7 @@ export const COUNTRIES: string[][] = [
 
 export const LANGUAGES: string[][] = [
   ['EN', 'English'],
-  ['FR', 'French'],
+  ['FR', 'Français'],
   ['DE', 'Deutsch'],
   ['ES', 'Spanish'],
   ['IT', 'Italian'],
