@@ -42,6 +42,7 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
   intervalId;
   isTeacher = false;
   participantResult: TestParticipantResult = null;
+  remainingTime: string;
 
   constructor(
     private alertCtrl: AlertController,
@@ -96,10 +97,20 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
           this.participantResult = this.sessionService.computeParticipantResult(this.course, this.session, this.learnerAnswers);
         }
       }),
+      map(() => {
+        if (this.session.autoPlay) {
+          this.autoPlay();
+        }
+      }),
       map(() => this.loading = false)
     ).subscribe();
   }
 
+  private autoPlay() {
+    if (this.session.status === 'STARTED') {
+    } else if (this.session.status === 'STOPPED') {
+    }
+  }
   public ngOnDestroy() {
     if (this.intervalId) {
       clearInterval(this.intervalId);
@@ -109,6 +120,16 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
   private checkExpiration() {
     this.sessionExpired = this.session.expireDate.getTime() < new Date().getTime()
       || this.session.status !== 'STARTED';
+    this.remainingTime = Math.round(moment.duration(moment(this.session.expireDate).diff(moment())).asMinutes()) + 'min';
+    if (this.session.autoPlay && this.sessionExpired && this.session.status !== 'CLOSED') {
+      console.log('Auto close');
+      this.session.status = 'CLOSED';
+      this.save().pipe(
+        flatMap(() => this.sessionService.computeLearnerScores(this.session, this.course)),
+        flatMap(() => this.save()),
+        map(() => this.navController.navigateRoot('/session/edit/' + this.session.id))
+      ).subscribe();
+    }
   }
 
   private checkSession(): Observable<any> {

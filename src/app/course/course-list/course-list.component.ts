@@ -1,3 +1,4 @@
+import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
 import { DateService } from 'src/app/service/DateService';
 import { AlertController, NavController } from '@ionic/angular';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
@@ -15,19 +16,19 @@ export class CourseListComponent implements OnInit {
   searchInput: string;
   loading = false;
   courses: Course[];
+  readonly = false;
 
   constructor(
     public alertCtrl: AlertController,
-    private changeDetectorRef: ChangeDetectorRef,
+    private connectedUserService: ConnectedUserService,
     private courseService: CourseService,
     private dateService: DateService,
-    // private helpService: helpService,
     private navController: NavController
     ) {
   }
 
   ngOnInit() {
-    // this.helpService.setHelp('course-list');
+    this.readonly = this.connectedUserService.getCurrentUser().role === 'LEARNER';
     this.searchCourses();
   }
   onSearchBarInput() {

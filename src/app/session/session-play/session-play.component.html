@@ -69,9 +69,6 @@
             <ion-button shape="round" (click)="incQuestionIdx()" class="questionButton">
                 <ion-icon name="arrow-forward-outline"></ion-icon>
             </ion-button>
-            <ion-button shape="round" (click)="nextNoAnswerQuestion()" class="questionButton" [disabled]="nbQuestion === learnerAnswers.size">
-                <ion-icon name="search-outline"></ion-icon>
-            </ion-button>
         </div>
         <div style="clear: both;"></div>
         <ion-list>
@@ -90,10 +87,14 @@
             <div class="questionNumber" *ngIf="session.status === 'CORRECTION'" [ngClass]="{'testPass': participantResult.pass, 'testFail': !participantResult.pass}">
                 Score: {{participantResult.score}}/{{participantResult.requiredScore}}, {{participantResult.percent}}%
             </div>
-            <div class="questionNumber">Questions without answer: {{nbQuestion - learnerAnswers.size}}/{{nbQuestion}}</div>
+            <div class="questionNumber">Questions without answer: {{nbQuestion - learnerAnswers.size}}/{{nbQuestion}}
+                <ion-button shape="round" (click)="nextNoAnswerQuestion()" class="questionButton" *ngIf="nbQuestion > learnerAnswers.size">
+                    <ion-icon name="search-outline"></ion-icon>
+                </ion-button>
+            </div>
             <div class="questionNumber">
                 <span *ngIf="sessionExpired" class="expired">Session expired ({{dateService.datetime2string(session.expireDate)}})</span>
-                <span *ngIf="!sessionExpired" class="notExpired">Limit date time: {{dateService.datetime2string(session.expireDate)}}</span>
+                <span *ngIf="!sessionExpired" class="notExpired">Remaining time: {{remainingTime}}</span>
             </div>
             <div>
                 Available languages: <br><span *ngFor="let lg of course.test.supportedLanguages" [ngClass]="{ 'selectedLang': lg === lang}" style="margin: 0 10px;">

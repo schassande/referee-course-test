@@ -12,3 +12,57 @@
 .logo {
     margin-top: 25vh;
 }
+
+.sessionListTitle {
+    margin: 20px 0 10px 20px;
+}
+
+.sessionList {
+    margin: 0 50px 0 20px;
+}
+
+.keyCodeLine {
+    margin: 10px auto;
+    display: flex;
+    text-align: center;
+}
+
+.keyCodeLabel,
+.keyCodeInput,
+.keyCodeButton {
+    margin: auto 10px;
+}
+
+.keyCodeLabel {
+    width: 60px;
+    text-align: right;
+    display: inline-block;
+}
+
+.keyCodeInput {
+    font-size: 2em;
+    text-transform: uppercase;
+    border: 1px solid blue;
+    width: 170px;
+    display: inline-block;
+}
+
+.keyCodeButton {
+    display: inline-block;
+    padding-right: 30px;
+}
+
+.instantLine {
+    margin: 10px auto;
+    display: flex;
+    text-align: center;
+}
+
+.instantSelect {
+    margin-left: auto;
+    margin-right: 10px;
+    /*color: red; */
+    font-size: 1.2em;
+}
+
+.instantButton {}

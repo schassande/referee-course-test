@@ -424,7 +424,24 @@ export class UserService  extends RemotePersistentDataService<User> {
                 .where('dataRegion', '==', region)
                 .where('role', '==', 'TEACHER'), 'default'),
         ).pipe(
-           map((list) => this.mergeObservables(list))
+            map((list) => this.mergeObservables(list)),
+            map(ruser => {
+                const str = text !== null && text && text.trim().length > 0 ? text.trim() : null;
+                if (ruser.data && str) {
+                    ruser.data = ruser.data.filter((u) => {
+                        return this.stringContains(str, u.firstName)
+                        || this.stringContains(str, u.lastName)
+                        || this.stringContains(str, u.email);
+                    });
+                }
+                return ruser;
+            })
         );
+    }
+
+    public userToPersonRef(user: User) {
+        return { personId: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName};
     }
 }

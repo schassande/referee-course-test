@@ -27,15 +27,15 @@ export class TeacherListComponent implements OnInit {
     private userService: UserService) { }
 
   ngOnInit() {
+    this.readonly = this.connectedUserService.getCurrentUser().role === 'LEARNER';
     this.searchTeachers();
   }
-  onSearchBarInput() {
-
-  }
   searchTeachers() {
+    this.loading = true;
     const region = this.connectedUserService.getCurrentUser().dataRegion;
     this.userService.findTeachers(this.searchInput, region).subscribe((ruser) => {
       this.teachers = ruser.data;
+      this.loading = false;
     });
   }
 

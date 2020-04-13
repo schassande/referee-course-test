@@ -24,12 +24,12 @@
                     <ion-button fill="clear" (click)="route('/course')">Courses</ion-button>
                 </ion-item>
                 <ion-item *ngIf="this.connectedUserService.isConnected()">
-                    <ion-icon name="alarm-outline"scope="start"></ion-icon>
+                    <ion-icon name="alarm-outline" scope="start"></ion-icon>
                     <ion-button fill="clear" (click)="route('/session')">Sessions</ion-button>
                 </ion-item>
                 <ion-item *ngIf="this.connectedUserService.isConnected()">
                     <ion-icon name="people-outline" scope="start"></ion-icon>
-                    <ion-button fill="clear" (click)="route('/teacher')">Techers</ion-button>
+                    <ion-button fill="clear" (click)="route('/teacher')">Teachers</ion-button>
                 </ion-item>
                 <ion-item *ngIf="this.connectedUserService.isConnected()">
                     <ion-icon name="options-outline" scope="start"></ion-icon>

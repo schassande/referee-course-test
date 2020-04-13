@@ -28,32 +28,32 @@
                 <ion-label>General information</ion-label>
             </ion-item-divider>
             <ion-item>
-                <ion-label>Name:</ion-label>
+                <ion-label position="fixed">Name:</ion-label>
                 <ion-input type="text" [(ngModel)]="course.name" [readonly]="readonly"></ion-input>
             </ion-item>
             <ion-item>
-                <ion-label>Level:</ion-label>
+                <ion-label position="fixed">Level:</ion-label>
                 <ion-input type="number" [(ngModel)]="course.level" [readonly]="readonly"></ion-input>
             </ion-item>
             <ion-item>
-                <ion-label>Theme:</ion-label>
+                <ion-label position="fixed">Theme:</ion-label>
                 <ion-input type="text" [(ngModel)]="course.theme" [readonly]="readonly"></ion-input>
             </ion-item>
             <ion-item>
-                <ion-label>Enabled:</ion-label>
+                <ion-label position="fixed">Enabled:</ion-label>
                 <ion-input *ngIf="readonly" type="text" [readonly]="true">{{course.enabled?'Yes':'No'}}</ion-input>
                 <ion-toggle *ngIf="!readonly" [(ngModel)]="course.enabled"></ion-toggle>
             </ion-item>
             <ion-item>
-                <ion-label>Version:</ion-label>
+                <ion-label position="fixed">Version:</ion-label>
                 <ion-input type="text" [(ngModel)]="course.test.version" [readonly]="readonly"></ion-input>
             </ion-item>
             <ion-item>
-                <ion-label>Duration:</ion-label>
+                <ion-label position="fixed">Duration:</ion-label>
                 <ion-input type="number" [(ngModel)]="course.test.duration" [readonly]="readonly"></ion-input>
             </ion-item>
             <ion-item>
-                <ion-label>Duration:</ion-label>
+                <ion-label position="fixed">Duration Unit:</ion-label>
                 <ion-input *ngIf="readonly" type="text" [(ngModel)]="course.test.durationUnit" readonly="true"></ion-input>
                 <ion-select *ngIf="!readonly" [(ngModel)]="course.test.durationUnit">
                     <ion-select-option value="m">Minute</ion-select-option>
@@ -62,7 +62,7 @@
                 </ion-select>
             </ion-item>
             <ion-item>
-                <ion-label>Required score:</ion-label>
+                <ion-label position="fixed">Score:</ion-label>
                 <ion-input type="number" [(ngModel)]="course.test.requiredScore" [readonly]="readonly"></ion-input>
             </ion-item>
         </ion-item-group>

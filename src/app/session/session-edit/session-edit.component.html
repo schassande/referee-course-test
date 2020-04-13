@@ -88,8 +88,8 @@
             </ion-item>
             <ion-item>
                 <ion-label>Expire Date:</ion-label>
-                <ion-input *ngIf="readonly" type="text" [(ngModel)]="expireDate" readonly="true" style="text-align: right;"></ion-input>
-                <ion-datetime *ngIf="!readonly" displayFormat="YYYY-MM-DD HH:mm" pickerFormat="YYYY-MM-DD HH:mm" [(ngModel)]="expireDate" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" style="text-align: center;"></ion-datetime>
+                <ion-input *ngIf="readonly && session.status !== 'REGISTRATION'" type="text" [(ngModel)]="expireDate" readonly="true" style="text-align: right;"></ion-input>
+                <ion-datetime *ngIf="!readonly && session.status !== 'REGISTRATION'" displayFormat="YYYY-MM-DD HH:mm" pickerFormat="YYYY-MM-DD HH:mm" [(ngModel)]="expireDate" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" style="text-align: center;"></ion-datetime>
             </ion-item>
         </ion-item-group>
         <ion-item-group style="border-left: 1px solid lightgrey; border-right: 1px solid lightgrey;">

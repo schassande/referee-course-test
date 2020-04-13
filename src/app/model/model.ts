@@ -112,6 +112,7 @@ export interface Session extends RootNode {
   /** The list of the participant of the session */
   participants: SessionParticipant[];
   participantIds: string[];
+  autoPlay?: boolean;
 }
 
 export interface PersonRef {

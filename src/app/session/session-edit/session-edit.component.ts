@@ -40,7 +40,8 @@ export class SessionEditComponent implements OnInit {
     private modalController: ModalController,
     private navController: NavController,
     private route: ActivatedRoute,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private userService: UserService
     ) {
   }
 
@@ -97,50 +98,15 @@ export class SessionEditComponent implements OnInit {
     );
   }
 
-  private computeExpireDate(d: Date, duration: number, durationUnit: DurationUnit): Date {
-    return moment(d).add(duration, durationUnit).toDate();
-  }
-
   private createNewSession(): Observable<any> {
-    console.log('Create new Session ');
     this.course = this.courses && this.courses.length ? this.courses[0] : null;
-    const now = moment();
-    now.set('m', Math.round(now.get('m') / 5) * 5);
-    const startDate = now.toDate();
-    const expireDate = this.computeExpireDate(startDate, this.course.test.duration, this.course.test.durationUnit);
     const teacher: User = this.connectedUserService.getCurrentUser();
-    this.session = {
-      id: '',
-      dataRegion: 'Europe',
-      status: 'REGISTRATION',
-      creationDate: new Date(),
-      lastUpdate: new Date(),
-      dataStatus: 'NEW',
-      version: new Date().getTime(),
-      keyCode: this.generateKeyCode(),
-      startDate,
-      expireDate,
-      teachers: [this.userToPersonRef(teacher)],
-      teacherIds: [teacher.id],
-      courseId: this.course ? this.course.id : null,
-      courseName: this.course ? this.course.name : null,
-      participants: [],
-      participantIds: []
-    };
+    this.session = this.sessionService.newSession(this.course, teacher, teacher.dataRegion);
     this.readonly = false;
     this.isTeacher = true;
     return of({ error: null, data: this.session});
   }
 
-  generateKeyCode(): string {
-    let code = moment().format('YY-');
-    for (let i = 0; i < 5; i++) {
-      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789';
-      const idx = (Math.random() * chars.length + Math.random() * chars.length) % chars.length;
-      code = code + chars.charAt(idx);
-    }
-    return code;
-  }
 
   saveNback() {
     if (this.readonly) {
@@ -187,7 +153,7 @@ export class SessionEditComponent implements OnInit {
             const participant = this.session.participants.find(p => p.person.personId === user.id);
             if (!participant) {
               this.session.participants.push({
-                person: this.userToPersonRef(user),
+                person: this.userService.userToPersonRef(user),
                 questionAnswerIds: [],
                 pass: false,
                 score: -1,
@@ -202,7 +168,7 @@ export class SessionEditComponent implements OnInit {
           sharedWith.users.forEach((user) => {
             const teacher = this.session.teachers.find(p => p.personId === user.id);
             if (!teacher) {
-              this.session.teachers.push(this.userToPersonRef(user));
+              this.session.teachers.push(this.userService.userToPersonRef(user));
               this.session.teacherIds.push(user.id);
             }
           });
@@ -210,12 +176,6 @@ export class SessionEditComponent implements OnInit {
       }
     });
     modal.present();
-  }
-
-  private userToPersonRef(user: User) {
-    return { personId: user.id,
-      firstName: user.firstName,
-      lastName: user.lastName};
   }
 
   private addToSet(item: string, list: string[]) {
@@ -246,7 +206,7 @@ export class SessionEditComponent implements OnInit {
   start() {
     this.session.status = 'STARTED';
     this.session.startDate = new Date();
-    this.session.expireDate = this.computeExpireDate(
+    this.session.expireDate = this.sessionService.computeExpireDate(
       this.session.startDate,
       this.course.test.duration,
       this.course.test.durationUnit);
