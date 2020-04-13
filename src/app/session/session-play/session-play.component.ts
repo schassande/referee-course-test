@@ -122,14 +122,18 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
       || this.session.status !== 'STARTED';
     this.remainingTime = Math.round(moment.duration(moment(this.session.expireDate).diff(moment())).asMinutes()) + 'min';
     if (this.session.autoPlay && this.sessionExpired && this.session.status !== 'CLOSED') {
-      console.log('Auto close');
-      this.session.status = 'CLOSED';
-      this.save().pipe(
-        flatMap(() => this.sessionService.computeLearnerScores(this.session, this.course)),
-        flatMap(() => this.save()),
-        map(() => this.navController.navigateRoot('/session/edit/' + this.session.id))
-      ).subscribe();
+      this.autoClose();
     }
+  }
+
+  autoClose() {
+    console.log('Auto close');
+    this.session.status = 'CLOSED';
+    this.save().pipe(
+      flatMap(() => this.sessionService.computeLearnerScores(this.session, this.course)),
+      flatMap(() => this.save()),
+      map(() => this.navController.navigateRoot('/session/edit/' + this.session.id))
+    ).subscribe();
   }
 
   private checkSession(): Observable<any> {

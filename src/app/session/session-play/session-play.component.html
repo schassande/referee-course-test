@@ -92,6 +92,9 @@
                     <ion-icon name="search-outline"></ion-icon>
                 </ion-button>
             </div>
+            <div class="questionNumber" *ngIf="session.autoPlay">
+                <ion-button shape="round" (click)="autoClose()" class="questionButton">Close the exam (cannot undo)</ion-button>
+            </div>
             <div class="questionNumber">
                 <span *ngIf="sessionExpired" class="expired">Session expired ({{dateService.datetime2string(session.expireDate)}})</span>
                 <span *ngIf="!sessionExpired" class="notExpired">Remaining time: {{remainingTime}}</span>
