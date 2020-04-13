@@ -22,11 +22,6 @@
         <ion-item-group style="width: 100%;">
             <ion-item-divider color="light">General info</ion-item-divider>
             <ion-item>
-                <ion-label *ngIf="!user.photo || !user.photo.url">No photo</ion-label>
-                <ion-avatar item-start *ngIf="user.photo && user.photo.url"><img src="{{user.photo.url}}"></ion-avatar>
-                <camera-icon-comp (photo)="onImage($event)" slot="end" alert="true"></camera-icon-comp>
-            </ion-item>
-            <ion-item>
                 <ion-label fixed>First name</ion-label>
                 <ion-input type="text" [(ngModel)]="user.firstName" id="firstName" name="firstName" min="3" max="15" #firstName="ngModel" required autofocus tabindex="1"></ion-input>
             </ion-item>
@@ -50,6 +45,12 @@
             <ion-item>
                 <ion-label fixed>Password</ion-label>
                 <ion-input type="password" [(ngModel)]="user.password" max="15" tabindex="5"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>Region</ion-label>
+                <ion-select [(ngModel)]="user.dataRegion">
+                    <ion-select-option *ngFor="let region of constantes.regions" value="{{region}}">{{region}}</ion-select-option>
+                </ion-select>
             </ion-item>
             <ion-item>
                 <ion-label>Speaking languages</ion-label>
