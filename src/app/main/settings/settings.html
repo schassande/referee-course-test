@@ -11,7 +11,7 @@
                 <ion-icon name="arrow-back"></ion-icon>
             </ion-button>
         </ion-buttons>
-        <ion-title style="text-align: center;">Settings</ion-title>
+        <ion-title style="text-align: center;" i18n="@@setting.title">Settings</ion-title>
         <ion-buttons slot="end">
             <ion-menu-button autoHide="false" menu="main"></ion-menu-button>
         </ion-buttons>
@@ -22,20 +22,16 @@
 <ion-content (swipe)="onSwipe($event)">
     <ion-list *ngIf="settings">
         <ion-item detail routerLink="/user/edit/{{currentUser.id}}">
-            <ion-label class="menu-entry">My account</ion-label>
+            <ion-label class="menu-entry" i18n="@@setting.my-account">My account</ion-label>
         </ion-item>
         <ion-item (click)="addToHome()" *ngIf="showInstallBtn">
-            <ion-label class="menu-entry">Install on device</ion-label>
+            <ion-label class="menu-entry" i18n="@@setting.install-on-device">Install on device</ion-label>
         </ion-item>
     </ion-list>
 
     <p *ngFor="let m of msg" class="message">{{m}}</p>
     <div color="light" style="text-align: center; font-size: 0.8em; margin-top: 10px;">
-        <div>The author of application is <br><a href="mailto:chassande@gmail.com">Sebastien Chassande-Barrioz</a>.</div>
+        <div><span i18n="@@setting.author">The author of application is</span> <br><a href="mailto:chassande@gmail.com">Sebastien Chassande-Barrioz</a>.</div>
         <div>Version: {{env.version}}</div>
-    </div>
-    <div style="text-align: left; font-size: 0.8em; margin-top: 10px;">
-        <div>Debug info:</div>
-        <div style="margin-left: 20px;" innerHtml="{{launchMode}}"></div>
     </div>
 </ion-content>

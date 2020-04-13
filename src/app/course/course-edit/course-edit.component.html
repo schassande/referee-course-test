@@ -5,7 +5,7 @@
                 <ion-icon name="arrow-back"></ion-icon>
             </ion-button>
         </ion-buttons>
-        <ion-title style="text-align: center;">Test Edit</ion-title>
+        <ion-title style="text-align: center;" i18n="@@course.edit.title">Test Edit</ion-title>
         <ion-buttons slot="end">
             <ion-menu-button autoHide="false" menu="main"></ion-menu-button>
         </ion-buttons>
@@ -25,44 +25,44 @@
     <ion-list *ngIf="!loading">
         <ion-item-group style="border-left: 1px solid lightgrey; border-right: 1px solid lightgrey;">
             <ion-item-divider color="light" style="text-align: center; font-size: 1.2em; padding: 10px;">
-                <ion-label>General information</ion-label>
+                <ion-label i18n="@@course.edit.general-info">General information</ion-label>
             </ion-item-divider>
             <ion-item>
-                <ion-label position="fixed">Name:</ion-label>
+                <ion-label position="fixed" i18n="@@course.edit.name">Name:</ion-label>
                 <ion-input type="text" [(ngModel)]="course.name" [readonly]="readonly"></ion-input>
             </ion-item>
             <ion-item>
-                <ion-label position="fixed">Level:</ion-label>
+                <ion-label position="fixed" i18n="@@course.edit.level">Level:</ion-label>
                 <ion-input type="number" [(ngModel)]="course.level" [readonly]="readonly"></ion-input>
             </ion-item>
             <ion-item>
-                <ion-label position="fixed">Theme:</ion-label>
+                <ion-label position="fixed" i18n="@@course.edit.theme">Theme:</ion-label>
                 <ion-input type="text" [(ngModel)]="course.theme" [readonly]="readonly"></ion-input>
             </ion-item>
             <ion-item>
-                <ion-label position="fixed">Enabled:</ion-label>
+                <ion-label position="fixed" i18n="@@course.edit.enabled">Enabled:</ion-label>
                 <ion-input *ngIf="readonly" type="text" [readonly]="true">{{course.enabled?'Yes':'No'}}</ion-input>
                 <ion-toggle *ngIf="!readonly" [(ngModel)]="course.enabled"></ion-toggle>
             </ion-item>
             <ion-item>
-                <ion-label position="fixed">Version:</ion-label>
+                <ion-label position="fixed" i18n="@@course.edit.version">Version:</ion-label>
                 <ion-input type="text" [(ngModel)]="course.test.version" [readonly]="readonly"></ion-input>
             </ion-item>
             <ion-item>
-                <ion-label position="fixed">Duration:</ion-label>
+                <ion-label position="fixed" i18n="@@course.edit.duration">Duration:</ion-label>
                 <ion-input type="number" [(ngModel)]="course.test.duration" [readonly]="readonly"></ion-input>
             </ion-item>
             <ion-item>
-                <ion-label position="fixed">Duration Unit:</ion-label>
+                <ion-label position="fixed" i18n="@@course.edit.duration-unit">Duration Unit:</ion-label>
                 <ion-input *ngIf="readonly" type="text" [(ngModel)]="course.test.durationUnit" readonly="true"></ion-input>
                 <ion-select *ngIf="!readonly" [(ngModel)]="course.test.durationUnit">
-                    <ion-select-option value="m">Minute</ion-select-option>
-                    <ion-select-option value="h">Hour</ion-select-option>
-                    <ion-select-option value="d">Day</ion-select-option>
+                    <ion-select-option value="m" i18n="@@course.edit.minute">Minute</ion-select-option>
+                    <ion-select-option value="h" i18n="@@course.edit.hour">Hour</ion-select-option>
+                    <ion-select-option value="d" i18n="@@course.edit.day">Day</ion-select-option>
                 </ion-select>
             </ion-item>
             <ion-item>
-                <ion-label position="fixed">Score:</ion-label>
+                <ion-label position="fixed" i18n="@@course.edit.score">Score:</ion-label>
                 <ion-input type="number" [(ngModel)]="course.test.requiredScore" [readonly]="readonly"></ion-input>
             </ion-item>
         </ion-item-group>

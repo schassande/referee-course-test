@@ -5,7 +5,7 @@
                 <ion-icon name="arrow-back"></ion-icon>
             </ion-button>
         </ion-buttons>
-        <ion-title style="text-align: center;">Course session</ion-title>
+        <ion-title style="text-align: center;" i18n="@@session-edit.title">Course session</ion-title>
         <ion-buttons slot="end">
             <ion-menu-button autoHide="false" menu="main"></ion-menu-button>
         </ion-buttons>
@@ -64,37 +64,37 @@
     <ion-list *ngIf="!loading">
         <ion-item-group style="border-left: 1px solid lightgrey; border-right: 1px solid lightgrey;">
             <ion-item-divider color="light" style="text-align: center; font-size: 1.2em; padding: 10px;">
-                <ion-label>General information</ion-label>
+                <ion-label i18n="@@session-edit.general-info">General information</ion-label>
             </ion-item-divider>
             <ion-item>
-                <ion-label>Course:</ion-label>
+                <ion-label i18n="@@session-edit.course">Course:</ion-label>
                 <ion-input *ngIf="readonly" type="text" [(ngModel)]="course.name" readonly="true" style="text-align: right;"></ion-input>
                 <ion-select *ngIf="!readonly" [(ngModel)]="session.courseId" (change)="onCourseIdChange()">
                     <ion-select-option *ngFor="let course of courses" value="{{course.id}}">{{course.name}}</ion-select-option>
                 </ion-select>
             </ion-item>
             <ion-item>
-                <ion-label>Code:</ion-label>
+                <ion-label i18n="@@session-edit.code">Code:</ion-label>
                 <ion-input type="text" [(ngModel)]="session.keyCode" [readonly]="true" style="text-align: right;"></ion-input>
             </ion-item>
             <ion-item>
-                <ion-label>Status:</ion-label>
+                <ion-label i18n="@@session-edit.status">Status:</ion-label>
                 <ion-input type="text" [(ngModel)]="session.status" [readonly]="true" style="text-align: right;"></ion-input>
             </ion-item>
             <ion-item>
-                <ion-label>Start Date:</ion-label>
+                <ion-label i18n="@@session-edit.start-date">Start Date:</ion-label>
                 <ion-input *ngIf="readonly" type="text" [(ngModel)]="startDate" readonly="true" style="text-align: right;"></ion-input>
                 <ion-datetime *ngIf="!readonly" displayFormat="YYYY-MM-DD HH:mm" pickerFormat="YYYY-MM-DD HH:mm" [(ngModel)]="startDate" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" style="text-align: center;"></ion-datetime>
             </ion-item>
             <ion-item>
-                <ion-label>Expire Date:</ion-label>
+                <ion-label i18n="@@session-edit.expire-date">Expire Date:</ion-label>
                 <ion-input *ngIf="readonly && session.status !== 'REGISTRATION'" type="text" [(ngModel)]="expireDate" readonly="true" style="text-align: right;"></ion-input>
                 <ion-datetime *ngIf="!readonly && session.status !== 'REGISTRATION'" displayFormat="YYYY-MM-DD HH:mm" pickerFormat="YYYY-MM-DD HH:mm" [(ngModel)]="expireDate" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" style="text-align: center;"></ion-datetime>
             </ion-item>
         </ion-item-group>
         <ion-item-group style="border-left: 1px solid lightgrey; border-right: 1px solid lightgrey;">
             <ion-item-divider color="light" style="text-align: center; font-size: 1.2em; padding: 10px;">
-                <ion-label>Teachers ({{session.teachers.length}})</ion-label>
+                <ion-label><span i18n="@@session-edit.teachers">Teachers</span> ({{session.teachers.length}})</ion-label>
             </ion-item-divider>
             <ion-item *ngFor="let teacher of session.teachers; let index = index;">
                 <ion-label style="border: none;" class="listItemButton">
@@ -105,7 +105,7 @@
         </ion-item-group>
         <ion-item-group style="border-left: 1px solid lightgrey; border-right: 1px solid lightgrey;">
             <ion-item-divider color="light" style="text-align: center; font-size: 1.2em; padding: 10px;">
-                <ion-label>Learners ({{session.participants.length}})</ion-label>
+                <ion-label><span i18n="@@session-edit.learners">Learners</span> ({{session.participants.length}})</ion-label>
             </ion-item-divider>
             <ion-item *ngFor="let learner of session.participants; let index = index;">
                 <ion-label style="border: none;" class="listItemButton">

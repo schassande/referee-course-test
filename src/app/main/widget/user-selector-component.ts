@@ -13,7 +13,7 @@ import { User } from 'src/app/model/model';
     selector: 'user-selector',
     template: `
 <ion-content padding>
-    <div style="margin-bottom: 20px;">Select an user.</div>
+    <div style="margin: 20px;" i18n="@@user-selector.select-user">Select an user.</div>
     <ion-list>
         <ion-item *ngFor="let user of users">
             <ion-icon slot="start" *ngIf="user.photo && !user.photo.url" name="person"></ion-icon>

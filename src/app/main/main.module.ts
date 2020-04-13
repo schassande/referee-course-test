@@ -17,7 +17,6 @@ import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
 
 // Components
 import { CameraIconComponent } from './widget/camera-icon-component';
-import { FolderPage } from './folder/folder.page';
 import { HomeComponent } from './home/home.component';
 import { HelpWidgetComponent } from './widget/help-widget-component';
 import { SharingComponent } from './widget/sharing-component';
@@ -32,7 +31,6 @@ import { UserSelectorComponent } from './widget/user-selector-component';
   declarations: [
     CameraIconComponent,
     HomeComponent, HelpWidgetComponent,
-    FolderPage,
     SettingsPage, SharingComponent,
     UserLoginComponent, UserEditPage, UserSelectorComponent],
   imports: [

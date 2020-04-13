@@ -2,6 +2,8 @@ import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
+import { registerLocaleData } from '@angular/common';
+import localeFr from '@angular/common/locales/fr';
 
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
@@ -38,10 +40,7 @@ import { SessionService } from 'src/app/service/SessionService';
 import { TranslationService } from 'src/app/service/TranslationService';
 import { UserService } from 'src/app/service/UserService';
 
-
 export class CustomHammerConfig extends HammerGestureConfig {}
-
-
 
 @NgModule({
   declarations: [AppComponent],

@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <span slot="start" style="margin-left: 10px;"><img src="assets/imgs/logo.png" height="30" /></span>
-        <ion-title style="text-align: center;">Test Course Referee App</ion-title>
+        <ion-title style="text-align: center;" i18n="@@home.page-title">Test Course Referee App</ion-title>
         <ion-buttons slot="end">
             <ion-menu-button autoHide="false" menu="main"></ion-menu-button>
         </ion-buttons>
@@ -10,12 +10,12 @@
 <ion-content>
     <ion-card *ngIf="teacherSessions && teacherSessions.length" style='--background: lightgrey;'>
         <ion-card-header>
-            <ion-card-title>List of your sessions as teacher</ion-card-title>
+            <ion-card-title i18n="@@home.teacher-list-sessions">List of your sessions as teacher</ion-card-title>
         </ion-card-header>
         <ion-card-content>
             <ion-item *ngFor="let session of teacherSessions" routerLink="/session/edit/{{session.id}}">
                 <ion-label>{{dateService.date2string(session.startDate)}} / {{session.courseName}} / {{session.keyCode}} / {{session.status}}
-                    <div *ngIf="session.autoPlay">Individual learner: {{session.participants[0].person.firstName}} {{session.participants[0].person.firstName}}</div>
+                    <div *ngIf="session.autoPlay"><span i18n="@@session.individual-learner">Individual learner</span>: {{session.participants[0].person.firstName}} {{session.participants[0].person.firstName}}</div>
                 </ion-label>
             </ion-item>
             <div style="text-align: right; margin-top: 10px;">
@@ -27,7 +27,7 @@
     </ion-card>
     <ion-card *ngIf="learnerSessions && learnerSessions.length" style='--background: lightgrey;'>
         <ion-card-header>
-            <ion-card-title>Your exams</ion-card-title>
+            <ion-card-title i18n="@@home.learner-list-sessions">Your exams</ion-card-title>
         </ion-card-header>
         <ion-card-content>
             <ion-list class="sessionList">
@@ -40,11 +40,11 @@
     </ion-card>
     <ion-card style='--background: lightgrey;'>
         <ion-card-header>
-            <ion-card-title>Register to an existing session</ion-card-title>
+            <ion-card-title i18n="@@home.register-session">Register to an existing session</ion-card-title>
         </ion-card-header>
         <ion-card-content>
             <div class="keyCodeLine">
-                <ion-label class="keyCodeLabel">Code: </ion-label>
+                <ion-label class="keyCodeLabel" i18n="@@home.session-code">Code: </ion-label>
                 <ion-input class="keyCodeInput" type="text" autocapitalize="true" autofocus="true" size="8" minlength="8" color="danger" maxlength="8" [(ngModel)]="sessionCode">
                 </ion-input>
                 <div class="keyCodeButton">
@@ -57,19 +57,19 @@
     </ion-card>
     <ion-card *ngIf="courses && courses.length" style='--background: lightgrey;'>
         <ion-card-header>
-            <ion-card-title>Individual online instant exam</ion-card-title>
+            <ion-card-title i18n="@@home.individual-online-exam.title">Individual online instant exam</ion-card-title>
         </ion-card-header>
         <ion-card-content>
-            <p>To run immediately a new individual online test, please select the test name and the teacher who will validate the examen.</p>
+            <p i18n="@@home.individual-online-exam.description">To run immediately a new individual online test, please select the test name and the teacher who will validate the examen.</p>
             <ion-list style="margin: 20px 0 20px 20px;">
                 <ion-item>
-                    <ion-label position="floating">Course: </ion-label>
+                    <ion-label position="floating">Course</ion-label>
                     <ion-select [(ngModel)]="courseId" class="instantSelect">
                         <ion-select-option *ngFor="let course of courses" value="{{course.id}}"><span style="padding: 5px;">{{course.name}}</span></ion-select-option>
                     </ion-select>
                 </ion-item>
                 <ion-item>
-                    <ion-label position="floating">Teacher: </ion-label>
+                    <ion-label position="floating" i18n="@@home.individual-online-exam.teacher">Teacher</ion-label>
                     <ion-select [(ngModel)]="teacherId" class="instantSelect">
                         <ion-select-option *ngFor="let teacher of teachers" value="{{teacher.id}}"><span style="padding: 5px;">{{teacher.firstName}} {{teacher.lastName}}</span></ion-select-option>
                     </ion-select>
@@ -83,7 +83,7 @@
         </ion-card-content>
     </ion-card>
     <div style="text-align: center; margin: 10px auto;" *ngIf="showInstallBtn">
-        <ion-button (click)="addToHome()">Install on device</ion-button>
+        <ion-button (click)="addToHome()" i18n="@@home.install-on-device">Install on device</ion-button>
     </div>
-    <div color="light" style="text-align: center; font-size: 0.8em; margin-top: 15px;">Connected as {{currentUser?.firstName}} {{currentUser?.lastName}}.</div>
+    <div color="light" style="text-align: center; font-size: 0.8em; margin-top: 15px;"><span i18n="@@home.connected-as">Connected as</span> {{currentUser?.firstName}} {{currentUser?.lastName}}.</div>
 </ion-content>

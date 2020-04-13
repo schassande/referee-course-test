@@ -5,7 +5,7 @@
                 <ion-icon name="arrow-back"></ion-icon>
             </ion-button>
         </ion-buttons>
-        <ion-title style="text-align: center;">Sessions</ion-title>
+        <ion-title style="text-align: center;" i18n="@@session-list.title">Sessions</ion-title>
         <ion-buttons slot="end">
             <ion-menu-button autoHide="false" menu="main"></ion-menu-button>
         </ion-buttons>
@@ -33,7 +33,8 @@
             <ion-label style="border: none;" class="listItemButton" (click)="sessionSelected(session)">
                 {{dateService.date2string(session.startDate)}} / {{session.courseName}} / {{session.keyCode}} / {{session.status}}
                 <div *ngFor="let teacher of session.teachers" style="margin-left: 100px;">by {{teacher.firstName}} {{teacher.lastName}}</div>
-                <div *ngIf="session.autoPlay" style="margin-left: 100px;">Individual learner: {{session.participants[0].person.firstName}} {{session.participants[0].person.firstName}}</div>
+                <div *ngIf="session.autoPlay" style="margin-left: 100px;">
+                    <span i18n="@@session-list.individual-learner">Individual learner</span>: {{session.participants[0].person.firstName}} {{session.participants[0].person.firstName}}</div>
             </ion-label>
             <ion-icon *ngIf="!readonly && session.teachers && session.teachers.length && session.teachers[0].personId === currentUser.id" slot="end" name="trash" (click)="deleteItem(session)"></ion-icon>
         </ion-item>

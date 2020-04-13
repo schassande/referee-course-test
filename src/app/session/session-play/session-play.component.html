@@ -5,7 +5,7 @@
                 <ion-icon name="arrow-back"></ion-icon>
             </ion-button>
         </ion-buttons>
-        <ion-title style="text-align: center;">Sessions</ion-title>
+        <ion-title style="text-align: center;" i18n="@@session-play.title">Sessions</ion-title>
         <ion-buttons slot="end">
             <ion-menu-button autoHide="false" menu="main"></ion-menu-button>
         </ion-buttons>
@@ -55,7 +55,7 @@
             </ion-item>
             <ion-item *ngIf="!serie.enabled">DISABLED</ion-item>
             <ion-item>
-                <ion-label>Required score: </ion-label>
+                <ion-label i18n="@@session-play.required-score">Required score: </ion-label>
                 <ion-input style="text-align: right;" readonly="true">{{serie.requiredScore}}
                     <span *ngIf="serie.passRequired"> *</span>
                 </ion-input>
@@ -65,7 +65,7 @@
             <ion-button shape="round" (click)="decQuestionIdx()" class="questionButton" style="margin-left: 20px;">
                 <ion-icon name="arrow-back-outline"></ion-icon>
             </ion-button>
-            <div class="questionNumber">Question {{questionIdx + 1}}/{{serie.questions.length}}</div>
+            <div class="questionNumber"><span i18n="@@session-play.question">Question</span> {{questionIdx + 1}}/{{serie.questions.length}}</div>
             <ion-button shape="round" (click)="incQuestionIdx()" class="questionButton">
                 <ion-icon name="arrow-forward-outline"></ion-icon>
             </ion-button>
@@ -85,22 +85,22 @@
         </ion-list>
         <div class="questionNumberLine">
             <div class="questionNumber" *ngIf="session.status === 'CORRECTION'" [ngClass]="{'testPass': participantResult.pass, 'testFail': !participantResult.pass}">
-                Score: {{participantResult.score}}/{{participantResult.requiredScore}}, {{participantResult.percent}}%
+                <span i18n="@@session-play.score">Score</span>: {{participantResult.score}}/{{participantResult.requiredScore}}, {{participantResult.percent}}%
             </div>
-            <div class="questionNumber">Questions without answer: {{nbQuestion - learnerAnswers.size}}/{{nbQuestion}}
+            <div class="questionNumber"><span i18n="@@session-play.question-no-answer">Questions without answer</span>: {{nbQuestion - learnerAnswers.size}}/{{nbQuestion}}
                 <ion-button shape="round" (click)="nextNoAnswerQuestion()" class="questionButton" *ngIf="nbQuestion > learnerAnswers.size">
                     <ion-icon name="search-outline"></ion-icon>
                 </ion-button>
             </div>
             <div class="questionNumber" *ngIf="session.autoPlay">
-                <ion-button shape="round" (click)="autoClose()" class="questionButton">Close the exam (cannot undo)</ion-button>
+                <ion-button shape="round" (click)="autoClose()" class="questionButton" i18n="@@session-play.button-close">Close the exam (cannot undo)</ion-button>
             </div>
             <div class="questionNumber">
-                <span *ngIf="sessionExpired" class="expired">Session expired ({{dateService.datetime2string(session.expireDate)}})</span>
-                <span *ngIf="!sessionExpired" class="notExpired">Remaining time: {{remainingTime}}</span>
+                <span *ngIf="sessionExpired" class="expired"><span i18n="@@session-play.session-expired">Session expired</span> ({{dateService.datetime2string(session.expireDate)}})</span>
+                <span *ngIf="!sessionExpired" class="notExpired"><span i18n="@@session-play.remaining-time">Remaining time</span>: {{remainingTime}}</span>
             </div>
             <div>
-                Available languages: <br><span *ngFor="let lg of course.test.supportedLanguages" [ngClass]="{ 'selectedLang': lg === lang}" style="margin: 0 10px;">
+                <span i18n="@@session-play.available-languages">Available languages</span>: <br><span *ngFor="let lg of course.test.supportedLanguages" [ngClass]="{ 'selectedLang': lg === lang}" style="margin: 0 10px;">
                      <img src="assets/flags/{{lg.toUpperCase()}}.png" height="30px" (click)="changeLanguage(lg)" style="margin-top: 10px;">
                 </span>
             </div>
