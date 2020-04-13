@@ -26,6 +26,19 @@ import { TeacherModule } from './teacher/teacher.module';
 import { SessionModule } from './session/session.module';
 import { CourseModule } from './course/course.module';
 
+
+import { AppSettingsService } from 'src/app/service/AppSettingsService';
+import { CourseService } from './service/CourseService';
+import { ConnectedUserService } from './service/ConnectedUserService';
+import { ClubService } from './service/ClubService';
+import { DateService } from './service/DateService';
+import { NtaService } from './service/NtaService';
+import { ParticipantQuestionAnswerService } from 'src/app/service/ParticipantQuestionAnswerService';
+import { SessionService } from 'src/app/service/SessionService';
+import { TranslationService } from 'src/app/service/TranslationService';
+import { UserService } from 'src/app/service/UserService';
+
+
 export class CustomHammerConfig extends HammerGestureConfig {}
 
 
@@ -54,7 +67,17 @@ export class CustomHammerConfig extends HammerGestureConfig {}
   providers: [
     StatusBar,
     SplashScreen,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    AppSettingsService,
+    ClubService,
+    ConnectedUserService,
+    CourseService,
+    DateService,
+    NtaService,
+    ParticipantQuestionAnswerService,
+    SessionService,
+    TranslationService,
+    UserService,
   ],
   bootstrap: [AppComponent]
 })
