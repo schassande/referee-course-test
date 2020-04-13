@@ -45,6 +45,12 @@
                     <ion-icon name="calculator-outline"></ion-icon>
                 </ion-fab-button>
             </ion-col>
+            <ion-col *ngIf="isTeacher && (session.status === 'CORRECTION' || session.status === 'CLOSED')">
+                <ion-fab-button (click)="exportResults()" style='font-size: 1.6em; margin-bottom: 10px;'>
+                    <ion-icon name="download-outline"></ion-icon>
+                </ion-fab-button>
+            </ion-col>
+
             <ion-col *ngIf="isTeacher && session.status !== 'CORRECTION' && session.status !== 'CLOSED'">
                 <ion-fab-button (click)="addXXX()" style='--background:green; font-size: 1.6em; margin-bottom: 10px;'>
                     <ion-icon name="add"></ion-icon>

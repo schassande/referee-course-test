@@ -269,6 +269,21 @@ export class SessionEditComponent implements OnInit {
     this.session.status = 'CLOSED';
     this.save().subscribe();
   }
+  exportResults() {
+    const sep = ',';
+    const content = this.session.participants.map(p => {
+      return p.person.firstName + sep + p.person.lastName + sep + (p.pass ? 'PASS' : 'FAIL') + sep + p.percent + '%' + sep + p.score;
+    }).join('\n');
+    const oMyBlob = new Blob([content], {type : 'text/csv'});
+    const url = URL.createObjectURL(oMyBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `RefereeExamResult_${this.course.name.replace(' ', '_')}_${this.dateService.date2string(this.session.startDate)}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+    a.remove();
+
+  }
   onSwipe(event) {
     if (event.direction === 4) {
       this.navController.navigateRoot(`/session`);
