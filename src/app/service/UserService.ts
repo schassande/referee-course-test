@@ -415,7 +415,7 @@ export class UserService  extends RemotePersistentDataService<User> {
         return users;
     }
 
-    public findTeachers(region: DataRegion): Observable<ResponseWithData<User[]>> {
+    public findTeachers(text: string, region: DataRegion): Observable<ResponseWithData<User[]>> {
         return forkJoin(
             this.query(this.getCollectionRef()
                 .where('dataRegion', '==', region)

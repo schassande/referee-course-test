@@ -145,4 +145,8 @@ export class SessionService extends RemotePersistentDataService<Session> {
     testResult.percent = Math.round(testResult.score * 100 / course.test.requiredScore);
     return testResult;
   }
+
+  public getByKeyCode(keyCode: string): Observable<ResponseWithData<Session>> {
+    return this.queryOne(this.getBaseQuery().where('keyCode', '==', keyCode), 'default');
+  }
 }

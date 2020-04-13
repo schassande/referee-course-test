@@ -17,7 +17,7 @@ import { MainModule } from '../main/main.module';
     FormsModule,
     IonicModule,
     CourseRoutingModule,
-    MainModule.forRoot()
+    MainModule
   ],
   declarations: [CourseEditComponent, CourseListComponent],
   entryComponents: [CourseEditComponent, CourseListComponent]

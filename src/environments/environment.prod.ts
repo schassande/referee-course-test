@@ -7,5 +7,6 @@ export const environment = {
     projectId: 'referee-course-test',
     storageBucket: 'referee-course-test.appspot.com',
     messagingSenderId: '18715023816'
-  }
+  },
+  version: ''
 };

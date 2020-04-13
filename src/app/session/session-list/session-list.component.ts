@@ -14,29 +14,27 @@ export class SessionListComponent implements OnInit {
   error: any;
   searchInput: string;
   loading = false;
-  private sessions: Session[];
-  private currentUser: User;
-  private readonly = false;
+  sessions: Session[];
+  currentUser: User;
+  readonly = false;
 
   constructor(
     public alertCtrl: AlertController,
-    private changeDetectorRef: ChangeDetectorRef,
     private connectedUserService: ConnectedUserService,
     private sessionService: SessionService,
-    private dateService: DateService,
-    // private helpService: helpService,
+    public dateService: DateService,
     private navController: NavController
     ) {
   }
 
   ngOnInit() {
-    console.log('SessionListComponent.ngOnInit()');
-    // this.helpService.setHelp('course-list');
     this.currentUser = this.connectedUserService.getCurrentUser();
     this.readonly = this.currentUser.role === 'LEARNER';
     this.searchSessions();
   }
-
+  onSearchBarInput() {
+    this.searchSessions();
+  }
   searchSessions(forceServer: boolean = false, event: any = null) {
     this.sessionService.search(this.searchInput, forceServer ? 'server' : 'default').subscribe((rsession) => {
       this.sessions = this.sessionService.sortSessionByStartDate(rsession.data, true);

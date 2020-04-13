@@ -21,7 +21,7 @@ export interface PhotoEvent {
             <input type="file" id="inputPhoto" #inputPhoto accept="image/*;capture=camera"
                 style="display: none;" capture="camera" (change)="onImage($event)" />
             <ion-icon slot="{{slot}}" name="camera" size="large" *ngIf="!loading"
-                class="cameraButton" (click)="openPhoto(inputPhoto)"></ion-icon>
+                class="cameraButton" (click)="openPhoto()"></ion-icon>
         </span>`
   })
 export class CameraIconComponent  {

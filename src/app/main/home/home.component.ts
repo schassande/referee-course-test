@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { AlertController, NavController } from '@ionic/angular';
 import { Session, User } from 'src/app/model/model';
 import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
 import { DateService } from 'src/app/service/DateService';
@@ -21,11 +21,10 @@ export class HomeComponent implements OnInit {
   teacherSessions: Session[] = [];
 
   constructor(
-      private alertCtrl: AlertController,
       private connectedUserService: ConnectedUserService,
       public dateService: DateService,
-      private sessionService: SessionService,
-      private changeDetectorRef: ChangeDetectorRef) {
+      private navController: NavController,
+      private sessionService: SessionService) {
   }
 
   public isLevelAdmin() {
@@ -70,7 +69,7 @@ export class HomeComponent implements OnInit {
     if (this.currentUser.role === 'TEACHER' || this.currentUser.role === 'ADMIN') {
       this.sessionService.findTeacherSessions().subscribe((rsess) => {
         this.teacherSessions = rsess.data;
-        console.log('this.teacherSessions', this.teacherSessions)
+        // console.log('this.teacherSessions', this.teacherSessions)
       });
     }
   }
@@ -78,8 +77,19 @@ export class HomeComponent implements OnInit {
     if (this.currentUser.role === 'TEACHER' || this.currentUser.role === 'ADMIN') {
       this.sessionService.findLearnerSessions().subscribe((rsess) => {
         this.learnerSessions = rsess.data;
-        console.log('this.learnerSessions', this.learnerSessions)
+        // console.log('this.learnerSessions', this.learnerSessions);
       });
     }
+  }
+  goToSession() {
+    this.sessionService.getByKeyCode(this.sessionCode).subscribe((rsess) => {
+      if (rsess.data) {
+        if (rsess.data.status === 'REGISTRATION' || rsess.data.status === 'CLOSED') {
+          this.navController.navigateRoot('/session/edit/' +  rsess.data.id);
+        } else {
+          this.navController.navigateRoot('/session/play/' +  rsess.data.id);
+        }
+      }
+    });
   }
 }

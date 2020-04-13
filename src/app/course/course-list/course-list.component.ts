@@ -14,7 +14,7 @@ export class CourseListComponent implements OnInit {
   error: any;
   searchInput: string;
   loading = false;
-  private courses: Course[];
+  courses: Course[];
 
   constructor(
     public alertCtrl: AlertController,
@@ -30,7 +30,9 @@ export class CourseListComponent implements OnInit {
     // this.helpService.setHelp('course-list');
     this.searchCourses();
   }
-
+  onSearchBarInput() {
+    this.searchCourses();
+  }
   searchCourses(forceServer: boolean = false, event: any = null) {
     this.courseService.search(this.searchInput, forceServer ? 'server' : 'default').subscribe((rcourse) => {
       this.courses = rcourse.data;

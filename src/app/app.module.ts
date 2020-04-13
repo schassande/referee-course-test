@@ -46,7 +46,7 @@ export class CustomHammerConfig extends HammerGestureConfig {}
     AngularFireMessagingModule,
     IonicStorageModule.forRoot({ name: '__mydb', driverOrder: ['indexeddb', 'sqlite', 'websql'] }),
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
-    MainModule.forRoot(),
+    MainModule,
     TeacherModule,
     SessionModule,
     CourseModule

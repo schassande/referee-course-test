@@ -24,38 +24,36 @@ import * as moment from 'moment';
 export class SessionPlayComponent implements OnInit, OnDestroy {
 
   loading = false;
-  private sessionId: string;
-  private session: Session;
-  private course: Course;
-  private lang: string;
+  sessionId: string;
+  session: Session;
+  course: Course;
+  lang: string;
 
-  private serieIdx = 0;
-  private serie: QuestionSerie = null;
-  private questionIdx = 0;
-  private question: Question = null;
-  private answerLetters: string[] = ['A', 'B', 'C', ' D', 'E', 'F', 'G', 'H', 'I', 'J'];
-  private answerValue = '';
+  serieIdx = 0;
+  serie: QuestionSerie = null;
+  questionIdx = 0;
+  question: Question = null;
+  answerLetters: string[] = ['A', 'B', 'C', ' D', 'E', 'F', 'G', 'H', 'I', 'J'];
+  answerValue = '';
   learnerAnswers: Map<string, ParticipantQuestionAnswer> = new Map<string, ParticipantQuestionAnswer>();
-  private nbQuestion = 0;
-  private sessionExpired = false;
-  private showRightAnswer = false;
-  private intervalId;
-  private isTeacher = false;
-  private participantResult: TestParticipantResult = null;
+  nbQuestion = 0;
+  sessionExpired = false;
+  showRightAnswer = false;
+  intervalId;
+  isTeacher = false;
+  participantResult: TestParticipantResult = null;
 
   constructor(
     private alertCtrl: AlertController,
     private changeDetectorRef: ChangeDetectorRef,
     private connectedUserService: ConnectedUserService,
     private courseService: CourseService,
-    private dateService: DateService,
-    private modalController: ModalController,
+    public dateService: DateService,
     private navController: NavController,
     private route: ActivatedRoute,
     private sessionService: SessionService,
     private translationService: TranslationService,
-    private participantQuestionAnswerService: ParticipantQuestionAnswerService,
-    private userService: UserService
+    private participantQuestionAnswerService: ParticipantQuestionAnswerService
   ) { }
 
   ngOnInit() {

@@ -24,13 +24,13 @@ import * as moment from 'moment';
 export class SessionEditComponent implements OnInit {
 
   loading = false;
-  private sessionId: string;
-  private session: Session;
-  private course: Course;
-  private courses: Course[];
-  private readonly = false;
-  private isTeacher = false;
-  private math = Math;
+  sessionId: string;
+  session: Session;
+  course: Course;
+  courses: Course[];
+  readonly = false;
+  isTeacher = false;
+  math = Math;
 
   constructor(
     public alertCtrl: AlertController,
@@ -268,5 +268,10 @@ export class SessionEditComponent implements OnInit {
   close() {
     this.session.status = 'CLOSED';
     this.save().subscribe();
+  }
+  onSwipe(event) {
+    if (event.direction === 4) {
+      this.navController.navigateRoot(`/session`);
+    }
   }
 }

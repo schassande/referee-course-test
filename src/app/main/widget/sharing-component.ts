@@ -9,8 +9,8 @@ import { Sharing } from 'src/app/model/model';
                         (click)="changeValue('YES')">
                         <ion-icon name="checkmark"></ion-icon>
                     </span>
-                    <span class="sharingButton sharingNE" [ngClass]="{'sharingNEActivated': value == 'LIMIT'}"
-                        (click)="changeValue('LIMIT')">
+                    <span class="sharingButton sharingNE" [ngClass]="{'sharingNEActivated': value == 'LIMITED'}"
+                        (click)="changeValue('LIMITED')">
                         <ion-icon name="help"></ion-icon>
                     </span>
                     <span class="sharingButton sharingNo" [ngClass]="{'sharingNoActivated': value == 'NO'}"
@@ -20,7 +20,7 @@ import { Sharing } from 'src/app/model/model';
                 </div>
                 <div *ngIf="readonly">
                     <span *ngIf="value == 'YES'"><ion-icon name="checkmark"></ion-icon></span>
-                    <span *ngIf="value == 'LIMIT'"><ion-icon name="help"></ion-icon></span>
+                    <span *ngIf="value == 'LIMITED'"><ion-icon name="help"></ion-icon></span>
                     <span *ngIf="value == 'NO'"><ion-icon name="close"></ion-icon></span>
                 </div>`,
     providers: [ { provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => SharingComponent), multi: true } ],
@@ -64,6 +64,7 @@ export class SharingComponent implements ControlValueAccessor {
 
     @Input()
     public name: string;
+    // tslint:disable-next-line:no-input-rename
     @Input('value')
     public val: Sharing;
     @Input()

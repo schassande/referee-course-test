@@ -44,18 +44,4 @@ import { UserSelectorComponent } from './widget/user-selector-component';
   ],
   entryComponents: [HomeComponent, UserSelectorComponent]
 })
-export class MainModule {
-  static mod: ModuleWithProviders = {
-    ngModule: MainModule,
-    providers: [
-      AppSettingsService,
-      DateService,
-      ConnectedUserService,
-      TranslationService,
-      UserService
-    ]
-  };
-  static forRoot(): ModuleWithProviders {
-    return this.mod;
-  }
-}
+export class MainModule {}

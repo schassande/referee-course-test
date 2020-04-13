@@ -18,10 +18,10 @@ import { Component, OnInit, ChangeDetectorRef, ViewChild, ElementRef } from '@an
 export class CourseEditComponent implements OnInit {
 
   loading = false;
-  private courseId: string;
-  private course: Course;
+  courseId: string;
+  course: Course;
   @ViewChild('inputCourse', null) inputCourse: ElementRef;
-  private readonly = false;
+  readonly = false;
 
   constructor(
     public alertCtrl: AlertController,
@@ -173,5 +173,10 @@ export class CourseEditComponent implements OnInit {
       forkJoin(obs).subscribe(() => console.log('Imported.'));
     };
     reader.readAsText(file);
+  }
+  onSwipe(event) {
+    if (event.direction === 4) {
+      this.navController.navigateRoot(`/course`);
+    }
   }
 }
