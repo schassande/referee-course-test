@@ -21,7 +21,7 @@ Features :
 * The application is open source and free
 * the application has nothing specific to the referee aspect. It could be used to run general online exams.
 
-## How to test?
+## How to test
 
 1. Go on the web side [https://exam.coachreferee.com](https://exam.coachreferee.com)
 2. Create an account

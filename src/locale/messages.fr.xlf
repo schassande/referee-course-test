@@ -12,7 +12,7 @@
       </trans-unit>
       <trans-unit id="home.teacher-list-sessions" datatype="html">
         <source>List of your sessions as teacher</source>
-        <target>Liste de vos session en tant que formateur</target>
+        <target>Liste de vos sessions en tant que formateur</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/home/home.component.html</context>
           <context context-type="linenumber">13</context>

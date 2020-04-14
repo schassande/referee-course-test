@@ -19,10 +19,11 @@
             "**/.*",
             "**/node_modules/**"
         ],
-        "rewrites": [{
-            "source": "**",
-            "destination": "/index.html"
-        }],
+        "redirects": [{ "source": "/", "destination": "/en", "type": 301 }],
+        "rewrites": [
+            { "source": "/en/**", "destination": "/en/index.html" },
+            { "source": "/fr/**", "destination": "/fr/index.html" }
+        ],
         "headers": [{
                 "source": "/build/app/**",
                 "headers": [{

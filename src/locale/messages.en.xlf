@@ -4,6 +4,7 @@
     <body>
       <trans-unit id="home.page-title" datatype="html">
         <source>Test Course Referee App</source>
+        <target>Test Course Referee App</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/home/home.component.html</context>
           <context context-type="linenumber">4</context>
@@ -11,6 +12,7 @@
       </trans-unit>
       <trans-unit id="home.teacher-list-sessions" datatype="html">
         <source>List of your sessions as teacher</source>
+        <target>List of your sessions as teacher</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/home/home.component.html</context>
           <context context-type="linenumber">13</context>
@@ -18,6 +20,7 @@
       </trans-unit>
       <trans-unit id="session.individual-learner" datatype="html">
         <source>Individual learner</source>
+        <target>Individual learner</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/home/home.component.html</context>
           <context context-type="linenumber">18</context>
@@ -25,6 +28,7 @@
       </trans-unit>
       <trans-unit id="home.learner-list-sessions" datatype="html">
         <source>Your exams</source>
+        <target>Your exams</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/home/home.component.html</context>
           <context context-type="linenumber">30</context>
@@ -32,6 +36,7 @@
       </trans-unit>
       <trans-unit id="home.register-session" datatype="html">
         <source>Register to an existing session</source>
+        <target>Register to an existing session</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/home/home.component.html</context>
           <context context-type="linenumber">43</context>
@@ -39,6 +44,7 @@
       </trans-unit>
       <trans-unit id="home.session-code" datatype="html">
         <source>Code: </source>
+        <target>Code: </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/home/home.component.html</context>
           <context context-type="linenumber">47</context>
@@ -46,6 +52,7 @@
       </trans-unit>
       <trans-unit id="home.individual-online-exam.title" datatype="html">
         <source>Individual online instant exam</source>
+        <target>Individual online instant exam</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/home/home.component.html</context>
           <context context-type="linenumber">60</context>
@@ -53,6 +60,7 @@
       </trans-unit>
       <trans-unit id="home.individual-online-exam.description" datatype="html">
         <source>To run immediately a new individual online test, please select the test name and the teacher who will validate the examen.</source>
+        <target>To run immediately a new individual online test, please select the test name and the teacher who will validate the examen.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/home/home.component.html</context>
           <context context-type="linenumber">63</context>
@@ -60,6 +68,7 @@
       </trans-unit>
       <trans-unit id="home.individual-online-exam.teacher" datatype="html">
         <source>Teacher</source>
+        <target>Teacher</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/home/home.component.html</context>
           <context context-type="linenumber">72</context>
@@ -67,6 +76,7 @@
       </trans-unit>
       <trans-unit id="home.install-on-device" datatype="html">
         <source>Install on device</source>
+        <target>Install on device</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/home/home.component.html</context>
           <context context-type="linenumber">86</context>
@@ -74,6 +84,7 @@
       </trans-unit>
       <trans-unit id="home.connected-as" datatype="html">
         <source>Connected as</source>
+        <target>Connected as</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/home/home.component.html</context>
           <context context-type="linenumber">88</context>
@@ -81,6 +92,7 @@
       </trans-unit>
       <trans-unit id="setting.title" datatype="html">
         <source>Settings</source>
+        <target>Settings</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/settings/settings.html</context>
           <context context-type="linenumber">14</context>
@@ -88,6 +100,7 @@
       </trans-unit>
       <trans-unit id="setting.my-account" datatype="html">
         <source>My account</source>
+        <target>My account</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/settings/settings.html</context>
           <context context-type="linenumber">25</context>
@@ -95,6 +108,7 @@
       </trans-unit>
       <trans-unit id="setting.install-on-device" datatype="html">
         <source>Install on device</source>
+        <target>Install on device</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/settings/settings.html</context>
           <context context-type="linenumber">28</context>
@@ -102,6 +116,7 @@
       </trans-unit>
       <trans-unit id="setting.author" datatype="html">
         <source>The author of application is</source>
+        <target>The author of application is</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/settings/settings.html</context>
           <context context-type="linenumber">34</context>
@@ -109,6 +124,7 @@
       </trans-unit>
       <trans-unit id="user-login.title" datatype="html">
         <source>Login</source>
+        <target>Login</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/user-login/user-login.component.html</context>
           <context context-type="linenumber">4</context>
@@ -116,6 +132,7 @@
       </trans-unit>
       <trans-unit id="user-login.welcome" datatype="html">
         <source>Welcome to Referee course test !<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br/&gt;"/><x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br/&gt;"/>Please enter your email and your password<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br/&gt;"/>to log in or create an account.</source>
+        <target>Welcome to Referee course test !<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br/&gt;"/><x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br/&gt;"/>Please enter your email and your password<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br/&gt;"/>to log in or create an account.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/user-login/user-login.component.html</context>
           <context context-type="linenumber">12</context>
@@ -123,6 +140,7 @@
       </trans-unit>
       <trans-unit id="user-login.email" datatype="html">
         <source>Email</source>
+        <target>Email</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/user-login/user-login.component.html</context>
           <context context-type="linenumber">15</context>
@@ -130,6 +148,7 @@
       </trans-unit>
       <trans-unit id="user-login.password" datatype="html">
         <source>Password</source>
+        <target>Password</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/user-login/user-login.component.html</context>
           <context context-type="linenumber">19</context>
@@ -137,6 +156,7 @@
       </trans-unit>
       <trans-unit id="user-login.remember-on-device" datatype="html">
         <source>Remenber on this device </source>
+        <target>Remenber on this device </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/user-login/user-login.component.html</context>
           <context context-type="linenumber">23</context>
@@ -144,6 +164,7 @@
       </trans-unit>
       <trans-unit id="user-login.reset-password" datatype="html">
         <source>Reset password</source>
+        <target>Reset password</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/user-login/user-login.component.html</context>
           <context context-type="linenumber">28</context>
@@ -151,6 +172,7 @@
       </trans-unit>
       <trans-unit id="user-login.errors" datatype="html">
         <source>Errors:</source>
+        <target>Errors:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/user-login/user-login.component.html</context>
           <context context-type="linenumber">31</context>
@@ -158,6 +180,7 @@
       </trans-unit>
       <trans-unit id="user-login.button-create-account" datatype="html">
         <source>Create<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br/&gt;"/>account</source>
+        <target>Create<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br/&gt;"/>account</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/user-login/user-login.component.html</context>
           <context context-type="linenumber">39</context>
@@ -165,6 +188,7 @@
       </trans-unit>
       <trans-unit id="user-login.button-login" datatype="html">
         <source>Login</source>
+        <target>Login</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/user-login/user-login.component.html</context>
           <context context-type="linenumber">43</context>
@@ -172,6 +196,7 @@
       </trans-unit>
       <trans-unit id="user-edit.title" datatype="html">
         <source>Account Edition</source>
+        <target>Account Edition</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/user-edit/user-edit.html</context>
           <context context-type="linenumber">14</context>
@@ -179,6 +204,7 @@
       </trans-unit>
       <trans-unit id="user-edit.genral-info" datatype="html">
         <source>General info</source>
+        <target>General info</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/user-edit/user-edit.html</context>
           <context context-type="linenumber">23</context>
@@ -186,6 +212,7 @@
       </trans-unit>
       <trans-unit id="user-edit.first-name" datatype="html">
         <source>First name</source>
+        <target>First name</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/user-edit/user-edit.html</context>
           <context context-type="linenumber">25</context>
@@ -193,6 +220,7 @@
       </trans-unit>
       <trans-unit id="user-edit.missing-value" datatype="html">
         <source>A value is required.</source>
+        <target>A value is required.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/user-edit/user-edit.html</context>
           <context context-type="linenumber">29</context>
@@ -208,6 +236,7 @@
       </trans-unit>
       <trans-unit id="user-edit.last-name" datatype="html">
         <source>Last name</source>
+        <target>Last name</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/user-edit/user-edit.html</context>
           <context context-type="linenumber">32</context>
@@ -215,6 +244,7 @@
       </trans-unit>
       <trans-unit id="user-edit.email" datatype="html">
         <source>Email</source>
+        <target>Email</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/user-edit/user-edit.html</context>
           <context context-type="linenumber">39</context>
@@ -222,6 +252,7 @@
       </trans-unit>
       <trans-unit id="user-edit.password" datatype="html">
         <source>Password</source>
+        <target>Password</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/user-edit/user-edit.html</context>
           <context context-type="linenumber">46</context>
@@ -229,6 +260,7 @@
       </trans-unit>
       <trans-unit id="user-edit.region" datatype="html">
         <source>Region</source>
+        <target>Region</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/user-edit/user-edit.html</context>
           <context context-type="linenumber">50</context>
@@ -236,6 +268,7 @@
       </trans-unit>
       <trans-unit id="user-edit.speaking-languages" datatype="html">
         <source>Speaking languages</source>
+        <target>Speaking languages</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/user-edit/user-edit.html</context>
           <context context-type="linenumber">56</context>
@@ -243,6 +276,7 @@
       </trans-unit>
       <trans-unit id="user-edit.role" datatype="html">
         <source>Role</source>
+        <target>Role</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/user-edit/user-edit.html</context>
           <context context-type="linenumber">62</context>
@@ -250,6 +284,7 @@
       </trans-unit>
       <trans-unit id="user-edit.teacher-qualifications" datatype="html">
         <source>Teacher qualifications</source>
+        <target>Teacher qualifications</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/user-edit/user-edit.html</context>
           <context context-type="linenumber">68</context>
@@ -257,6 +292,7 @@
       </trans-unit>
       <trans-unit id="user-edit.qualification-notqualified" datatype="html">
         <source>Not Qualified</source>
+        <target>Not Qualified</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/user-edit/user-edit.html</context>
           <context context-type="linenumber">81</context>
@@ -264,6 +300,7 @@
       </trans-unit>
       <trans-unit id="user-edit.qualification-learner" datatype="html">
         <source>Learner</source>
+        <target>Learner</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/user-edit/user-edit.html</context>
           <context context-type="linenumber">82</context>
@@ -271,6 +308,7 @@
       </trans-unit>
       <trans-unit id="user-edit.qualification-qualified" datatype="html">
         <source>Qualified</source>
+        <target>Qualified</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/user-edit/user-edit.html</context>
           <context context-type="linenumber">83</context>
@@ -278,6 +316,7 @@
       </trans-unit>
       <trans-unit id="user-edit.data-privacy" datatype="html">
         <source>Data privacy</source>
+        <target>Data privacy</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/user-edit/user-edit.html</context>
           <context context-type="linenumber">88</context>
@@ -285,6 +324,7 @@
       </trans-unit>
       <trans-unit id="user-edit.privacy-data" datatype="html">
         <source>Sharing of my personal (fields above) data to the application users</source>
+        <target>Sharing of my personal (fields above) data to the application users</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/user-edit/user-edit.html</context>
           <context context-type="linenumber">91</context>
@@ -292,6 +332,7 @@
       </trans-unit>
       <trans-unit id="user-edit.fix-pb" datatype="html">
         <source>Please fix the following problem(s)</source>
+        <target>Please fix the following problem(s)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/user-edit/user-edit.html</context>
           <context context-type="linenumber">98</context>
@@ -299,6 +340,7 @@
       </trans-unit>
       <trans-unit id="user-edit.button-delete-account" datatype="html">
         <source>Delete Account</source>
+        <target>Delete Account</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/user-edit/user-edit.html</context>
           <context context-type="linenumber">104</context>
@@ -306,6 +348,7 @@
       </trans-unit>
       <trans-unit id="user-edit.button-save" datatype="html">
         <source>Save</source>
+        <target>Save</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/user-edit/user-edit.html</context>
           <context context-type="linenumber">105</context>
@@ -313,6 +356,7 @@
       </trans-unit>
       <trans-unit id="user-selector.select-user" datatype="html">
         <source>Select an user.</source>
+        <target>Select an user.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/widget/user-selector-component.ts</context>
           <context context-type="linenumber">3</context>
@@ -320,6 +364,7 @@
       </trans-unit>
       <trans-unit id="course.edit.title" datatype="html">
         <source>Test Edit</source>
+        <target>Test Edit</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
           <context context-type="linenumber">8</context>
@@ -327,6 +372,7 @@
       </trans-unit>
       <trans-unit id="course.edit.general-info" datatype="html">
         <source>General information</source>
+        <target>General information</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
           <context context-type="linenumber">28</context>
@@ -334,6 +380,7 @@
       </trans-unit>
       <trans-unit id="course.edit.name" datatype="html">
         <source>Name:</source>
+        <target>Name:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
           <context context-type="linenumber">31</context>
@@ -341,6 +388,7 @@
       </trans-unit>
       <trans-unit id="course.edit.level" datatype="html">
         <source>Level:</source>
+        <target>Level:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
           <context context-type="linenumber">35</context>
@@ -348,6 +396,7 @@
       </trans-unit>
       <trans-unit id="course.edit.theme" datatype="html">
         <source>Theme:</source>
+        <target>Theme:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
           <context context-type="linenumber">39</context>
@@ -355,6 +404,7 @@
       </trans-unit>
       <trans-unit id="course.edit.enabled" datatype="html">
         <source>Enabled:</source>
+        <target>Enabled:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
           <context context-type="linenumber">43</context>
@@ -362,6 +412,7 @@
       </trans-unit>
       <trans-unit id="course.edit.version" datatype="html">
         <source>Version:</source>
+        <target>Version:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
           <context context-type="linenumber">48</context>
@@ -369,6 +420,7 @@
       </trans-unit>
       <trans-unit id="course.edit.duration" datatype="html">
         <source>Duration:</source>
+        <target>Duration:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
           <context context-type="linenumber">52</context>
@@ -376,6 +428,7 @@
       </trans-unit>
       <trans-unit id="course.edit.duration-unit" datatype="html">
         <source>Duration Unit:</source>
+        <target>Duration Unit:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
           <context context-type="linenumber">56</context>
@@ -383,6 +436,7 @@
       </trans-unit>
       <trans-unit id="course.edit.minute" datatype="html">
         <source>Minute</source>
+        <target>Minute</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
           <context context-type="linenumber">59</context>
@@ -390,6 +444,7 @@
       </trans-unit>
       <trans-unit id="course.edit.hour" datatype="html">
         <source>Hour</source>
+        <target>Hour</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
           <context context-type="linenumber">60</context>
@@ -397,6 +452,7 @@
       </trans-unit>
       <trans-unit id="course.edit.day" datatype="html">
         <source>Day</source>
+        <target>Day</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
           <context context-type="linenumber">61</context>
@@ -404,6 +460,7 @@
       </trans-unit>
       <trans-unit id="course.edit.score" datatype="html">
         <source>Score:</source>
+        <target>Score:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
           <context context-type="linenumber">65</context>
@@ -411,6 +468,7 @@
       </trans-unit>
       <trans-unit id="course.list.title" datatype="html">
         <source>Courses</source>
+        <target>Courses</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/course/course-list/course-list.component.html</context>
           <context context-type="linenumber">8</context>
@@ -418,6 +476,7 @@
       </trans-unit>
       <trans-unit id="session-edit.title" datatype="html">
         <source>Course session</source>
+        <target>Course session</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/session/session-edit/session-edit.component.html</context>
           <context context-type="linenumber">8</context>
@@ -425,6 +484,7 @@
       </trans-unit>
       <trans-unit id="session-edit.general-info" datatype="html">
         <source>General information</source>
+        <target>General information</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/session/session-edit/session-edit.component.html</context>
           <context context-type="linenumber">67</context>
@@ -432,6 +492,7 @@
       </trans-unit>
       <trans-unit id="session-edit.course" datatype="html">
         <source>Course:</source>
+        <target>Course:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/session/session-edit/session-edit.component.html</context>
           <context context-type="linenumber">70</context>
@@ -439,6 +500,7 @@
       </trans-unit>
       <trans-unit id="session-edit.code" datatype="html">
         <source>Code:</source>
+        <target>Code:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/session/session-edit/session-edit.component.html</context>
           <context context-type="linenumber">77</context>
@@ -446,6 +508,7 @@
       </trans-unit>
       <trans-unit id="session-edit.status" datatype="html">
         <source>Status:</source>
+        <target>Status:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/session/session-edit/session-edit.component.html</context>
           <context context-type="linenumber">81</context>
@@ -453,6 +516,7 @@
       </trans-unit>
       <trans-unit id="session-edit.start-date" datatype="html">
         <source>Start Date:</source>
+        <target>Start Date:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/session/session-edit/session-edit.component.html</context>
           <context context-type="linenumber">85</context>
@@ -460,6 +524,7 @@
       </trans-unit>
       <trans-unit id="session-edit.expire-date" datatype="html">
         <source>Expire Date:</source>
+        <target>Expire Date:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/session/session-edit/session-edit.component.html</context>
           <context context-type="linenumber">90</context>
@@ -467,6 +532,7 @@
       </trans-unit>
       <trans-unit id="session-edit.teachers" datatype="html">
         <source>Teachers</source>
+        <target>Teachers</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/session/session-edit/session-edit.component.html</context>
           <context context-type="linenumber">97</context>
@@ -474,6 +540,7 @@
       </trans-unit>
       <trans-unit id="session-edit.learners" datatype="html">
         <source>Learners</source>
+        <target>Learners</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/session/session-edit/session-edit.component.html</context>
           <context context-type="linenumber">108</context>
@@ -481,6 +548,7 @@
       </trans-unit>
       <trans-unit id="session-list.title" datatype="html">
         <source>Sessions</source>
+        <target>Sessions</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/session/session-list/session-list.component.html</context>
           <context context-type="linenumber">8</context>
@@ -488,6 +556,7 @@
       </trans-unit>
       <trans-unit id="session-list.individual-learner" datatype="html">
         <source>Individual learner</source>
+        <target>Individual learner</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/session/session-list/session-list.component.html</context>
           <context context-type="linenumber">37</context>
@@ -495,6 +564,7 @@
       </trans-unit>
       <trans-unit id="session-play.title" datatype="html">
         <source>Sessions</source>
+        <target>Sessions</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/session/session-play/session-play.component.html</context>
           <context context-type="linenumber">8</context>
@@ -502,6 +572,7 @@
       </trans-unit>
       <trans-unit id="session-play.required-score" datatype="html">
         <source>Required score: </source>
+        <target>Required score: </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/session/session-play/session-play.component.html</context>
           <context context-type="linenumber">58</context>
@@ -509,6 +580,7 @@
       </trans-unit>
       <trans-unit id="session-play.question" datatype="html">
         <source>Question</source>
+        <target>Question</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/session/session-play/session-play.component.html</context>
           <context context-type="linenumber">68</context>
@@ -516,6 +588,7 @@
       </trans-unit>
       <trans-unit id="session-play.score" datatype="html">
         <source>Score</source>
+        <target>Score</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/session/session-play/session-play.component.html</context>
           <context context-type="linenumber">88</context>
@@ -523,6 +596,7 @@
       </trans-unit>
       <trans-unit id="session-play.question-no-answer" datatype="html">
         <source>Questions without answer</source>
+        <target>Questions without answer</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/session/session-play/session-play.component.html</context>
           <context context-type="linenumber">90</context>
@@ -530,6 +604,7 @@
       </trans-unit>
       <trans-unit id="session-play.button-close" datatype="html">
         <source>Close the exam (cannot undo)</source>
+        <target>Close the exam (cannot undo)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/session/session-play/session-play.component.html</context>
           <context context-type="linenumber">96</context>
@@ -537,6 +612,7 @@
       </trans-unit>
       <trans-unit id="session-play.session-expired" datatype="html">
         <source>Session expired</source>
+        <target>Session expired</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/session/session-play/session-play.component.html</context>
           <context context-type="linenumber">99</context>
@@ -544,6 +620,7 @@
       </trans-unit>
       <trans-unit id="session-play.remaining-time" datatype="html">
         <source>Remaining time</source>
+        <target>Remaining time</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/session/session-play/session-play.component.html</context>
           <context context-type="linenumber">100</context>
@@ -551,6 +628,7 @@
       </trans-unit>
       <trans-unit id="session-play.available-languages" datatype="html">
         <source>Available languages</source>
+        <target>Available languages</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/session/session-play/session-play.component.html</context>
           <context context-type="linenumber">103</context>
@@ -558,6 +636,7 @@
       </trans-unit>
       <trans-unit id="teacher-list.title" datatype="html">
         <source>Teachers</source>
+        <target>Teachers</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/teacher/teacher-list/teacher-list.component.html</context>
           <context context-type="linenumber">8</context>
