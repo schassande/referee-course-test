@@ -27,7 +27,7 @@ Features :
 
 ### How control a session as teacher
 
-The page about the session offers you control button on the bottom. Here is the list of the available button and their explanation:
+The page about the session offers you control button on the bottom. Here is the list of the available buttons and their explanation:
 
 * ![Add teacher](https://raw.githubusercontent.com/schassande/referee-course-test/master/doc/session_add_teacher_or_learner.png): use it to add a teacher or learner
 * ![Start the exam](https://raw.githubusercontent.com/schassande/referee-course-test/master/doc/session_start.png): Start or restart the exam
