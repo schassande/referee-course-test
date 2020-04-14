@@ -25,6 +25,12 @@ Features :
 * The application is available in several languages: English, French.
 * The application has nothing specific to the referee aspect. It could be used to run general online exams.
 
+### How control a session as teacher
+
+The page about the session offers you control button on the bottom. Here is the list of the available button and their explanation:
+
+* [Add teacher](doc/session_add_teacher_or_learner.png): use it to add a teacher or learner
+
 ## How to test
 
 1. Go on the web side [https://exam.coachreferee.com](https://exam.coachreferee.com)
