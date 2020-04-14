@@ -29,7 +29,8 @@ Features :
 
 The page about the session offers you control button on the bottom. Here is the list of the available button and their explanation:
 
-* [Add teacher](https://raw.githubusercontent.com/schassande/referee-course-test/master/doc/session_add_teacher_or_learner.png): use it to add a teacher or learner
+* ![Add teacher](https://raw.githubusercontent.com/schassande/referee-course-test/master/doc/session_add_teacher_or_learner.png): use it to add a teacher or learner
+* ![Start the exam](doc/session_start.png): Start the exam
 
 ## How to test
 
