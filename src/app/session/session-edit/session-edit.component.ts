@@ -214,11 +214,12 @@ export class SessionEditComponent implements OnInit {
     }
   stop() {
     this.session.status = 'STOPPED';
+    this.session.expireDate = new Date();
     this.save().subscribe();
   }
   correction() {
     this.session.status = 'CORRECTION';
-    this.save().subscribe();
+    this.save().subscribe(() => this.computeScores());
   }
   computeScores() {
     this.sessionService.computeLearnerScores(this.session, this.course).pipe(

@@ -298,12 +298,15 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
     }
   stop() {
     this.session.status = 'STOPPED';
+    this.session.expireDate = new Date();
     this.save().subscribe();
   }
 
   correction() {
     this.session.status = 'CORRECTION';
-    this.save().subscribe();
+    this.sessionService.computeLearnerScores(this.session, this.course).pipe(
+      flatMap(() => this.save())
+    ).subscribe();
   }
 
   close() {
