@@ -12,4 +12,5 @@ Web application to run referee course test
 - Tester avec plusieurs series
 - Selectionner N questions parmi M sur une serie
 - Imposer des questions dans une serie
-- flag sur un Course pour autoriser le test individuel
+- flag sur un Course pour autoriser le test individuel (flag posé => ajouter le filtre)
+- Envoi d'un email de confirmations d'inscription
