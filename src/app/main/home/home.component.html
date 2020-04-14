@@ -86,4 +86,9 @@
         <ion-button (click)="addToHome()" i18n="@@home.install-on-device">Install on device</ion-button>
     </div>
     <div color="light" style="text-align: center; font-size: 0.8em; margin-top: 15px;"><span i18n="@@home.connected-as">Connected as</span> {{currentUser?.firstName}} {{currentUser?.lastName}}.</div>
+    <div style="margin: 10px auto; text-align: center;">
+        <span *ngFor="let lg of applicationLanguages" [ngClass]="{ 'selectedLang': lg === localeId}" style="margin: 0 10px;">
+             <a href="/{{lg}}/index.html"><img src="assets/flags/{{lg.toUpperCase()}}.png" height="30px" style="margin-top: 10px;"></a>
+        </span>
+    </div>
 </ion-content>

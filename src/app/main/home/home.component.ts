@@ -1,5 +1,5 @@
 import { UserService } from 'src/app/service/UserService';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, LOCALE_ID, Inject } from '@angular/core';
 import { NavController, AlertController } from '@ionic/angular';
 import { map } from 'rxjs/operators';
 import { Session, User, Course, SessionParticipant } from 'src/app/model/model';
@@ -16,6 +16,7 @@ import { Observable } from 'rxjs';
 })
 export class HomeComponent implements OnInit {
 
+  readonly applicationLanguages = ['en', 'fr'];
 
   currentUser: User = null;
   showInstallBtn = false;
@@ -35,7 +36,8 @@ export class HomeComponent implements OnInit {
       public dateService: DateService,
       private navController: NavController,
       private sessionService: SessionService,
-      private userService: UserService) {
+      private userService: UserService,
+      @Inject(LOCALE_ID) public localeId: string) {
   }
 
   public isLevelAdmin() {

@@ -1,27 +1,33 @@
 {
 	"course": {
-		"name": "Level1",
+		"name": "Referee Level 1",
 		"level": 1,
+		"dataRegion": "Europe",
 		"theme": "blue",
 		"enabled": true,
+		"allowedAlone": true,
 		"test": {
 			"version": "1.0",
 			"enabled": true,
 			"duration": 30,
 			"durationUnit": "m",
 			"requiredScore": 23,  
+			"nbQuestion": 30,
+			"supportedLanguages": ["EN", "FR"],
 			"series": [{
 				"enabled": true,
 				"requiredScore": 27,
 				"passRequired": true,
+				"nbQuestion": 30,
 				"questions": [
 					{
 						"questionId": "Q1",
 						"key": "euro.level1.Q1",
 						"enabled": true,
+						"required": true,
 						"answers": [
 							{"answerId": "A", "key": "euro.level1.Q1.A", "right": false, "point": 0},
-							{"answerId": "B", "key": "euro.level1.Q1.B", "right": true, "point": 1},
+							{"answerId": "B", "key": "euro.level1.Q1.B", "right": true,  "point": 1},
 							{"answerId": "C", "key": "euro.level1.Q1.C", "right": false, "point": 0},
 							{"answerId": "D", "key": "euro.level1.Q1.D", "right": false, "point": 0}
 						]
@@ -30,8 +36,9 @@
 						"questionId": "Q2",
 						"key": "euro.level1.Q2",
 						"enabled": true,
+						"required": true,
 						"answers": [
-							{"answerId": "A", "key": "euro.level1.Q2.A", "right": true, "point": 1},
+							{"answerId": "A", "key": "euro.level1.Q2.A", "right": true,  "point": 1},
 							{"answerId": "B", "key": "euro.level1.Q2.B", "right": false, "point": 0},
 							{"answerId": "C", "key": "euro.level1.Q2.C", "right": false, "point": 0},
 							{"answerId": "D", "key": "euro.level1.Q2.D", "right": false, "point": 0}
@@ -41,9 +48,10 @@
 						"questionId": "Q3",
 						"key": "euro.level1.Q3",
 						"enabled": true,
+						"required": true,
 						"answers": [
 							{"answerId": "A", "key": "euro.level1.Q3.A", "right": false, "point": 0},
-							{"answerId": "B", "key": "euro.level1.Q3.B", "right": true, "point": 1},
+							{"answerId": "B", "key": "euro.level1.Q3.B", "right": true,  "point": 1},
 							{"answerId": "C", "key": "euro.level1.Q3.C", "right": false, "point": 0},
 							{"answerId": "D", "key": "euro.level1.Q3.D", "right": false, "point": 0}
 						]
@@ -52,10 +60,11 @@
 						"questionId": "Q4",
 						"key": "euro.level1.Q4",
 						"enabled": true,
+						"required": true,
 						"answers": [
 							{"answerId": "A", "key": "euro.level1.Q4.A", "right": false, "point": 0},
 							{"answerId": "B", "key": "euro.level1.Q4.B", "right": false, "point": 0},
-							{"answerId": "C", "key": "euro.level1.Q4.C", "right": true, "point": 1},
+							{"answerId": "C", "key": "euro.level1.Q4.C", "right": true,  "point": 1},
 							{"answerId": "D", "key": "euro.level1.Q4.D", "right": false, "point": 0}
 						]
 					},
@@ -63,9 +72,10 @@
 						"questionId": "Q5",
 						"key": "euro.level1.Q5",
 						"enabled": true,
+						"required": true,
 						"answers": [
 							{"answerId": "A", "key": "euro.level1.Q5.A", "right": false, "point": 0},
-							{"answerId": "B", "key": "euro.level1.Q5.B", "right": true, "point": 1},
+							{"answerId": "B", "key": "euro.level1.Q5.B", "right": true,  "point": 1},
 							{"answerId": "C", "key": "euro.level1.Q5.C", "right": false, "point": 0},
 							{"answerId": "D", "key": "euro.level1.Q5.D", "right": false, "point": 0}
 						]
@@ -74,10 +84,11 @@
 						"questionId": "Q6",
 						"key": "euro.level1.Q6",
 						"enabled": true,
+						"required": true,
 						"answers": [
 							{"answerId": "A", "key": "euro.level1.Q6.A", "right": false, "point": 0},
 							{"answerId": "B", "key": "euro.level1.Q6.B", "right": false, "point": 0},
-							{"answerId": "C", "key": "euro.level1.Q6.C", "right": true, "point": 1},
+							{"answerId": "C", "key": "euro.level1.Q6.C", "right": true,  "point": 1},
 							{"answerId": "D", "key": "euro.level1.Q6.D", "right": false, "point": 0}
 						]
 					},
@@ -85,32 +96,35 @@
 						"questionId": "Q7",
 						"key": "euro.level1.Q7",
 						"enabled": true,
+						"required": true,
 						"answers": [
 							{"answerId": "A", "key": "euro.level1.Q7.A", "right": false, "point": 0},
 							{"answerId": "B", "key": "euro.level1.Q7.B", "right": false, "point": 0},
 							{"answerId": "C", "key": "euro.level1.Q7.C", "right": false, "point": 0},
-							{"answerId": "D", "key": "euro.level1.Q7.D", "right": true, "point": 1}
+							{"answerId": "D", "key": "euro.level1.Q7.D", "right": true,  "point": 1}
 						]
 					},
 					{
 						"questionId": "Q8",
 						"key": "euro.level1.Q8",
 						"enabled": true,
+						"required": true,
 						"answers": [
 							{"answerId": "A", "key": "euro.level1.Q8.A", "right": false, "point": 0},
 							{"answerId": "B", "key": "euro.level1.Q8.B", "right": false, "point": 0},
 							{"answerId": "C", "key": "euro.level1.Q8.C", "right": false, "point": 0},
-							{"answerId": "D", "key": "euro.level1.Q8.D", "right": true, "point": 1}
+							{"answerId": "D", "key": "euro.level1.Q8.D", "right": true,  "point": 1}
 						]
 					},
 					{
 						"questionId": "Q9",
 						"key": "euro.level1.Q9",
 						"enabled": true,
+						"required": true,
 						"answers": [
 							{"answerId": "A", "key": "euro.level1.Q9.A", "right": false, "point": 0},
 							{"answerId": "B", "key": "euro.level1.Q9.B", "right": false, "point": 0},
-							{"answerId": "C", "key": "euro.level1.Q9.C", "right": true, "point": 1},
+							{"answerId": "C", "key": "euro.level1.Q9.C", "right": true,  "point": 1},
 							{"answerId": "D", "key": "euro.level1.Q9.D", "right": false, "point": 0}
 						]
 					},
@@ -118,10 +132,11 @@
 						"questionId": "Q10",
 						"key": "euro.level1.Q10",
 						"enabled": true,
+						"required": true,
 						"answers": [
 							{"answerId": "A", "key": "euro.level1.Q10.A", "right": false, "point": 0},
 							{"answerId": "B", "key": "euro.level1.Q10.B", "right": false, "point": 0},
-							{"answerId": "C", "key": "euro.level1.Q10.C", "right": true, "point": 1},
+							{"answerId": "C", "key": "euro.level1.Q10.C", "right": true,  "point": 1},
 							{"answerId": "D", "key": "euro.level1.Q10.D", "right": false, "point": 0}
 						]
 					},
@@ -129,9 +144,10 @@
 						"questionId": "Q11",
 						"key": "euro.level1.Q11",
 						"enabled": true,
+						"required": true,
 						"answers": [
 							{"answerId": "A", "key": "euro.level1.Q11.A", "right": false, "point": 0},
-							{"answerId": "B", "key": "euro.level1.Q11.B", "right": true, "point": 1},
+							{"answerId": "B", "key": "euro.level1.Q11.B", "right": true,  "point": 1},
 							{"answerId": "C", "key": "euro.level1.Q11.C", "right": false, "point": 0},
 							{"answerId": "D", "key": "euro.level1.Q11.D", "right": false, "point": 0}
 						]
@@ -140,32 +156,35 @@
 						"questionId": "Q12",
 						"key": "euro.level1.Q12",
 						"enabled": true,
+						"required": true,
 						"answers": [
 							{"answerId": "A", "key": "euro.level1.Q12.A", "right": false, "point": 0},
 							{"answerId": "B", "key": "euro.level1.Q12.B", "right": false, "point": 0},
 							{"answerId": "C", "key": "euro.level1.Q12.C", "right": false, "point": 0},
-							{"answerId": "D", "key": "euro.level1.Q12.D", "right": true, "point": 1}
+							{"answerId": "D", "key": "euro.level1.Q12.D", "right": true,  "point": 1}
 						]
 					},
 					{
 						"questionId": "Q13",
 						"key": "euro.level1.Q13",
 						"enabled": true,
+						"required": true,
 						"answers": [
 							{"answerId": "A", "key": "euro.level1.Q13.A", "right": false, "point": 0},
 							{"answerId": "B", "key": "euro.level1.Q13.B", "right": false, "point": 0},
 							{"answerId": "C", "key": "euro.level1.Q13.C", "right": false, "point": 0},
-							{"answerId": "D", "key": "euro.level1.Q13.D", "right": true, "point": 1}
+							{"answerId": "D", "key": "euro.level1.Q13.D", "right": true,  "point": 1}
 						]
 					},
 					{
 						"questionId": "Q14",
 						"key": "euro.level1.Q14",
 						"enabled": true,
+						"required": true,
 						"answers": [
 							{"answerId": "A", "key": "euro.level1.Q14.A", "right": false, "point": 0},
 							{"answerId": "B", "key": "euro.level1.Q14.B", "right": false, "point": 0},
-							{"answerId": "C", "key": "euro.level1.Q14.C", "right": true, "point": 1},
+							{"answerId": "C", "key": "euro.level1.Q14.C", "right": true,  "point": 1},
 							{"answerId": "D", "key": "euro.level1.Q14.D", "right": false, "point": 0}
 						]
 					},
@@ -173,8 +192,9 @@
 						"questionId": "Q15",
 						"key": "euro.level1.Q15",
 						"enabled": true,
+						"required": true,
 						"answers": [
-							{"answerId": "A", "key": "euro.level1.Q15.A", "right": true, "point": 1},
+							{"answerId": "A", "key": "euro.level1.Q15.A", "right": true,  "point": 1},
 							{"answerId": "B", "key": "euro.level1.Q15.B", "right": false, "point": 0},
 							{"answerId": "C", "key": "euro.level1.Q15.C", "right": false, "point": 0},
 							{"answerId": "D", "key": "euro.level1.Q15.D", "right": false, "point": 0}
@@ -184,19 +204,21 @@
 						"questionId": "Q16",
 						"key": "euro.level1.Q16",
 						"enabled": true,
+						"required": true,
 						"answers": [
 							{"answerId": "A", "key": "euro.level1.Q16.A", "right": false, "point": 0},
 							{"answerId": "B", "key": "euro.level1.Q16.B", "right": false, "point": 0},
 							{"answerId": "C", "key": "euro.level1.Q16.C", "right": false, "point": 0},
-							{"answerId": "D", "key": "euro.level1.Q16.D", "right": true, "point": 1}
+							{"answerId": "D", "key": "euro.level1.Q16.D", "right": true,  "point": 1}
 						]
 					},
 					{
 						"questionId": "Q17",
 						"key": "euro.level1.Q17",
 						"enabled": true,
+						"required": true,
 						"answers": [
-							{"answerId": "A", "key": "euro.level1.Q17.A", "right": true, "point": 1},
+							{"answerId": "A", "key": "euro.level1.Q17.A", "right": true,  "point": 1},
 							{"answerId": "B", "key": "euro.level1.Q17.B", "right": false, "point": 0},
 							{"answerId": "C", "key": "euro.level1.Q17.C", "right": false, "point": 0},
 							{"answerId": "D", "key": "euro.level1.Q17.D", "right": false, "point": 0}
@@ -206,8 +228,9 @@
 						"questionId": "Q18",
 						"key": "euro.level1.Q18",
 						"enabled": true,
+						"required": true,
 						"answers": [
-							{"answerId": "A", "key": "euro.level1.Q18.A", "right": true, "point": 1},
+							{"answerId": "A", "key": "euro.level1.Q18.A", "right": true,  "point": 1},
 							{"answerId": "B", "key": "euro.level1.Q18.B", "right": false, "point": 0},
 							{"answerId": "C", "key": "euro.level1.Q18.C", "right": false, "point": 0},
 							{"answerId": "D", "key": "euro.level1.Q18.D", "right": false, "point": 0}
@@ -217,9 +240,10 @@
 						"questionId": "Q19",
 						"key": "euro.level1.Q19",
 						"enabled": true,
+						"required": true,
 						"answers": [
 							{"answerId": "A", "key": "euro.level1.Q19.A", "right": false, "point": 0},
-							{"answerId": "B", "key": "euro.level1.Q19.B", "right": true, "point": 1},
+							{"answerId": "B", "key": "euro.level1.Q19.B", "right": true,  "point": 1},
 							{"answerId": "C", "key": "euro.level1.Q19.C", "right": false, "point": 0},
 							{"answerId": "D", "key": "euro.level1.Q19.D", "right": false, "point": 0}
 						]
@@ -228,9 +252,10 @@
 						"questionId": "Q20",
 						"key": "euro.level1.Q20",
 						"enabled": true,
+						"required": true,
 						"answers": [
 							{"answerId": "A", "key": "euro.level1.Q20.A", "right": false, "point": 0},
-							{"answerId": "B", "key": "euro.level1.Q20.B", "right": true, "point": 1},
+							{"answerId": "B", "key": "euro.level1.Q20.B", "right": true,  "point": 1},
 							{"answerId": "C", "key": "euro.level1.Q20.C", "right": false, "point": 0},
 							{"answerId": "D", "key": "euro.level1.Q20.D", "right": false, "point": 0}
 						]
@@ -239,8 +264,9 @@
 						"questionId": "Q21",
 						"key": "euro.level1.Q21",
 						"enabled": true,
+						"required": true,
 						"answers": [
-							{"answerId": "A", "key": "euro.level1.Q21.A", "right": true, "point": 1},
+							{"answerId": "A", "key": "euro.level1.Q21.A", "right": true,  "point": 1},
 							{"answerId": "B", "key": "euro.level1.Q21.B", "right": false, "point": 0},
 							{"answerId": "C", "key": "euro.level1.Q21.C", "right": false, "point": 0},
 							{"answerId": "D", "key": "euro.level1.Q21.D", "right": false, "point": 0}
@@ -250,9 +276,10 @@
 						"questionId": "Q22",
 						"key": "euro.level1.Q22",
 						"enabled": true,
+						"required": true,
 						"answers": [
 							{"answerId": "A", "key": "euro.level1.Q22.A", "right": false, "point": 0},
-							{"answerId": "B", "key": "euro.level1.Q22.B", "right": true, "point": 1},
+							{"answerId": "B", "key": "euro.level1.Q22.B", "right": true,  "point": 1},
 							{"answerId": "C", "key": "euro.level1.Q22.C", "right": false, "point": 0},
 							{"answerId": "D", "key": "euro.level1.Q22.D", "right": false, "point": 0}
 						]
@@ -261,10 +288,11 @@
 						"questionId": "Q23",
 						"key": "euro.level1.Q23",
 						"enabled": true,
+						"required": true,
 						"answers": [
 							{"answerId": "A", "key": "euro.level1.Q23.A", "right": false, "point": 0},
 							{"answerId": "B", "key": "euro.level1.Q23.B", "right": false, "point": 0},
-							{"answerId": "C", "key": "euro.level1.Q23.C", "right": true, "point": 1},
+							{"answerId": "C", "key": "euro.level1.Q23.C", "right": true,  "point": 1},
 							{"answerId": "D", "key": "euro.level1.Q23.D", "right": false, "point": 0}
 						]
 					},
@@ -272,10 +300,11 @@
 						"questionId": "Q24",
 						"key": "euro.level1.Q24",
 						"enabled": true,
+						"required": true,
 						"answers": [
 							{"answerId": "A", "key": "euro.level1.Q24.A", "right": false, "point": 0},
 							{"answerId": "B", "key": "euro.level1.Q24.B", "right": false, "point": 0},
-							{"answerId": "C", "key": "euro.level1.Q24.C", "right": true, "point": 1},
+							{"answerId": "C", "key": "euro.level1.Q24.C", "right": true,  "point": 1},
 							{"answerId": "D", "key": "euro.level1.Q24.D", "right": false, "point": 0}
 						]
 					},
@@ -283,17 +312,19 @@
 						"questionId": "Q25",
 						"key": "euro.level1.Q25",
 						"enabled": true,
+						"required": true,
 						"answers": [
 							{"answerId": "A", "key": "euro.level1.Q25.A", "right": false, "point": 0},
 							{"answerId": "B", "key": "euro.level1.Q25.B", "right": false, "point": 0},
 							{"answerId": "C", "key": "euro.level1.Q25.C", "right": false, "point": 0},
-							{"answerId": "D", "key": "euro.level1.Q25.D", "right": true, "point": 1}
+							{"answerId": "D", "key": "euro.level1.Q25.D", "right": true,  "point": 1}
 						]
 					},
 					{
 						"questionId": "Q26",
 						"key": "euro.level1.Q26",
 						"enabled": true,
+						"required": true,
 						"answers": [
 							{"answerId": "A", "key": "euro.level1.Q26.A", "right": true, "point": 1},
 							{"answerId": "B", "key": "euro.level1.Q26.B", "right": false, "point": 0},
@@ -305,31 +336,34 @@
 						"questionId": "Q27",
 						"key": "euro.level1.Q27",
 						"enabled": true,
+						"required": true,
 						"answers": [
 							{"answerId": "A", "key": "euro.level1.Q27.A", "right": false, "point": 0},
 							{"answerId": "B", "key": "euro.level1.Q27.B", "right": false, "point": 0},
 							{"answerId": "C", "key": "euro.level1.Q27.C", "right": false, "point": 0},
-							{"answerId": "D", "key": "euro.level1.Q27.D", "right": true, "point": 1}
+							{"answerId": "D", "key": "euro.level1.Q27.D", "right": true,  "point": 1}
 						]
 					},
 					{
 						"questionId": "Q28",
 						"key": "euro.level1.Q28",
 						"enabled": true,
+						"required": true,
 						"answers": [
 							{"answerId": "A", "key": "euro.level1.Q28.A", "right": false, "point": 0},
 							{"answerId": "B", "key": "euro.level1.Q28.B", "right": false, "point": 0},
 							{"answerId": "C", "key": "euro.level1.Q28.C", "right": false, "point": 0},
-							{"answerId": "D", "key": "euro.level1.Q28.D", "right": true, "point": 1}
+							{"answerId": "D", "key": "euro.level1.Q28.D", "right": true,  "point": 1}
 						]
 					},
 					{
 						"questionId": "Q29",
 						"key": "euro.level1.Q29",
 						"enabled": true,
+						"required": true,
 						"answers": [
 							{"answerId": "A", "key": "euro.level1.Q29.A", "right": false, "point": 0},
-							{"answerId": "B", "key": "euro.level1.Q29.B", "right": true, "point": 1},
+							{"answerId": "B", "key": "euro.level1.Q29.B", "right": true,  "point": 1},
 							{"answerId": "C", "key": "euro.level1.Q29.C", "right": false, "point": 0},
 							{"answerId": "D", "key": "euro.level1.Q29.D", "right": false, "point": 0}
 						]
@@ -338,8 +372,9 @@
 						"questionId": "Q30",
 						"key": "euro.level1.Q30",
 						"enabled": true,
+						"required": true,
 						"answers": [
-							{"answerId": "A", "key": "euro.level1.Q30.A", "right": true, "point": 1},
+							{"answerId": "A", "key": "euro.level1.Q30.A", "right": true,  "point": 1},
 							{"answerId": "B", "key": "euro.level1.Q30.B", "right": false, "point": 0},
 							{"answerId": "C", "key": "euro.level1.Q30.C", "right": false, "point": 0},
 							{"answerId": "D", "key": "euro.level1.Q30.D", "right": false, "point": 0}

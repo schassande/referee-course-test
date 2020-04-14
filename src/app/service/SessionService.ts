@@ -132,14 +132,14 @@ export class SessionService extends RemotePersistentDataService<Session> {
         const pa = learnerAnswers.get(question.questionId);
         if (pa) {
           const rightAnswer = question.answers.filter(answer => answer.right);
-          console.log('computeNbRightAnswer: rightAnswer=', rightAnswer, 'pa=', pa);
+          // console.log('computeNbRightAnswer: rightAnswer=', rightAnswer, 'pa=', pa);
           if (rightAnswer
             && rightAnswer[0].answerId === pa.answerId
             && pa.responseTime.getTime() < session.expireDate.getTime()) {
             serieResult.score ++;
           }
         } else {
-          console.log('computeNbRightAnswer: no response for question ', question.questionId);
+          // console.log('computeNbRightAnswer: no response for question ', question.questionId);
         }
       });
       serieResult.pass = serieResult.score >= serie.requiredScore;

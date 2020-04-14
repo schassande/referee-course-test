@@ -16,6 +16,8 @@ export interface Course extends RootNode {
   enabled: boolean;
   /** The test associated with the course */
   test: Test;
+  /** Flag indicating if the test can be run alone online. */
+  allowedAlone: boolean;
 }
 
 export type DurationUnit = 'm' | 'h' | 'd';
@@ -34,6 +36,7 @@ export interface Test {
   series: QuestionSerie[];
   /** The required number of point for the serie */
   requiredScore: number;
+  /** Number of question to ask in the test */
   nbQuestion: number;
   /** List of supported languages */
   supportedLanguages: string[];
@@ -51,30 +54,8 @@ export interface QuestionSerie {
   requiredScore: number;
   /** indicate if this serie is required to be passed, in order to pass the test */
   passRequired: boolean;
-}
-
-/** A question of the serie of the test */
-export interface Question extends Translatable {
-  /** The identifier of the question */
-  questionId: string;
-  /** the identifier of the image associated to the question */
-  imageId?: string;
-  /** The list of the possible answer to the question */
-  answers: Answer[];
-  /** Indicate if the question is enabled. */
-  enabled: boolean;
-}
-
-/** An answer of a question. */
-export interface Answer extends Translatable {
-  /** The identifier of the answer */
-  answerId: string;
-  /** the identifier of the image associated to the answer */
-  imageId?: string;
-  /** Flag indicating if the answer is right */
-  right?: boolean;
-  /** Number of point wan when the user choose the answer */
-  point: number;
+  /** the number of question to ask in the serie */
+  nbQuestion: number;
 }
 
 /** A translation of the text. The identifier is the <key>.<lang> */
@@ -87,6 +68,32 @@ export interface Translatable {
   /** the translation identifier of the answer */
   key: string;
   text?: string;
+}
+
+/** A question of the serie of the test */
+export interface Question extends Translatable {
+  /** The identifier of the question */
+  questionId: string;
+  /** the identifier of the image associated to the question */
+  imageId?: string;
+  /** The list of the possible answer to the question */
+  answers: Answer[];
+  /** Indicate if the question is enabled. */
+  enabled: boolean;
+  /** Flag to indicate the question is required. */
+  required: boolean;
+}
+
+/** An answer of a question. */
+export interface Answer extends Translatable {
+  /** The identifier of the answer */
+  answerId: string;
+  /** the identifier of the image associated to the answer */
+  imageId?: string;
+  /** Flag indicating if the answer is right */
+  right?: boolean;
+  /** Number of point wan when the user choose the answer */
+  point: number;
 }
 
 export type SessionStatus = 'REGISTRATION' | 'STARTED' | 'STOPPED' | 'CORRECTION' | 'CLOSED';
@@ -121,14 +128,6 @@ export interface PersonRef {
   lastName: string;
 }
 
-/** A participant of a session */
-export interface SessionParticipant extends TestParticipantResult {
-  /** The user */
-  person: PersonRef;
-  /** The answerq of the questions */
-  questionAnswerIds: string[];
-}
-
 export interface ParticipantResult {
   /** pass */
   pass: boolean;
@@ -140,6 +139,14 @@ export interface ParticipantResult {
 }
 export interface TestParticipantResult extends ParticipantResult {
   seriesResult: ParticipantResult[];
+}
+
+/** A participant of a session */
+export interface SessionParticipant extends TestParticipantResult {
+  /** The user */
+  person: PersonRef;
+  /** The answerq of the questions */
+  questionAnswerIds: string[];
 }
 
 export interface ParticipantQuestionAnswer extends RootNode {

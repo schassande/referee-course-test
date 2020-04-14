@@ -78,10 +78,11 @@ export class CourseEditComponent implements OnInit {
         lastUpdate: new Date(),
         dataStatus: 'NEW',
         version: new Date().getTime(),
-        name: 'Level1',
+        name: 'Referee Level 1',
         level: 1,
         theme: 'blue',
         enabled: true,
+        allowedAlone: true,
         test: {
           version: '1.0',
           enabled: true,
@@ -90,7 +91,7 @@ export class CourseEditComponent implements OnInit {
           requiredScore: 23,
           nbQuestion: 30,
           supportedLanguages: ['en'],
-          series: [ { enabled: true, requiredScore: 27, passRequired: true, questions: [] } ]
+          series: [ { enabled: true, requiredScore: 27, passRequired: true, questions: [], nbQuestion: 30 } ]
         }
       };
       return of({ error: null, data: this.course});

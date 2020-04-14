@@ -35,7 +35,6 @@ export class AppComponent implements OnInit {
   ngOnInit() {
   }
   public route(url: string = '/home') {
-    console.log('route(', url, ')');
     this.navController.navigateRoot(url);
     this.menu.close();
   }
