@@ -36,17 +36,21 @@ Once you are granted as teacher, you can create a group sesssion. You can add te
 
 ## Bug to fix
 
-* orthographe de drop-off : drop off, dropoff ou drop-off ? Plusieurs orthographes constatées.
+* spelling stuff in fr version drop-off : drop off, dropoff ou drop-off ? several and differents ...
 
 ## TODO List
 
 Here is the list of next developpements:
 
-* quand on clique sur le drapeau français, tout ne bascule pas en français (questions without answers, close the exam, etc. en bas de la page)
-* S26, R23, T30 à eclaircir
-* Tester avec plusieurs series
-* Systeme de log
-* Import de traduction en properties + rapport d'importation
-* Import de formation
-* Envoi d'un email de confirmations d'inscription
-* Envoie d'un certificat par email de réussite par email
+* Document how to control the session as teacher
+* Translations import :
+  
+  1) Change the import format of translations to .csv file, => separate from test import
+  2) report of import / status of the translations per course
+
+* global switch of the language over the web site
+* Improve the session report per learner S26, R23, T30
+* Test the application with several series
+* Introduction log system
+* Sent an email to confirm the subscription
+* Sent a certificat when a learner passes an exam
