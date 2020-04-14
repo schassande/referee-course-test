@@ -15,7 +15,7 @@
         <ion-card-content>
             <ion-item *ngFor="let session of teacherSessions" routerLink="/session/edit/{{session.id}}">
                 <ion-label>{{dateService.date2string(session.startDate)}} / {{session.courseName}} / {{session.keyCode}} / {{session.status}}
-                    <div *ngIf="session.autoPlay"><span i18n="@@session.individual-learner">Individual learner</span>: {{session.participants[0].person.firstName}} {{session.participants[0].person.firstName}}</div>
+                    <div *ngIf="session.autoPlay"><span i18n="@@session.individual-learner">Individual learner</span>: {{session.participants[0].person.firstName}} {{session.participants[0].person.lastName}}</div>
                 </ion-label>
             </ion-item>
             <div style="text-align: right; margin-top: 10px;">

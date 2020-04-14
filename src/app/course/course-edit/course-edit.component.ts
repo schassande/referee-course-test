@@ -91,7 +91,14 @@ export class CourseEditComponent implements OnInit {
           requiredScore: 23,
           nbQuestion: 30,
           supportedLanguages: ['en'],
-          series: [ { enabled: true, requiredScore: 27, passRequired: true, questions: [], nbQuestion: 30 } ]
+          series: [ {
+            enabled: true,
+            requiredScore: 27,
+            passRequired: true,
+            questions: [],
+            nbQuestion: 30,
+            selectionMode: 'RANDOM'
+          }]
         }
       };
       return of({ error: null, data: this.course});

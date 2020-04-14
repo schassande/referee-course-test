@@ -29,10 +29,9 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
   course: Course;
   lang: string;
 
-  serieIdx = 0;
-  serie: QuestionSerie = null;
   questionIdx = 0;
   question: Question = null;
+  questions: Question[] = [];
   answerLetters: string[] = ['A', 'B', 'C', ' D', 'E', 'F', 'G', 'H', 'I', 'J'];
   answerValue = '';
   learnerAnswers: Map<string, ParticipantQuestionAnswer> = new Map<string, ParticipantQuestionAnswer>();
@@ -168,12 +167,15 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
 
   private setQuestion() {
     if (this.course) {
-      const sIdx = Math.min(this.serieIdx, this.course.test.series.length);
-      this.serie = this.course.test.series[sIdx];
-      if (this.serie) {
-        const qIdx = Math.min(this.questionIdx, this.serie.questions.length);
-        this.question = this.serie.questions[qIdx];
-      }
+      // create a temp Map of questions
+      const id2q: Map<string, Question> = new Map<string, Question>();
+      this.course.test.series.forEach((series) => {
+        series.questions.forEach((q) => id2q.set(q.questionId, q));
+      });
+      // extract the selected questions
+      this.questions = this.session.questionIds.map(qId => id2q.get(qId));
+      // set the current question
+      this.question = this.questions[this.questionIdx];
     }
   }
 
@@ -187,21 +189,8 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
     }
   }
   incQuestionIdx() {
-    // increase question
-    this.questionIdx ++;
-    if (this.questionIdx >= this.serie.questions.length) {
-      // It is the last question of the current serie
-      // => set to the first question
-      this.questionIdx = 0;
-
-      // try to move to next serie
-      this.serieIdx ++;
-      if (this.serieIdx >= this.course.test.series.length) {
-        this.serieIdx = 0;
-      }
-    }
-    this.serie = this.course.test.series[this.serieIdx];
-    this.question = this.serie.questions[this.questionIdx];
+    this.questionIdx = (this.questionIdx + 1) % this.questions.length;
+    this.question = this.questions[this.questionIdx];
     this.updateAnswer();
   }
 
@@ -209,29 +198,18 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
     // decrease question
     this.questionIdx --;
     if (this.questionIdx < 0 ) {
-      // It is the last question of the current serie
-
-      // try to move to previous serie
-      this.serieIdx --;
-      if (this.serieIdx < 0) {
-        this.serieIdx =  this.course.test.series.length - 1;
-      }
-      this.serie = this.course.test.series[this.serieIdx];
-        // => set to the last question of the serie
-      this.questionIdx = this.serie.questions.length - 1;
+      this.questionIdx = this.questions.length - 1;
     }
-    this.question = this.serie.questions[this.questionIdx];
+    this.question = this.questions[this.questionIdx];
     this.updateAnswer();
   }
 
   private loadTranslation(): Observable<any> {
     const obs: Observable<any>[] = [];
-    this.course.test.series.forEach(series => {
-      series.questions.forEach(question => {
-        obs.push(this.translationService.translate(question, this.lang));
-        question.answers.forEach(answer => {
-          obs.push(this.translationService.translate(answer, this.lang));
-        });
+    this.questions.forEach(question => {
+      obs.push(this.translationService.translate(question, this.lang));
+      question.answers.forEach(answer => {
+        obs.push(this.translationService.translate(answer, this.lang));
       });
     });
     return forkJoin(obs);

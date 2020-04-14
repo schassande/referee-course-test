@@ -22,6 +22,8 @@ Features :
 * The application is open source and free
 * The application is available in several languages: English, French
 * The application has nothing specific to the referee aspect. It could be used to run general online exams.
+* An exam is composed by series of questions. Each serie has a number of question to select. A question can be required.
+* During the creation of a session, the application selects the required questions and some randomly questions to reach the number of question by each serie.
 
 ## How to test
 
@@ -34,12 +36,6 @@ Once you are granted as teacher, you can create a group sesssion. You can add te
 
 ## Bug to fix
 
-* Quand tu cliques sur "Session" pour voir la liste des sessions, à côté de individual learner il est écrit 2 fois le prénom au lieu de prénom & nom
-* question 6/30 réponse A : "peut commencer le match comme remplaçant" au lieu de "remplacent"
-* question 17/20 : "Laquelle de ces combinaisons ne présente que des situations de pénalité ?" au lieu de "Laquelle de ses combinaisons présente que des situations de pénalité?"
-* question 23/30 : il y a un espace entre "vraie" et "?"
-* question 23/30 réponse C : "à marquer ou à essayer de marquer" à la place de "à marquer où essayer de marquer"
-* question 28/30 : il manque un point à la fin de la réponse A
 * orthographe de drop-off : drop off, dropoff ou drop-off ? Plusieurs orthographes constatées.
 
 ## TODO List
@@ -48,9 +44,6 @@ Here is the list of next developpements:
 
 * quand on clique sur le drapeau français, tout ne bascule pas en français (questions without answers, close the exam, etc. en bas de la page)
 * S26, R23, T30 à eclaircir
-* Question tirer au hazard => lister les questionIds dans la Session
-* Imposer des questions dans une serie
-* Selectionner N questions parmi M sur une serie
 * Tester avec plusieurs series
 * Systeme de log
 * Import de traduction en properties + rapport d'importation

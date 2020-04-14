@@ -47,25 +47,11 @@
     </div>
 
     <div *ngIf="!loading && session && session.status !== 'CLOSED'">
-        <ion-list *ngIf="course.test.series.length > 1">
-            <ion-item>
-                <ion-icon scope="start" name="arrow-forward-circle-outline"></ion-icon>
-                <ion-label>{{serie.serieName}}</ion-label>
-                <ion-icon scope="end" name="arrow-backward-circle-outline"></ion-icon>
-            </ion-item>
-            <ion-item *ngIf="!serie.enabled">DISABLED</ion-item>
-            <ion-item>
-                <ion-label i18n="@@session-play.required-score">Required score: </ion-label>
-                <ion-input style="text-align: right;" readonly="true">{{serie.requiredScore}}
-                    <span *ngIf="serie.passRequired"> *</span>
-                </ion-input>
-            </ion-item>
-        </ion-list>
         <div class="questionNumberLine">
             <ion-button shape="round" (click)="decQuestionIdx()" class="questionButton" style="margin-left: 20px;">
                 <ion-icon name="arrow-back-outline"></ion-icon>
             </ion-button>
-            <div class="questionNumber"><span i18n="@@session-play.question">Question</span> {{questionIdx + 1}}/{{serie.questions.length}}</div>
+            <div class="questionNumber"><span i18n="@@session-play.question">Question</span> {{questionIdx + 1}}/{{questions.length}}</div>
             <ion-button shape="round" (click)="incQuestionIdx()" class="questionButton">
                 <ion-icon name="arrow-forward-outline"></ion-icon>
             </ion-button>
@@ -78,7 +64,7 @@
             <ion-radio-group name="question" [(ngModel)]="answerValue">
                 <ion-item *ngFor="let answer of question.answers; let index = index;" (click)="answerSelected(index)" [ngClass]="{'rightAnswer': showRightAnswer && answer.right}">
                     <ion-label class="answer">{{answerLetters[index]}} - {{answer.text}}</ion-label>
-                    <ion-icon *ngIf="sessionExpired && answerValue && answerValue == index" slot="end" name="radio-button-on-outline"></ion-icon>
+                    <ion-icon *ngIf="sessionExpired && answerValue && answerValue === index.toString()" slot="end" name="radio-button-on-outline"></ion-icon>
                     <ion-radio *ngIf="!sessionExpired" slot="end" value="{{index}}"></ion-radio>
                 </ion-item>
             </ion-radio-group>

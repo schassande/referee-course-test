@@ -41,6 +41,7 @@ export interface Test {
   /** List of supported languages */
   supportedLanguages: string[];
 }
+export type SelectionMode = 'ALL' | 'RANDOM';
 
 /** A serie of the test */
 export interface QuestionSerie {
@@ -56,6 +57,8 @@ export interface QuestionSerie {
   passRequired: boolean;
   /** the number of question to ask in the serie */
   nbQuestion: number;
+  /** mode of selection of the question */
+  selectionMode: SelectionMode;
 }
 
 /** A translation of the text. The identifier is the <key>.<lang> */
@@ -116,10 +119,17 @@ export interface Session extends RootNode {
   /** The list of the teachers of a session */
   teachers: PersonRef[];
   teacherIds: string[];
-  /** The list of the participant of the session */
+  /** The list of the participant of the session (must be sync with 'participantIds')  */
   participants: SessionParticipant[];
+  /** The list of the participant identifier of the session (must be sync with 'participants') */
   participantIds: string[];
+  /** flag indicating whether the session is run automatically */
   autoPlay?: boolean;
+  /**
+   * The list of the identifier of the questions to run during the test. 
+   * The questions are extracted from the course.
+   */
+  questionIds: string[];
 }
 
 export interface PersonRef {

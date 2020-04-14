@@ -1,7 +1,7 @@
 import { UserService } from 'src/app/service/UserService';
 import { map } from 'rxjs/operators';
 import { ParticipantQuestionAnswerService } from 'src/app/service/ParticipantQuestionAnswerService';
-import { Course, ParticipantQuestionAnswer, User, DurationUnit } from 'src/app/model/model';
+import { DurationUnit, Course, ParticipantQuestionAnswer, Question, User } from 'src/app/model/model';
 import { ParticipantResult, SessionParticipant, TestParticipantResult, DataRegion } from './../model/model';
 import { DateService } from 'src/app/service/DateService';
 import { ResponseWithData } from 'src/app/service/response';
@@ -129,18 +129,21 @@ export class SessionService extends RemotePersistentDataService<Session> {
         pass: true,
       };
       serie.questions.forEach(question => {
-        const pa = learnerAnswers.get(question.questionId);
-        if (pa) {
-          const rightAnswer = question.answers.filter(answer => answer.right);
-          // console.log('computeNbRightAnswer: rightAnswer=', rightAnswer, 'pa=', pa);
-          if (rightAnswer
-            && rightAnswer[0].answerId === pa.answerId
-            && pa.responseTime.getTime() < session.expireDate.getTime()) {
-            serieResult.score ++;
+        if (session.questionIds.indexOf(question.questionId) >= 0) {
+          // the question of the serie has been selected.
+          const pa = learnerAnswers.get(question.questionId);
+          if (pa) {
+            const rightAnswer = question.answers.filter(answer => answer.right);
+            // console.log('computeNbRightAnswer: rightAnswer=', rightAnswer, 'pa=', pa);
+            if (rightAnswer
+              && rightAnswer[0].answerId === pa.answerId
+              && pa.responseTime.getTime() < session.expireDate.getTime()) {
+              serieResult.score ++;
+            }
+          } else {
+            // console.log('computeNbRightAnswer: no response for question ', question.questionId);
           }
-        } else {
-          // console.log('computeNbRightAnswer: no response for question ', question.questionId);
-        }
+        } // else the question has not been selected
       });
       serieResult.pass = serieResult.score >= serie.requiredScore;
       serieResult.percent = Math.round(serieResult.score * 100 / serie.questions.length);
@@ -162,7 +165,7 @@ export class SessionService extends RemotePersistentDataService<Session> {
     now.set('m', Math.round(now.get('m') / 5) * 5);
     const startDate = now.toDate();
     const expireDate = this.computeExpireDate(startDate, course.test.duration, course.test.durationUnit);
-    return {
+    const session: Session = {
       id: '',
       dataRegion,
       status: 'REGISTRATION',
@@ -178,9 +181,54 @@ export class SessionService extends RemotePersistentDataService<Session> {
       courseId: course ? course.id : null,
       courseName: course ? course.name : null,
       participants: [],
-      participantIds: []
+      participantIds: [],
+      questionIds: []
     };
+    this.randomizeQuestions(session, course);
+    return session;
   }
+
+  private randomizeQuestions(session: Session, course: Course) {
+    // for each serie extract the required number of question
+    course.test.series.forEach(serie => {
+        if (!serie.selectionMode) {
+          serie.selectionMode = 'RANDOM';
+        }
+        if (serie.selectionMode === 'RANDOM') {
+        // extract required questions
+        const retainQuestionIds: string[] = serie.questions
+          .filter(question => question.required)
+          .map(question => question.questionId);
+        // console.log(retainQuestionIds.length + ' questions required from serie ');
+        if (serie.nbQuestion > retainQuestionIds.length) {
+          // there is not enough questions => look for the not required questions
+          const othersQuestions: string[] = serie.questions
+            .filter(question => !question.required)
+            .map(question => question.questionId);
+          // add the missing questions to reach the number
+          while (serie.nbQuestion > retainQuestionIds.length) {
+            const idx = (Math.random() * 100000) % othersQuestions.length;
+            const retainQuestionId: string = othersQuestions.splice(idx, 1)[0];
+            // console.log('Add question ' + retainQuestionId);
+            retainQuestionIds.push(retainQuestionId);
+          }
+        }
+        retainQuestionIds.forEach(qId => session.questionIds.push(qId));
+        // console.log(retainQuestionIds.length + ' questions retains for the serie ');
+        this.shuffleArray(session.questionIds);
+      } else if (serie.selectionMode === 'ALL') {
+        serie.questions.forEach(question => session.questionIds.push(question.questionId));
+      }
+    });
+  }
+  /** Shuffle the content of an array */
+  public shuffleArray(array: any[]) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const rand = Math.floor(Math.random() * (i + 1));
+        [array[i], array[rand]] = [array[rand], array[i]]
+    }
+  }
+
   public computeExpireDate(d: Date, duration: number, durationUnit: DurationUnit): Date {
     return moment(d).add(duration, durationUnit).toDate();
   }

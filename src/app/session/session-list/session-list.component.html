@@ -34,7 +34,7 @@
                 {{dateService.date2string(session.startDate)}} / {{session.courseName}} / {{session.keyCode}} / {{session.status}}
                 <div *ngFor="let teacher of session.teachers" style="margin-left: 100px;">by {{teacher.firstName}} {{teacher.lastName}}</div>
                 <div *ngIf="session.autoPlay" style="margin-left: 100px;">
-                    <span i18n="@@session-list.individual-learner">Individual learner</span>: {{session.participants[0].person.firstName}} {{session.participants[0].person.firstName}}</div>
+                    <span i18n="@@session-list.individual-learner">Individual learner</span>: {{session.participants[0].person.firstName}} {{session.participants[0].person.lastName}}</div>
             </ion-label>
             <ion-icon *ngIf="!readonly && session.teachers && session.teachers.length && session.teachers[0].personId === currentUser.id" slot="end" name="trash" (click)="deleteItem(session)"></ion-icon>
         </ion-item>
