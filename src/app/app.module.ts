@@ -19,6 +19,7 @@ import { AngularFireStorageModule } from '@angular/fire/storage';
 import { AngularFireFunctionsModule } from '@angular/fire/functions';
 import { AngularFireMessagingModule } from '@angular/fire/messaging';
 import { IonicStorageModule } from '@ionic/storage';
+import { ToastrModule, ToastNoAnimationModule } from 'ngx-toastr';
 
 import { environment } from '../environments/environment';
 import { HammerGestureConfig, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
@@ -39,6 +40,7 @@ import { ParticipantQuestionAnswerService } from 'src/app/service/ParticipantQue
 import { SessionService } from 'src/app/service/SessionService';
 import { TranslationService } from 'src/app/service/TranslationService';
 import { UserService } from 'src/app/service/UserService';
+import { ToastrService } from 'ngx-toastr';
 
 export class CustomHammerConfig extends HammerGestureConfig {}
 
@@ -49,6 +51,7 @@ export class CustomHammerConfig extends HammerGestureConfig {}
     BrowserModule,
     FormsModule,
     IonicModule.forRoot(),
+    ToastNoAnimationModule.forRoot(),
     AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFirestoreModule,
@@ -75,6 +78,7 @@ export class CustomHammerConfig extends HammerGestureConfig {}
     NtaService,
     ParticipantQuestionAnswerService,
     SessionService,
+    ToastrService,
     TranslationService,
     UserService,
   ],

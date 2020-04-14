@@ -82,7 +82,7 @@ export class SessionService extends RemotePersistentDataService<Session> {
   }
 
   public computeLearnerScores(session: Session, course: Course): Observable<any> {
-    const obs: Observable<any>[] = [];
+    const obs: Observable<any>[] = [of('')];
     session.participants.forEach(participant => {
       obs.push(this.computeLearnerScoresOfParticipant(session, course, participant));
     });

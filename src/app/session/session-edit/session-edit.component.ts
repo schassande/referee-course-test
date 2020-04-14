@@ -1,3 +1,4 @@
+import { ToastrService } from 'ngx-toastr';
 import { DurationUnit } from './../../model/model';
 import { UserService } from 'src/app/service/UserService';
 import { UserSelectorComponent } from './../../main/widget/user-selector-component';
@@ -22,7 +23,7 @@ import * as moment from 'moment';
   styleUrls: ['./session-edit.component.scss'],
 })
 export class SessionEditComponent implements OnInit {
-
+  readonly toastCfg = { timeOut: 3000, positionClass: 'toast-bottom-right-custom' };
   loading = false;
   sessionId: string;
   session: Session;
@@ -41,6 +42,7 @@ export class SessionEditComponent implements OnInit {
     private navController: NavController,
     private route: ActivatedRoute,
     private sessionService: SessionService,
+    private toastrService: ToastrService,
     private userService: UserService
     ) {
   }
@@ -210,25 +212,29 @@ export class SessionEditComponent implements OnInit {
       this.session.startDate,
       this.course.test.duration,
       this.course.test.durationUnit);
-    this.save().subscribe();
+    this.save().subscribe(() => this.toastrService.success('The exam has been started.', '', this.toastCfg));
     }
   stop() {
     this.session.status = 'STOPPED';
     this.session.expireDate = new Date();
-    this.save().subscribe();
+    this.save().subscribe(() => this.toastrService.success('The exam has been stopped.', '', this.toastCfg));
   }
   correction() {
     this.session.status = 'CORRECTION';
-    this.save().subscribe(() => this.computeScores());
+    this.sessionService.computeLearnerScores(this.session, this.course).pipe(
+      flatMap(() => this.save()),
+      map(() => this.toastrService.success('Marking step of the exam.', '', this.toastCfg))
+    ).subscribe();
   }
   computeScores() {
     this.sessionService.computeLearnerScores(this.session, this.course).pipe(
-      flatMap(() => this.save())
+      flatMap(() => this.save()),
+      map(() => this.toastrService.success('Scores has been computed.', '', this.toastCfg))
     ).subscribe();
   }
   close() {
     this.session.status = 'CLOSED';
-    this.save().subscribe();
+    this.save().subscribe(() => this.toastrService.success('The exam has been closed.', '', this.toastCfg));
   }
   exportResults() {
     const sep = ',';

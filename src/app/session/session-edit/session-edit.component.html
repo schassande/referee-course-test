@@ -110,7 +110,10 @@
             <ion-item *ngFor="let learner of session.participants; let index = index;">
                 <ion-label style="border: none;" class="listItemButton">
                     {{learner.person.firstName}} {{learner.person.lastName}}
-                    <span *ngIf="learner.score >= 0" [ngClass]="{'testPass': learner.pass, 'testFail': !learner.pass}">, S:{{learner.score}},R:{{learner.requiredScore}},T:{{course.test.nbQuestion}},({{learner.percent}}%) {{learner.pass ? 'PASS' : 'FAIL'}}</span>
+                    <div *ngIf="learner.score >= 0" [ngClass]="{'testPass': learner.pass, 'testFail': !learner.pass}" style="margin-top: 5px;">
+                        <span>{{learner.pass ? 'PASS' : 'FAIL'}}</span>&nbsp;
+                        <span>Score:{{learner.score}} ({{learner.percent}}%), Required:{{learner.requiredScore}}, Total:{{course.test.nbQuestion}}</span>
+                    </div>
                 </ion-label>
                 <ion-icon *ngIf="!readonly" slot="end" name="trash" (click)="deleteLearner(learner, index)"></ion-icon>
             </ion-item>

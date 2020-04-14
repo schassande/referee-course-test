@@ -1,3 +1,4 @@
+import { ToastrService } from 'ngx-toastr';
 import { TestParticipantResult } from './../../model/model';
 import { ResponseWithData } from 'src/app/service/response';
 import { ModalController, NavController, AlertController } from '@ionic/angular';
@@ -22,6 +23,7 @@ import * as moment from 'moment';
   styleUrls: ['./session-play.component.scss'],
 })
 export class SessionPlayComponent implements OnInit, OnDestroy {
+  readonly toastCfg = { timeOut: 3000, positionClass: 'toast-bottom-right-custom' };
 
   loading = false;
   sessionId: string;
@@ -52,6 +54,7 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
     private navController: NavController,
     private route: ActivatedRoute,
     private sessionService: SessionService,
+    private toastrService: ToastrService,
     private translationService: TranslationService,
     private participantQuestionAnswerService: ParticipantQuestionAnswerService
   ) { }
@@ -294,26 +297,26 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
       this.session.startDate,
       this.course.test.duration,
       this.course.test.durationUnit);
-    this.save().subscribe();
+    this.save().subscribe(() => this.toastrService.success('The exam has been started.', '', this.toastCfg));
     }
   stop() {
     this.session.status = 'STOPPED';
     this.session.expireDate = new Date();
-    this.save().subscribe();
+    this.save().subscribe(() => this.toastrService.success('The exam has been stopped.', '', this.toastCfg));
   }
 
   correction() {
     this.session.status = 'CORRECTION';
     this.sessionService.computeLearnerScores(this.session, this.course).pipe(
       flatMap(() => this.save())
-    ).subscribe();
+    ).subscribe(() => this.toastrService.success('Marking step of the exam.', '', this.toastCfg));
   }
 
   close() {
     this.session.status = 'CLOSED';
     this.save().pipe(
       map(() => this.loadData())
-    ).subscribe();
+    ).subscribe(() => this.toastrService.success('The exam has been closed.', '', this.toastCfg));
   }
 
   save(): Observable<ResponseWithData<Session>> {

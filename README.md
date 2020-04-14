@@ -1,6 +1,6 @@
 # Exam of referees
 
-The application is hosted on: https://exam.coachreferee.com
+The application is hosted on: [https://exam.coachreferee.com](https://exam.coachreferee.com)
 
 ## Description of the application
 
@@ -54,7 +54,6 @@ Once you are granted as teacher, you can create a group sesssion. You can add te
 
 Here is the list of next developpements:
 
-* Document how to control the session as teacher
 * Translations import :
   
   1) Change the import format of translations to .csv file, => separate from test import

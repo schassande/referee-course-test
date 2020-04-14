@@ -28,6 +28,13 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+/** Toaster */
+
+@import "../node_modules/ngx-toastr/toastr.css";
+
+/** Local style */
+
 .plusButton {
     font-size: 2em;
 }
@@ -56,4 +63,9 @@ body {
     -webkit-user-select: none;
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
+}
+
+.toast-bottom-right-custom {
+    bottom: 90px;
+    right: 12px;
 }
