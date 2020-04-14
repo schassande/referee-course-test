@@ -30,7 +30,12 @@ Features :
 The page about the session offers you control button on the bottom. Here is the list of the available button and their explanation:
 
 * ![Add teacher](https://raw.githubusercontent.com/schassande/referee-course-test/master/doc/session_add_teacher_or_learner.png): use it to add a teacher or learner
-* ![Start the exam](doc/session_start.png): Start the exam
+* ![Start the exam](https://raw.githubusercontent.com/schassande/referee-course-test/master/doc/session_start.png): Start or restart the exam
+* ![View as teacher](https://raw.githubusercontent.com/schassande/referee-course-test/master/doc/session_view_as_teacher.png): Go on the view to see the questions and the answers
+* ![Stop the exam](https://raw.githubusercontent.com/schassande/referee-course-test/master/doc/session_stop.png): Stop the exam. If a learner answer to a question is after that, it does not count.
+* ![Go to correction](https://raw.githubusercontent.com/schassande/referee-course-test/master/doc/session_correction.png): Change to the step correction. The learner can see the correction.
+* ![Compute score](https://raw.githubusercontent.com/schassande/referee-course-test/master/doc/session_compute_score.png): Compute the score of the learners
+* ![Close](https://raw.githubusercontent.com/schassande/referee-course-test/master/doc/session_close.png): close the exam. the Learner will not see the correct answers.
 
 ## How to test
 
