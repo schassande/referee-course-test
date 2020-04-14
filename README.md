@@ -16,10 +16,12 @@ Features :
 * All data are isolated by region (Europe, Aus, NZ, ...)
 * A teacher can grant a user to the teacher level.
 * A teacher can see the sessions of its region
+* A course can allowed or not to be run in individual session.
 * The datase contains the level 1 course in EN & FR. Import process based on file permit to add others courses and translations
 * The web site works on phone, tablet & computer. Chrome is the more suitable browser for the application but it works on Firefox.
 * The application is open source and free
-* the application has nothing specific to the referee aspect. It could be used to run general online exams.
+* The application is available in several languages: English, French
+* The application has nothing specific to the referee aspect. It could be used to run general online exams.
 
 ## How to test
 
@@ -44,10 +46,8 @@ Once you are granted as teacher, you can create a group sesssion. You can add te
 
 Here is the list of next developpements:
 
-* Site en I18N
 * quand on clique sur le drapeau français, tout ne bascule pas en français (questions without answers, close the exam, etc. en bas de la page)
 * S26, R23, T30 à eclaircir
-* Autoriser le test individuel seulement pour certaines formations (flag posé => ajouter le filtre)
 * Question tirer au hazard => lister les questionIds dans la Session
 * Imposer des questions dans une serie
 * Selectionner N questions parmi M sur une serie

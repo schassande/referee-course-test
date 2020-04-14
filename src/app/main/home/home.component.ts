@@ -62,7 +62,7 @@ export class HomeComponent implements OnInit {
   }
 
   loadCourses(): Observable<any> {
-    return this.courseService.all().pipe(
+    return this.courseService.findAllowedAlone().pipe(
       map((rcourses) => {
         this.courses = rcourses.data;
         this.courseId = this.courses && this.courses.length ? this.courses[0].id : null;

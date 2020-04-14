@@ -44,6 +44,10 @@ export class CourseService extends RemotePersistentDataService<Course> {
     return this.query(this.getBaseQuery(), options);
   }
 
+  public findAllowedAlone(options: 'default' | 'server' | 'cache' = 'default'): Observable<ResponseWithData<Course[]>> {
+    return this.query(this.getBaseQuery().where('allowedAlone', '==', true), options);
+  }
+
   public search(text: string, options: 'default' | 'server' | 'cache' = 'default'): Observable<ResponseWithData<Course[]>> {
     const str = text !== null && text && text.trim().length > 0 ? text.trim() : null;
     return str ?
