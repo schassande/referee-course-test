@@ -1,6 +1,6 @@
 {
     "name": "referee-course-test",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "author": "Ionic Framework",
     "homepage": "https://ionicframework.com/",
     "scripts": {
@@ -14,10 +14,12 @@
         "build-i18n:fr": "ng build --output-path=www/fr --aot --prod --base-href /fr/ --i18n-file=src/locale/messages.fr.xlf --i18n-format=xlf --i18n-locale=fr",
         "build-i18n": "npm run build-i18n:en && npm run build-i18n:fr",
         "deploy": "firebase deploy --only hosting",
-        "deploy-functions": "firebase deploy --only functions"
+        "deploy-functions": "firebase deploy --only functions",
+        "build-deploy": "npm run build && npm run deploy"
     },
     "private": true,
     "dependencies": {
+        "@angular/animations": "~8.2.14",
         "@angular/common": "~8.2.14",
         "@angular/core": "~8.2.14",
         "@angular/fire": "^6.0.0",
@@ -42,7 +44,7 @@
         "moment": "^2.24.0",
         "ng2-charts": "^2.3.0",
         "ngx-markdown": "^9.0.0",
-        "ngx-toastr": "^12.0.1",
+        "ngx-toastr": "~11.3.3",
         "rxjs": "~6.5.1",
         "tslib": "^1.9.0",
         "zone.js": "~0.9.1"

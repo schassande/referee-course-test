@@ -229,7 +229,7 @@ export class SessionEditComponent implements OnInit {
   computeScores() {
     this.sessionService.computeLearnerScores(this.session, this.course).pipe(
       flatMap(() => this.save()),
-      map(() => this.toastrService.success('Scores has been computed.', '', this.toastCfg))
+      map(() => this.toastrService.success('Scores have been computed.', '', this.toastCfg))
     ).subscribe();
   }
   close() {

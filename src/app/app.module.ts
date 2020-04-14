@@ -19,7 +19,8 @@ import { AngularFireStorageModule } from '@angular/fire/storage';
 import { AngularFireFunctionsModule } from '@angular/fire/functions';
 import { AngularFireMessagingModule } from '@angular/fire/messaging';
 import { IonicStorageModule } from '@ionic/storage';
-import { ToastrModule, ToastNoAnimationModule } from 'ngx-toastr';
+import { ToastrModule } from 'ngx-toastr';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { environment } from '../environments/environment';
 import { HammerGestureConfig, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
@@ -49,9 +50,10 @@ export class CustomHammerConfig extends HammerGestureConfig {}
   entryComponents: [],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     FormsModule,
     IonicModule.forRoot(),
-    ToastNoAnimationModule.forRoot(),
+    ToastrModule.forRoot(),
     AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFirestoreModule,
