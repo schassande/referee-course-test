@@ -126,7 +126,7 @@ export interface Session extends RootNode {
   /** flag indicating whether the session is run automatically */
   autoPlay?: boolean;
   /**
-   * The list of the identifier of the questions to run during the test. 
+   * The list of the identifier of the questions to run during the test.
    * The questions are extracted from the course.
    */
   questionIds: string[];
