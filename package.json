@@ -10,12 +10,19 @@
         "test": "ng test",
         "lint": "ng lint",
         "e2e": "ng e2e",
+        "pre-build": "node ./replace.build.js",
+        "post-build": "node ./clean.apikey.js",
         "build-i18n:en": "ng build --output-path=www/en --aot --prod --base-href /en/ --i18n-file=src/locale/messages.en.xlf --i18n-format=xlf --i18n-locale=en",
         "build-i18n:fr": "ng build --output-path=www/fr --aot --prod --base-href /fr/ --i18n-file=src/locale/messages.fr.xlf --i18n-format=xlf --i18n-locale=fr",
-        "build-i18n": "npm run build-i18n:en && npm run build-i18n:fr",
+        "build-i18n": "npm run pre-build && npm run build-i18n:en && npm run build-i18n:fr && npm run post-build",
+        "commit-version": "git commit -a -m 'version'",
         "deploy": "firebase deploy --only hosting",
         "deploy-functions": "firebase deploy --only functions",
-        "build-deploy": "npm run build && npm run deploy"
+        "build-deploy": "npm run build && npm run deploy",
+
+        "release-patch": "npm version patch && npm run build-i18n && npm run commit-version",
+        "release-minor": "npm version minor && npm run build-i18n && npm run commit-version",
+        "release-major": "npm version major && npm run build-i18n && npm run commit-version"
     },
     "private": true,
     "dependencies": {
@@ -68,6 +75,7 @@
         "karma-jasmine": "~2.0.1",
         "karma-jasmine-html-reporter": "^1.4.0",
         "protractor": "~5.4.0",
+        "replace-in-file": "^4.0.0",
         "ts-node": "~7.0.0",
         "tslint": "~5.15.0",
         "typescript": "~3.4.3"
