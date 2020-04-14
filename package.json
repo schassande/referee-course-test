@@ -1,6 +1,6 @@
 {
     "name": "referee-course-test",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "author": "Ionic Framework",
     "homepage": "https://ionicframework.com/",
     "scripts": {
@@ -19,7 +19,6 @@
         "deploy": "firebase deploy --only hosting",
         "deploy-functions": "firebase deploy --only functions",
         "build-deploy": "npm run build && npm run deploy",
-
         "release-patch": "npm version patch && npm run build-i18n && npm run commit-version",
         "release-minor": "npm version minor && npm run build-i18n && npm run commit-version",
         "release-major": "npm version major && npm run build-i18n && npm run commit-version"
