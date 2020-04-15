@@ -466,6 +466,36 @@
           <context context-type="linenumber">65</context>
         </context-group>
       </trans-unit>
+      
+      <trans-unit id="course.edit.nbQuestion" datatype="html">
+        <source>Nb Question:</source>
+        <target>Nb Question:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="course.edit.allowedAlone" datatype="html">
+        <source>Individual allowed:</source>
+        <target>Individual allowed:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="course-edit.supported_languages" datatype="html">
+        <source>Languages:</source>
+        <target>Languages:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="course-edit.serie_questions" datatype="html">
+        <source>Serie of questions</source>
+        <target>Serie of questions</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
+        </context-group>
+      </trans-unit>
+
       <trans-unit id="course.list.title" datatype="html">
         <source>Courses</source>
         <target>Courses</target>

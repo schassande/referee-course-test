@@ -1,3 +1,4 @@
+import { DateService } from './DateService';
 import { map } from 'rxjs/operators';
 import { Observable, forkJoin } from 'rxjs';
 import { AppSettingsService } from './AppSettingsService';
@@ -19,6 +20,7 @@ export class CourseService extends RemotePersistentDataService<Course> {
       toastController: ToastController,
       appSettingsService: AppSettingsService,
       private connectedUserService: ConnectedUserService,
+      private dateService: DateService,
       private alertCtrl: AlertController,
     ) {
       super(appSettingsService, db, toastController);
@@ -33,6 +35,8 @@ export class CourseService extends RemotePersistentDataService<Course> {
   }
 
   protected adjustFieldOnLoad(item: Course) {
+    item.creationDate = this.adjustDate(item.creationDate, this.dateService);
+    item.lastUpdate = this.adjustDate(item.lastUpdate, this.dateService);
   }
 
   /** Query basis for course limiting access to the course of the region */

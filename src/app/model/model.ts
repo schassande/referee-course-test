@@ -297,8 +297,7 @@ export const LANGUAGES: string[][] = [
   ['DE', 'Deutsch'],
   ['ES', 'Spanish'],
   ['IT', 'Italian'],
-  ['PO', 'Portuguese'],
-  ['CN', 'Chinese']
+  ['PO', 'Portuguese']
 ];
 
 export const CONSTANTES =  {

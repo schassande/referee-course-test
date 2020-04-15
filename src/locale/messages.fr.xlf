@@ -468,10 +468,38 @@
       </trans-unit>
       <trans-unit id="course.list.title" datatype="html">
         <source>Courses</source>
-        <target>Courses</target>
+        <target>Formations</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/course/course-list/course-list.component.html</context>
           <context context-type="linenumber">8</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="course.edit.nbQuestion" datatype="html">
+        <source>Nb Question:</source>
+        <target>Nb Question:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="course.edit.allowedAlone" datatype="html">
+        <source>Individual allowed:</source>
+        <target>Individuel autorisé:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="course-edit.supported_languages" datatype="html">
+        <source>Languages:</source>
+        <target>Langues:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="course-edit.serie_questions" datatype="html">
+        <source>Serie of questions</source>
+        <target>Serie de questions</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
         </context-group>
       </trans-unit>
       <trans-unit id="session-edit.title" datatype="html">

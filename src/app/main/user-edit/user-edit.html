@@ -63,28 +63,28 @@
                 <span style="text-align: right;">{{user.role}}</span>
             </ion-item>
         </ion-item-group>
+        <ion-item-group style="width: 100%;">
+            <ion-item-divider color="light"><span i18n="@@user-edit.teacher-qualifications">Teacher qualifications</span>
+                <ion-icon name="add" slot="end" (click)="addQual()" style="margin-right: 20px;"></ion-icon>
+            </ion-item-divider>
+            <ion-item *ngFor="let qual of user.teacherQualifications; let index = index;" style="text-align: right;">
+                <ion-select [(ngModel)]="qual.region" style="margin-right: 30px; text-align: right;">
+                    <ion-select-option *ngFor="let region of constantes.regions" value="{{region}}">{{region}}</ion-select-option>
+                </ion-select>
+                <ion-select [(ngModel)]="qual.level" style="margin-right: 30px; text-align: right;">
+                    <ion-select-option value="1">1</ion-select-option>
+                    <ion-select-option value="2">2</ion-select-option>
+                    <ion-select-option value="3">3</ion-select-option>
+                </ion-select>
+                <ion-select [(ngModel)]="qual.status" style="text-align: right;">
+                    <ion-select-option value="NotQualified" i18n="@@user-edit.qualification-notqualified">Not Qualified</ion-select-option>
+                    <ion-select-option value="Learner" i18n="@@user-edit.qualification-learner">Learner</ion-select-option>
+                    <ion-select-option value="Qualified" i18n="@@user-edit.qualification-qualified">Qualified</ion-select-option>
+                </ion-select>
+                <ion-icon name="trash" slot="end" (click)="deleteQual(index)"></ion-icon>
+            </ion-item>
+        </ion-item-group>
         <ion-item-group>
-            <ion-item-group style="width: 100%;">
-                <ion-item-divider color="light"><span i18n="@@user-edit.teacher-qualifications">Teacher qualifications</span>
-                    <ion-icon name="add" slot="end" (click)="addQual()" style="margin-right: 20px;"></ion-icon>
-                </ion-item-divider>
-                <ion-item *ngFor="let qual of user.teacherQualifications; let index = index;" style="text-align: right;">
-                    <ion-select [(ngModel)]="qual.region" style="margin-right: 30px; text-align: right;">
-                        <ion-select-option *ngFor="let region of constantes.regions" value="{{region}}">{{region}}</ion-select-option>
-                    </ion-select>
-                    <ion-select [(ngModel)]="qual.level" style="margin-right: 30px; text-align: right;">
-                        <ion-select-option value="1">1</ion-select-option>
-                        <ion-select-option value="2">2</ion-select-option>
-                        <ion-select-option value="3">3</ion-select-option>
-                    </ion-select>
-                    <ion-select [(ngModel)]="qual.status" style="text-align: right;">
-                        <ion-select-option value="NotQualified" i18n="@@user-edit.qualification-notqualified">Not Qualified</ion-select-option>
-                        <ion-select-option value="Learner" i18n="@@user-edit.qualification-learner">Learner</ion-select-option>
-                        <ion-select-option value="Qualified" i18n="@@user-edit.qualification-qualified">Qualified</ion-select-option>
-                    </ion-select>
-                    <ion-icon name="trash" slot="end" (click)="deleteQual(index)"></ion-icon>
-                </ion-item>
-            </ion-item-group>
             <ion-item-divider color="light" i18n="@@user-edit.data-privacy">Data privacy</ion-item-divider>
             <form #form="ngForm" style="margin-bottom: 50px;">
                 <ion-item>
