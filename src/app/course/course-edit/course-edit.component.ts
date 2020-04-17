@@ -11,6 +11,8 @@ import { AlertController, NavController } from '@ionic/angular';
 import { Course, Translation, Translatable } from 'src/app/model/model';
 import { Component, OnInit, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 
+import * as csv from 'csvtojson';
+
 @Component({
   selector: 'app-course-edit',
   templateUrl: './course-edit.component.html',
@@ -23,10 +25,8 @@ export class CourseEditComponent implements OnInit {
   course: Course;
   @ViewChild('inputCourse', null) inputCourse: ElementRef;
   readonly = false;
-  languages = LANGUAGES;
 
   constructor(
-    public alertCtrl: AlertController,
     private courseService: CourseService,
     private connectedUserService: ConnectedUserService,
     private dateService: DateService,
@@ -185,47 +185,6 @@ export class CourseEditComponent implements OnInit {
     reader.readAsText(file);
   }
 
-  exportCourseLanguages() {
-    const buttons: any[] = [];
-    this.course.test.supportedLanguages.forEach(lang => {
-      buttons.push({ text: lang, handler: () => this.exportCourseLanguage(lang) });
-    });
-    buttons.push({ text: 'Cancel', role: 'cancel'});
-    this.alertCtrl.create({ message: 'Which language do you want to export?', buttons })
-      .then( (alert) => alert.present() );
-  }
-
-  exportCourseLanguage(lang: string) {
-    const obs: Observable<any>[] = [];
-    let content = '';
-    const extractTrad = (trans: Translatable) => {
-      const trId = trans.key + '.' + lang.toLowerCase();
-      obs.push(this.translationService.get(trId).pipe(
-        map((rtrad) => {
-          content += trId + '=' + (rtrad.data ? rtrad.data.text : '?') + '\n';
-        })
-      ));
-    };
-    this.course.test.series.forEach(serie => {
-      serie.questions.forEach(question => {
-        extractTrad(question);
-        question.answers.forEach(answer => {
-          extractTrad(answer);
-        });
-      });
-    });
-    forkJoin(obs).subscribe((trads) => {
-      const oMyBlob = new Blob([content], {type : 'text/csv'});
-      const url = URL.createObjectURL(oMyBlob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Course_Translation_${this.course.name.replace(' ', '_')}_${lang}_${
-        this.dateService.date2string(new Date())}.properties`;
-      a.click();
-      window.URL.revokeObjectURL(url);
-      a.remove();
-    });
-  }
   exportCourse() {
     const content = JSON.stringify(this.course, null, 2);
     const oMyBlob = new Blob([content], {type : 'text/csv'});
@@ -238,17 +197,6 @@ export class CourseEditComponent implements OnInit {
     window.URL.revokeObjectURL(url);
     a.remove();
   }
-  toggleLanguage(lang: string, event) {
-    if (event.detail.checked) {
-      this.course.test.supportedLanguages.push(lang);
-    } else {
-      const idx = this.course.test.supportedLanguages.indexOf(lang);
-      if (idx > 0) {
-        this.course.test.supportedLanguages.splice(idx, 1);
-      }
-    }
-  }
-
   onSwipe(event) {
     if (event.direction === 4) {
       this.navController.navigateRoot(`/course`);

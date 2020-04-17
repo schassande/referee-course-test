@@ -9,6 +9,7 @@ import { CourseEditComponent } from './course-edit/course-edit.component';
 import { CourseListComponent } from './course-list/course-list.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { MainModule } from '../main/main.module';
+import { CourseExImportComponent } from './course-ex-import/course-ex-import.component';
 
 
 @NgModule({
@@ -19,7 +20,7 @@ import { MainModule } from '../main/main.module';
     CourseRoutingModule,
     MainModule
   ],
-  declarations: [CourseEditComponent, CourseListComponent],
-  entryComponents: [CourseEditComponent, CourseListComponent]
+  declarations: [CourseEditComponent, CourseListComponent, CourseExImportComponent],
+  entryComponents: [CourseEditComponent, CourseListComponent, CourseExImportComponent]
 })
 export class CourseModule {}

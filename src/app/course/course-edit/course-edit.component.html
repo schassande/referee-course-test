@@ -16,11 +16,6 @@
     <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="!readonly">
         <ion-row>
             <ion-col>
-                <ion-fab-button (click)="exportCourseLanguages()">
-                    <ion-icon name="archive-outline"></ion-icon>
-                </ion-fab-button>
-            </ion-col>
-            <ion-col>
                 <ion-fab-button (click)="exportCourse()">
                     <ion-icon name="code-download-outline"></ion-icon>
                 </ion-fab-button>
@@ -89,15 +84,13 @@
                 <ion-toggle *ngIf="!readonly" [(ngModel)]="course.allowedAlone"></ion-toggle>
             </ion-item>
         </ion-item-group>
-        <ion-item-group style="width: 100%;">
-            <ion-item-divider color="light" style="text-align: center; font-size: 1.2em; padding: 10px;">
-                <span i18n="@@course-edit.supported_languages">Languages</span>
-            </ion-item-divider>
-            <ion-item *ngFor="let lang of languages; let index = index;" style="text-align: right;">
-                <img src="assets/flags/{{ lang[0].toUpperCase() }}.png" height="30px" style="margin: 5px 20px 5px 0;">{{lang[1]}}
-                <ion-checkbox slot="end" checked="{{ course.test.supportedLanguages.indexOf(lang[0]) >= 0}}" (ionChange)="toggleLanguage(lang[0], $event)"></ion-checkbox>
-            </ion-item>
-        </ion-item-group>
+        <ion-item>
+            <span i18n="@@course-edit.supported_languages">Languages</span>:
+            <div *ngFor="let lang of course.test.supportedLanguages" style="text-align: left;">
+                <img src="assets/flags/{{ lang.toUpperCase() }}.png" height="30px">
+            </div>
+            <ion-button slot="end" routerLink="/course/eximport/{{courseId}}">Manage</ion-button>
+        </ion-item>
         <ion-item-group style="border-left: 1px solid lightgrey; border-right: 1px solid lightgrey;" *ngFor="let serie of course.test.series; let index = index">
             <ion-item-divider color="light" style="text-align: center; font-size: 1.2em; padding: 10px;">
                 <ion-label><span i18n="@@course-edit.serie_questions">Serie of questions</span> {{index + 1}} {{serie.serieName}}</ion-label>
