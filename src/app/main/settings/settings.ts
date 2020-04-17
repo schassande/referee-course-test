@@ -100,6 +100,7 @@ export class SettingsPage implements OnInit {
   }
 
   public reloadPage() {
+    // tslint:disable-next-line: deprecation
     window.location.reload(true);
   }
 
