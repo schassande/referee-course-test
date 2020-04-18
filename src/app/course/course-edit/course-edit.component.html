@@ -21,7 +21,7 @@
                 </ion-fab-button>
             </ion-col>
             <ion-col>
-                <input type="file" #inputCourse accept="*.csv" style="display: none;" (change)="importCourseFromCsv($event)" />
+                <input type="file" #inputCourse accept="*.csv" style="display: none;" (change)="importCourse($event)" />
                 <ion-fab-button (click)="loadFile()">
                     <ion-icon name="attach"></ion-icon>
                 </ion-fab-button>

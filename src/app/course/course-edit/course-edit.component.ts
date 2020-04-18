@@ -7,7 +7,7 @@ import { Observable, of, forkJoin } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { DateService } from 'src/app/service/DateService';
 import { CourseService } from 'src/app/service/CourseService';
-import { AlertController, NavController } from '@ionic/angular';
+import { AlertController, NavController, ToastController } from '@ionic/angular';
 import { Course, Translation, Translatable } from 'src/app/model/model';
 import { Component, OnInit, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 
@@ -30,81 +30,80 @@ export class CourseEditComponent implements OnInit {
     private courseService: CourseService,
     private connectedUserService: ConnectedUserService,
     private dateService: DateService,
-    // private helpService: helpService,
     private navController: NavController,
     private route: ActivatedRoute,
+    private toastController: ToastController,
     private translationService: TranslationService
     ) {
   }
 
-  ngOnInit() {
-    // this.helpService.setHelp('course-list');
+  public ngOnInit() {
     this.readonly = this.connectedUserService.getCurrentUser().role === 'LEARNER';
     this.loadParams().pipe(
-      flatMap(() => this.loadCourse())
+      flatMap(() => this.courseId ? this.loadCourse() : this.createNewCourse())
     ).subscribe();
   }
 
-  loadParams(): Observable<any> {
+  private loadParams(): Observable<any> {
     return this.route.paramMap.pipe(map((params) => {
       return this.courseId = params.get('id');
     }));
   }
 
-  loadCourse(): Observable<any> {
-    if (this.courseId) {
-      console.log('load course by id: ' + this.courseId);
-      this.loading = true;
-      return this.courseService.get(this.courseId).pipe(
-        map((rcourse) => this.course = rcourse.data),
-        flatMap(() => {
-          const obs: Observable<any>[] = [];
-          this.course.test.series.forEach(serie => {
-            serie.questions.forEach(question => {
-              obs.push(this.translationService.translate(question));
-              question.answers.forEach(answer => {
-                obs.push(this.translationService.translate(answer));
-              });
+  private loadCourse(): Observable<any> {
+    console.log('load course by id: ' + this.courseId);
+    this.loading = true;
+    return this.courseService.get(this.courseId).pipe(
+      map((rcourse) => this.course = rcourse.data),
+      flatMap(() => {
+        const obs: Observable<any>[] = [];
+        this.course.test.series.forEach(serie => {
+          serie.questions.forEach(question => {
+            obs.push(this.translationService.translate(question));
+            question.answers.forEach(answer => {
+              obs.push(this.translationService.translate(answer));
             });
           });
-          return forkJoin(obs);
-        }),
-        map(() => this.loading = false)
-      );
-    } else {
-      console.log('Create new course');
-      this.course = {
-        id: '',
-        dataRegion: 'Europe',
-        creationDate: new Date(),
-        lastUpdate: new Date(),
-        dataStatus: 'NEW',
-        version: new Date().getTime(),
-        name: 'Referee Level 1',
-        level: 1,
-        theme: 'blue',
+        });
+        return forkJoin(obs);
+      }),
+      map(() => this.loading = false)
+    );
+  }
+
+  private createNewCourse(): Observable<any>{
+    console.log('Create new course');
+    this.course = {
+      id: '',
+      dataRegion: 'Europe',
+      creationDate: new Date(),
+      lastUpdate: new Date(),
+      dataStatus: 'NEW',
+      version: new Date().getTime(),
+      name: 'Referee Level 1',
+      level: 1,
+      theme: 'blue',
+      enabled: true,
+      allowedAlone: true,
+      test: {
+        version: '1.0',
         enabled: true,
-        allowedAlone: true,
-        test: {
-          version: '1.0',
+        duration: 30,
+        durationUnit: 'm',
+        requiredScore: 23,
+        nbQuestion: 30,
+        supportedLanguages: ['en'],
+        series: [ {
           enabled: true,
-          duration: 30,
-          durationUnit: 'm',
-          requiredScore: 23,
+          requiredScore: 27,
+          passRequired: true,
+          questions: [],
           nbQuestion: 30,
-          supportedLanguages: ['en'],
-          series: [ {
-            enabled: true,
-            requiredScore: 27,
-            passRequired: true,
-            questions: [],
-            nbQuestion: 30,
-            selectionMode: 'RANDOM'
-          }]
-        }
-      };
-      return of({ error: null, data: this.course});
-    }
+          selectionMode: 'RANDOM'
+        }]
+      }
+    };
+    return of({ error: null, data: this.course});
   }
 
   saveNback() {
@@ -129,74 +128,60 @@ export class CourseEditComponent implements OnInit {
         return rcourse;
       }));
   }
+
   loadFile() {
     if (!this.readonly) {
       this.inputCourse.nativeElement.click();
     }
   }
 
-  importCourseFromCsv(event) {
+  importCourse(event) {
     if (!this.readonly) {
-      this.analayse(event.target.files[0]);
+      const reader: FileReader = new FileReader();
+      reader.onloadend = () => {
+        const importedCourse: Course = JSON.parse(reader.result.toString());
+        // console.log('Course imported: ', JSON.stringify(importedCourse, null, 2));
+        if (importedCourse.id === this.courseId) {
+          this.course =  importedCourse;
+          this.save().subscribe(() => {
+            this.toastController.create({
+              message: 'Couse updated.',
+              position: 'bottom',
+              duration: 4000,
+              translucent: true
+            }).then((alert) => alert.present());
+          });
+        }
+      };
+      reader.readAsText(event.target.files[0]);
     }
   }
 
-  private analayse(file) {
-    const reader: FileReader = new FileReader();
-    reader.onloadend = () => {
-      // console.log('analayse file: ', reader.result);
-      const data: any = JSON.parse(reader.result.toString());
-      // console.log('Imported course: ', JSON.stringify(data.course, null, 2));
-      this.course = { ...this.course, ...data.course };
-      console.log('Course imported: ', JSON.stringify(this.course, null, 2));
-      // console.log('translations: ', data.translations);
-      const obs: Observable<any>[] = [];
-      obs.push(this.save());
-      // tslint:disable-next-line:prefer-for-of
-      for (let i = 0; i < data.translations.length; i++) {
-        const translation = data.translations[i];
-        // tslint:disable-next-line:prefer-for-of
-        for (let j = 0; j < translation.texts.length; j++) {
-          const txt = translation.texts[j];
-          const trId: string = translation.id + '.' + txt.lang;
-          obs.push(this.translationService.get(trId).pipe(
-            flatMap((rtrad) => {
-              if (rtrad.data) {
-                rtrad.data.text = txt.text;
-                return this.translationService.save(rtrad.data);
-              } else {
-                const trad: Translation = {
-                  version: new Date().getTime(),
-                  creationDate: new Date(),
-                  lastUpdate: new Date(),
-                  dataStatus: 'NEW',
-                  dataRegion: 'Europe',
-                  id: trId,
-                  text: txt.text
-                };
-                return this.translationService.save(trad);
-              }
-            })
-          ));
-        }
-      }
-      forkJoin(obs).subscribe(() => console.log('Imported.'));
-    };
-    reader.readAsText(file);
+  exportCourse() {
+    // get a new instance of the course in order to clean the I18N texts
+    this.courseService.get(this.courseId).pipe(
+      map((rcourse) => {
+        // clean i18n texts
+        rcourse.data.test.series.forEach(serie => {
+          serie.questions.forEach(question => {
+            delete question.text;
+            question.answers.forEach(answer => delete answer.text);
+          });
+        });
+        const content = JSON.stringify(rcourse.data, null, 2);
+        const oMyBlob = new Blob([content], {type : 'text/csv'});
+        const url = URL.createObjectURL(oMyBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Course_${this.course.name.replace(' ', '_')}_${
+          this.dateService.date2string(new Date())}.json`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+      })
+    ).subscribe();
   }
 
-  exportCourse() {
-    const content = JSON.stringify(this.course, null, 2);
-    const oMyBlob = new Blob([content], {type : 'text/csv'});
-    const url = URL.createObjectURL(oMyBlob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Course_${this.course.name.replace(' ', '_')}_${
-      this.dateService.date2string(new Date())}.json`;
-    a.click();
-    window.URL.revokeObjectURL(url);
-    a.remove();
-  }
   onSwipe(event) {
     if (event.direction === 4) {
       this.navController.navigateRoot(`/course`);

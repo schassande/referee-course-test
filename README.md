@@ -54,14 +54,8 @@ Once you are granted as teacher, you can create a group sesssion. You can add te
 
 Here is the list of next developpements:
 
-* Translations import :
-  
-  1) Change the import format of translations to .csv file, => separate from test import
-  2) report of import / status of the translations per course
-
-* global switch of the language over the web site
-* Improve the session report per learner S26, R23, T30
+* Global switch of the language over the web site
 * Test the application with several series
-* Introduction log system
+* Use a log system
 * Sent an email to confirm the subscription
 * Sent a certificat when a learner passes an exam
