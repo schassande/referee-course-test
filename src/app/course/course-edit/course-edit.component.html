@@ -89,7 +89,7 @@
             <div *ngFor="let lang of course.test.supportedLanguages" style="text-align: left;">
                 <img src="assets/flags/{{ lang.toUpperCase() }}.png" height="30px">
             </div>
-            <ion-button slot="end" routerLink="/course/eximport/{{courseId}}">Manage</ion-button>
+            <ion-button slot="end" routerLink="/course/translation/{{courseId}}">Manage</ion-button>
         </ion-item>
         <ion-item-group style="border-left: 1px solid lightgrey; border-right: 1px solid lightgrey;" *ngFor="let serie of course.test.series; let index = index">
             <ion-item-divider color="light" style="text-align: center; font-size: 1.2em; padding: 10px;">

@@ -15,11 +15,11 @@ import { parse, parseLines } from 'dot-properties';
 
 
 @Component({
-  selector: 'app-course-ex-import',
-  templateUrl: './course-ex-import.component.html',
-  styleUrls: ['./course-ex-import.component.scss'],
+  selector: 'app-course-translation',
+  templateUrl: './course-translation.component.html',
+  styleUrls: ['./course-translation.component.scss'],
 })
-export class CourseExImportComponent implements OnInit {
+export class CourseTranslationComponent implements OnInit {
 
   loading = false;
   courseId: string;

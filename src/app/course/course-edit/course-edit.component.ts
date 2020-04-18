@@ -71,7 +71,7 @@ export class CourseEditComponent implements OnInit {
     );
   }
 
-  private createNewCourse(): Observable<any>{
+  private createNewCourse(): Observable<any> {
     console.log('Create new course');
     this.course = {
       id: '',

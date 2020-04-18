@@ -7,9 +7,8 @@ import { IonicModule } from '@ionic/angular';
 import { CourseRoutingModule } from './course-routing.module';
 import { CourseEditComponent } from './course-edit/course-edit.component';
 import { CourseListComponent } from './course-list/course-list.component';
-import { BrowserModule } from '@angular/platform-browser';
+import { CourseTranslationComponent } from './course-translation/course-translation.component';
 import { MainModule } from '../main/main.module';
-import { CourseExImportComponent } from './course-ex-import/course-ex-import.component';
 
 
 @NgModule({
@@ -20,7 +19,7 @@ import { CourseExImportComponent } from './course-ex-import/course-ex-import.com
     CourseRoutingModule,
     MainModule
   ],
-  declarations: [CourseEditComponent, CourseListComponent, CourseExImportComponent],
-  entryComponents: [CourseEditComponent, CourseListComponent, CourseExImportComponent]
+  declarations: [CourseEditComponent, CourseListComponent, CourseTranslationComponent],
+  entryComponents: [CourseEditComponent, CourseListComponent, CourseTranslationComponent]
 })
 export class CourseModule {}
