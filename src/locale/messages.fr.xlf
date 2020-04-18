@@ -502,6 +502,20 @@
           <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="course.translation.title" datatype="html">
+        <source>Test translation</source>
+        <target>Traduction test</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/course/course-translation/course-translation.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="course.translation.missing-translations" datatype="html">
+        <source>Missing translations</source>
+        <target>Traductions manquantes</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/course/course-translation/course-translation.component.html</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="session-edit.title" datatype="html">
         <source>Course session</source>
         <target>Configuration de session</target>
