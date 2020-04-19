@@ -417,13 +417,13 @@ export class UserService  extends RemotePersistentDataService<User> {
     }
 
     public findTeachers(text: string, region: DataRegion): Observable<ResponseWithData<User[]>> {
-        return forkJoin(
+        return forkJoin([
             this.query(this.getCollectionRef()
                 .where('dataRegion', '==', region)
                 .where('role', '==', 'ADMIN'), 'default'),
             this.query(this.getCollectionRef()
                 .where('dataRegion', '==', region)
-                .where('role', '==', 'TEACHER'), 'default'),
+                .where('role', '==', 'TEACHER'), 'default')]
         ).pipe(
             map((list) => this.mergeObservables(list)),
             map(ruser => {
