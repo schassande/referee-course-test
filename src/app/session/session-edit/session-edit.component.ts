@@ -1,3 +1,4 @@
+import { Category } from 'typescript-logging';
 import { ToastrService } from 'ngx-toastr';
 import { DurationUnit } from './../../model/model';
 import { UserService } from 'src/app/service/UserService';
@@ -16,6 +17,9 @@ import { Session, Course, User, SharedWith } from 'src/app/model/model';
 import { SessionService } from 'src/app/service/SessionService';
 import { TranslationService } from 'src/app/service/TranslationService';
 import * as moment from 'moment';
+import { logSession } from 'src/app/logging-config';
+
+const logger = new Category('edit', logSession);
 
 @Component({
   selector: 'app-session-edit',
@@ -61,7 +65,6 @@ export class SessionEditComponent implements OnInit {
   }
 
   ngOnInit() {
-    // this.helpService.setHelp('course-list');
     this.loadParams().pipe(
       flatMap(() => this.loadCourses()),
       flatMap(() => this.loadSession())
@@ -83,7 +86,7 @@ export class SessionEditComponent implements OnInit {
   }
 
   private loadSessionFromId(): Observable<any> {
-    console.log('load session by id: ' + this.sessionId);
+    logger.debug(() => 'load session by id: ' + this.sessionId);
     this.loading = true;
     return this.sessionService.get(this.sessionId).pipe(
       map((rses) => {
@@ -129,7 +132,7 @@ export class SessionEditComponent implements OnInit {
         if (!rses.error) {
           this.session = rses.data;
         }
-        // console.log('Session saved: ', this.session);
+        logger.debug(() => 'Session saved: ' + this.session);
         return rses;
       }));
   }
@@ -194,7 +197,7 @@ export class SessionEditComponent implements OnInit {
       this.session.courseName = null;
       this.course = null;
     }
-    console.log('onCourseIdChange(): ', this.session.courseName);
+    logger.debug(() => 'onCourseIdChange(): ' + this.session.courseName);
   }
 
   deleteTeacher(teacher: User, index: number) {

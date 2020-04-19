@@ -1,7 +1,11 @@
+import { logUser } from 'src/app/logging-config';
+import { Category } from 'typescript-logging';
 import { AppSettingsService } from './AppSettingsService';
 import { Injectable, EventEmitter, Type } from '@angular/core';
 import { User } from './../model/model';
 import * as firebase from 'firebase/app';
+
+const logger = new Category('connected', logUser);
 
 @Injectable({ providedIn: 'root' })
 export class ConnectedUserService {
@@ -28,7 +32,6 @@ export class ConnectedUserService {
       && this.currentUser.token && this.currentUser.token != null;
   }
   public getCurrentUser(): User {
-    // console.log('ConnectedUserService.getCurrentUser()=', this);
     return this.currentUser;
   }
   public getLang(): string {
@@ -39,18 +42,17 @@ export class ConnectedUserService {
 
   public userConnected(user: User, credential: firebase.auth.UserCredential) {
     this.currentUser = user;
-    // console.log('ConnectedUserService.userConnected', this);
     if (credential !== null || this.credential === null || this.credential.user.email !== user.email) {
       // set the new credential or clean if user is
       this.credential = credential;
     } // else keep the credential because it is same user
-    console.log('User connected: ' + this.currentUser.email);
+    logger.info(() => 'User connected: ' + this.currentUser.email);
     this.$userConnectionEvent.emit(this.currentUser);
   }
   public userDisconnected() {
     this.currentUser = null;
     // keep the credential in case of
-    console.log('User disconnected.');
+    logger.info(() => 'User disconnected.');
     this.$userConnectionEvent.emit(this.currentUser);
   }
 }

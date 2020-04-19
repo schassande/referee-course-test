@@ -61,13 +61,13 @@ export class UserService  extends RemotePersistentDataService<User> {
             return obs.pipe(
                 flatMap((userCred: firebase.auth.UserCredential) => {
                     // Store in application user datbase the firestore user id
-                    console.log('User has been created on firebase with the id: ', userCred.user.uid);
+                    this.logger.debug(() => 'User has been created on firebase with the id: ' + userCred.user.uid);
                     user.accountId = userCred.user.uid;
                     return super.save(user);
                 }),
                 flatMap((ruser) => {
                     if (ruser.data) {
-                        console.log('User has been created on user database with the id: ', ruser.data.id);
+                        this.logger.debug(() => 'User has been created on user database with the id: ' + ruser.data.id);
                         // Send an email to admin with the account to validate
                         this.sendNewAccountToAdmin(ruser.data.id);
                         this.sendNewAccountToUser(ruser.data.id);
@@ -76,12 +76,12 @@ export class UserService  extends RemotePersistentDataService<User> {
                             return this.autoLogin();
                         }
                     } else {
-                        console.log('Error on the user creation: ', ruser.error);
+                        this.logger.debug(() => 'Error on the user creation: ' + ruser.error);
                     }
                     return of(ruser);
                 }),
                 catchError((err) => {
-                    console.error('Error on the user creation: ', err);
+                    this.logger.error('Error on the user creation: ', err);
                     return of({ error: err, data: null});
                 }),
             );
@@ -99,7 +99,7 @@ export class UserService  extends RemotePersistentDataService<User> {
         return super.delete(id).pipe(
             flatMap( (res) => {
                 if (res.error != null) {
-                    console.log('Error on delete', res.error);
+                    this.logger.debug(() => 'Error on delete' + res.error);
                     return of (res);
                 } else {
                     // then delete the user from firestore user auth database
@@ -121,16 +121,16 @@ export class UserService  extends RemotePersistentDataService<User> {
     }
 
     public login(email: string, password: string): Observable<ResponseWithData<User>> {
-        // console.log('UserService.login(' + email + ', ' + password + ')');
+        this.logger.debug(() => 'UserService.login(' + email + ', ' + password + ')');
         let credential = null;
         return from(this.auth.signInWithEmailAndPassword(email, password)).pipe(
             flatMap( (cred: firebase.auth.UserCredential) => {
                 credential = cred;
-                // console.log('login: cred=', JSON.stringify(cred, null, 2));
+                this.logger.debug(() => 'login: cred=' + JSON.stringify(cred, null, 2));
                 return this.getByEmail(email);
             }),
             catchError((err) => {
-                // console.log('UserService.login(' + email + ', ' + password + ') error=', err);
+                this.logger.debug(() => 'UserService.login(' + email + ', ' + password + ') error=', err);
                 this.loadingController.dismiss(null);
                 console.error(err);
                 if (err.code !== 'auth/network-request-failed') {
@@ -139,7 +139,7 @@ export class UserService  extends RemotePersistentDataService<User> {
                 return of({ error: err, data: null});
             }),
             map( (ruser: ResponseWithData<User>) => {
-                // console.log('UserService.login(' + email + ', ' + password + ') ruser=', ruser);
+                this.logger.debug(() => 'UserService.login(' + email + ', ' + password + ') ruser=' + JSON.stringify(ruser, null, 2));
                 if (ruser.data) {
                     switch (ruser.data.accountStatus) {
                     case 'ACTIVE':
@@ -175,7 +175,7 @@ export class UserService  extends RemotePersistentDataService<User> {
     }
 
     public logout() {
-        console.log('UserService.logout()');
+        this.logger.info(() => 'UserService.logout()');
         this.connectedUserService.userDisconnected();
     }
 
@@ -193,19 +193,19 @@ export class UserService  extends RemotePersistentDataService<User> {
             flatMap((settings: LocalAppSettings) => {
                 const email = settings.lastUserEmail;
                 const password = settings.lastUserPassword;
-                // console.log('UserService.autoLogin(): lastUserEmail=' + email + ', lastUserPassword=' + password);
+                this.logger.debug(() => 'UserService.autoLogin(): lastUserEmail=' + email + ', lastUserPassword=' + password);
                 if (!email) {
                     loading.dismiss();
                     return of({ error: null, data: null});
                 }
                 if (!this.connectedUserService.isOnline() || settings.forceOffline) {
-                    console.log('UserService.autoLogin(): offline => connect with email only');
+                    this.logger.debug(() => 'UserService.autoLogin(): offline => connect with email only');
                     loading.dismiss();
                     return this.connectByEmail(email, password);
                 }
                 if (password) {
                     // password is defined => try to login
-                    // console.log('UserService.autoLogin(): login(' + email + ', ' + password + ')');
+                    this.logger.debug(() => 'UserService.autoLogin(): login(' + email + ', ' + password + ')');
                     return this.login(email, password).pipe(
                         map((ruser) =>  {
                             loading.dismiss();
@@ -220,7 +220,7 @@ export class UserService  extends RemotePersistentDataService<User> {
     }
 
     public resetPassword(email, sub: Subject<ResponseWithData<User>> = null) {
-        // console.log('Reset password of the account', email);
+        this.logger.debug(() => 'Reset password of the account ' + email);
         this.auth.sendPasswordResetEmail(email).then(() => {
             this.alertCtrl.create({message: 'An email has been sent to \'' + email + '\' to reset the password.'})
                 .then((alert) => alert.present());
@@ -234,7 +234,7 @@ export class UserService  extends RemotePersistentDataService<User> {
     public loginWithEmailNPassword(email: string,
                                    password: string,
                                    savePassword: boolean): Observable<ResponseWithData<User>> {
-        console.log('loginWithEmailNPassword(' + email + ', ' + password + ', ' + savePassword + ')');
+        this.logger.debug(() => 'loginWithEmailNPassword(' + email + ', ' + password + ', ' + savePassword + ')');
         return this.login(email, password).pipe(
             flatMap ( (ruser) => {
                 if (ruser.error) {
@@ -249,9 +249,9 @@ export class UserService  extends RemotePersistentDataService<User> {
             }),
             map( (ruser) => {
                 if (ruser.data) { // Login with success
-                    console.log('UserService.loginWithEmailNPassword(' + email + '): login with success');
+                    this.logger.debug(() => 'UserService.loginWithEmailNPassword(' + email + '): login with success');
                     if (savePassword) {
-                        console.log('UserService.askPasswordToLogin(' + email + '): store password.');
+                        this.logger.debug(() => 'UserService.askPasswordToLogin(' + email + '): store password.');
                         // The user is ok to store password in settings on local device
                         this.appSettingsService.setLastUser(email, password);
                     }
@@ -265,19 +265,20 @@ export class UserService  extends RemotePersistentDataService<User> {
         return this.appSettingsService.get().pipe(
             flatMap((appSettings) => {
                 if (email === appSettings.lastUserEmail && (password == null || password === appSettings.lastUserPassword)) {
-                    console.log('UserService.connectByEmail(' + email + ',' + password + '): password is valid => get user');
+                    this.logger.debug(() => 'UserService.connectByEmail(' + email + ',' + password + '): password is valid => get user');
                     return this.getByEmail(email);
                 } else {
-                    console.log('UserService.connectByEmail(' + email + ',' + password + '): wrong password.');
+                    this.logger.debug(() => 'UserService.connectByEmail(' + email + ',' + password + '): wrong password.');
                     return of({ error: null, data: null });
                 }
             }),
             map( (ruser: ResponseWithData<User>) => {
                 if (ruser.data) {
-                    console.log('UserService.connectByEmail(' + email + ',' + password + '): user found', ruser.data);
+                    this.logger.debug(() => 'UserService.connectByEmail(' + email + ',' + password + '): user found'
+                        + JSON.stringify(ruser.data, null, 2));
                     this.connectedUserService.userConnected(ruser.data, null);
                 } else {
-                    console.log('UserService.connectByEmail(' + email + ',' + password + '): fail.');
+                    this.logger.debug(() => 'UserService.connectByEmail(' + email + ',' + password + '): fail.');
                 }
                 return ruser;
             })
@@ -290,7 +291,7 @@ export class UserService  extends RemotePersistentDataService<User> {
     public getByEmail(email: string): Observable<ResponseWithData<User>> {
         return this.queryOne(this.getCollectionRef().where('email', '==', email), 'default').pipe(
             map((ruser => {
-                // console.log('UserService.getByEmail(' + email + ')=', ruser.data);
+                this.logger.debug(() => 'UserService.getByEmail(' + email + ')=' + JSON.stringify(ruser.data, null, 2));
                 return ruser;
             })),
             catchError((err) => {
@@ -315,11 +316,11 @@ export class UserService  extends RemotePersistentDataService<User> {
         return from(firebase.auth().signInWithPopup(authProvider)).pipe(
             flatMap( (cred: firebase.auth.UserCredential) => {
                 credential = cred;
-                console.log('authWith: cred=', JSON.stringify(cred, null, 2));
+                this.logger.debug(() => 'authWith: cred=' + JSON.stringify(cred, null, 2));
                 return this.getByEmail(cred.user.email);
             }),
             catchError((err) => {
-                // console.log('authWith error: ', err);
+                this.logger.error('authWith error: ', err);
                 return of({ error: err, data: null});
             }),
             flatMap( (ruser: ResponseWithData<User>) => {
@@ -330,7 +331,7 @@ export class UserService  extends RemotePersistentDataService<User> {
                 }
             }),
             map( (ruser: ResponseWithData<User>) => {
-                console.log('authWith user: ', JSON.stringify(ruser));
+                this.logger.debug(() => 'authWith user: ' + JSON.stringify(ruser));
                 if (ruser.data) {
                     this.connectedUserService.userConnected(ruser.data, credential);
                 }

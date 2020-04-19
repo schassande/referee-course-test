@@ -1,3 +1,5 @@
+import { logCourse } from 'src/app/logging-config';
+import { Category } from 'typescript-logging';
 import { LANGUAGES } from './../../model/model';
 import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
 import { TranslationService } from 'src/app/service/TranslationService';
@@ -12,6 +14,7 @@ import { Course, Translation, Translatable } from 'src/app/model/model';
 import { Component, OnInit, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 
 import * as csv from 'csvtojson';
+const logger = new Category('course-edit', logCourse);
 
 @Component({
   selector: 'app-course-edit',
@@ -51,7 +54,7 @@ export class CourseEditComponent implements OnInit {
   }
 
   private loadCourse(): Observable<any> {
-    console.log('load course by id: ' + this.courseId);
+    logger.debug(() => 'load course by id: ' + this.courseId);
     this.loading = true;
     return this.courseService.get(this.courseId).pipe(
       map((rcourse) => this.course = rcourse.data),
@@ -72,7 +75,7 @@ export class CourseEditComponent implements OnInit {
   }
 
   private createNewCourse(): Observable<any> {
-    console.log('Create new course');
+    logger.debug(() => 'Create new course');
     this.course = {
       id: '',
       dataRegion: 'Europe',
@@ -124,7 +127,7 @@ export class CourseEditComponent implements OnInit {
         if (!rcourse.error) {
           this.course = rcourse.data;
         }
-        console.log('Course saved: ', this.course);
+        logger.debug(() => 'Course saved: ' + this.course);
         return rcourse;
       }));
   }
@@ -140,7 +143,7 @@ export class CourseEditComponent implements OnInit {
       const reader: FileReader = new FileReader();
       reader.onloadend = () => {
         const importedCourse: Course = JSON.parse(reader.result.toString());
-        // console.log('Course imported: ', JSON.stringify(importedCourse, null, 2));
+        logger.debug(() => 'Course imported: ' + JSON.stringify(importedCourse, null, 2));
         if (importedCourse.id === this.courseId) {
           this.course =  importedCourse;
           this.save().subscribe(() => {

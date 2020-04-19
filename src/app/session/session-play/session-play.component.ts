@@ -1,3 +1,5 @@
+import { logSession } from 'src/app/logging-config';
+import { Category } from 'typescript-logging';
 import { ToastrService } from 'ngx-toastr';
 import { TestParticipantResult } from './../../model/model';
 import { ResponseWithData } from 'src/app/service/response';
@@ -16,6 +18,8 @@ import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
 import { ParticipantQuestionAnswerService } from 'src/app/service/ParticipantQuestionAnswerService';
 import { Course, DurationUnit, QuestionSerie, Question, Session, Translation, ParticipantQuestionAnswer } from 'src/app/model/model';
 import * as moment from 'moment';
+
+const logger = new Category('play', logSession);
 
 @Component({
   selector: 'app-session-play',
@@ -129,7 +133,7 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
   }
 
   autoClose() {
-    console.log('Auto close');
+    logger.debug(() => 'Auto close');
     this.session.status = 'CLOSED';
     this.save().pipe(
       flatMap(() => this.sessionService.computeLearnerScores(this.session, this.course)),
@@ -183,11 +187,11 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
   }
 
   nextNoAnswerQuestion() {
-    // console.log('nextNoAnswerQuestion()', this.nbQuestion, this.learnerAnswers.size, this.answerValue);
+    logger.debug(() => 'nextNoAnswerQuestion()' + this.nbQuestion + ' ' + this.learnerAnswers.size + ' ' + this.answerValue);
     if (this.nbQuestion > this.learnerAnswers.size) {
       while (this.answerValue !== '') {
         this.incQuestionIdx();
-        // console.log('nextNoAnswerQuestion() questionIdx=' + this.questionIdx + ', answerValue=' + this.answerValue);
+        logger.debug(() => 'nextNoAnswerQuestion() questionIdx=' + this.questionIdx + ', answerValue=' + this.answerValue);
       }
     }
   }
@@ -224,7 +228,7 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
         map((rpa) => {
           this.learnerAnswers.clear();
           rpa.data.forEach((pa) => {
-            // console.log('loadAnswers(): ', pa.questionId, pa);
+            logger.debug(() => 'loadAnswers(): ' + pa.questionId + ' ' + pa);
             this.learnerAnswers.set(pa.questionId, pa);
           });
           this.updateAnswer();
@@ -240,7 +244,7 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
     if (this.sessionExpired) {
       return;
     }
-    // console.log('answerSelected:', index);
+    logger.debug(() => 'answerSelected:' + index);
     let pa: ParticipantQuestionAnswer = this.learnerAnswers.get(this.getAnswerKey());
     if (pa) {
       pa.answerId = this.question.answers[index].answerId;
@@ -274,7 +278,7 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
       this.answerValue = '';
     }
     this.changeDetectorRef.detectChanges();
-    // console.log('updateAnswer(): ', this.getAnswerKey(), pa, this.answerValue);
+    logger.debug(() => 'updateAnswer(): ' + this.getAnswerKey() + ' ' + pa + ' ' + this.answerValue);
   }
 
   onSwipe(event) {
@@ -325,7 +329,7 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
         if (!rses.error) {
           this.session = rses.data;
         }
-        // console.log('Session saved: ', this.session);
+        logger.debug(() => 'Session saved: ' + this.session);
         return rses;
       }));
   }

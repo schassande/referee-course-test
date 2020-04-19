@@ -1,9 +1,14 @@
+import { logSession } from 'src/app/logging-config';
+import { Category } from 'typescript-logging';
 import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
 import { DateService } from 'src/app/service/DateService';
 import { AlertController, NavController } from '@ionic/angular';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { SessionService } from 'src/app/service/SessionService';
 import { Session, User } from 'src/app/model/model';
+
+const logger = new Category('list', logSession);
+
 
 @Component({
   selector: 'app-session-list',
@@ -69,7 +74,6 @@ export class SessionListComponent implements OnInit {
   }
 
   onSwipe(event) {
-    // console.log('onSwipe', event);
     if (event.direction === 4) {
       this.navController.navigateRoot(`/home`);
     }

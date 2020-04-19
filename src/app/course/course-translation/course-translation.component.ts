@@ -1,3 +1,4 @@
+import { Category } from 'typescript-logging';
 import { LANGUAGES } from './../../model/model';
 import { ResponseWithData } from 'src/app/service/response';
 import { map, flatMap } from 'rxjs/operators';
@@ -12,7 +13,9 @@ import { CourseService } from 'src/app/service/CourseService';
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 
 import { parse, parseLines } from 'dot-properties';
+import { logCourse } from 'src/app/logging-config';
 
+const logger = new Category('course-translation', logCourse);
 
 @Component({
   selector: 'app-course-translation',
@@ -57,7 +60,7 @@ export class CourseTranslationComponent implements OnInit {
   }
 
   loadCourse(): Observable<any> {
-    console.log('load course by id: ' + this.courseId);
+    logger.debug(() => 'load course by id: ' + this.courseId);
     this.loading = true;
     return this.courseService.get(this.courseId).pipe(
       map((rcourse) => this.course = rcourse.data),
@@ -92,7 +95,7 @@ export class CourseTranslationComponent implements OnInit {
         map((trans) => {
           const tid = this.translationService.getTranslationId(key, lang);
           if (!trans) {
-            // console.log('******** Missing ', tid);
+            logger.debug(() => '******** Missing ' + tid);
             this.missingTranslations[lang].push(key);
           }
         })
@@ -102,7 +105,7 @@ export class CourseTranslationComponent implements OnInit {
         this.percentTranslations[lang] = Math.round(100 - ((this.missingTranslations[lang].length * 100) / this.keys.length));
         this.nbMissingTranslations = this.course.test.supportedLanguages.map((lg) => this.missingTranslations[lg].length)
           .reduce((a, b) => a + b);
-        // console.log('######## ' + lang, this.percentTranslations[lang] + '%');
+        logger.debug(() => '######## ' + lang + ' ' + this.percentTranslations[lang] + '%');
       })
     );
   }
@@ -174,7 +177,7 @@ export class CourseTranslationComponent implements OnInit {
               obs.push(this.integrateTranslation(transId, text, nbs));
             } else {
               nbs[2]++;
-              console.log('Key ' + lineKey + ' for the language ' +  lineLang + ' has been ignored.');
+              logger.debug(() => 'Key ' + lineKey + ' for the language ' +  lineLang + ' has been ignored.');
             }
           }
         });
@@ -198,7 +201,7 @@ export class CourseTranslationComponent implements OnInit {
         if (rtrans.data) {
           translation.text = text;
           nbs[0]++;
-          // console.log('Update translation ', transId, ' with ', text);
+          logger.debug(() => 'Update translation ' + transId + ' with ' + text);
         } else {
           translation = {
             version: new Date().getTime(),
@@ -210,7 +213,7 @@ export class CourseTranslationComponent implements OnInit {
             text
           };
           nbs[1]++;
-          // console.log('NEW translation ', transId, ' with ', text);
+          logger.debug(() => 'NEW translation ' + transId + ' with ' + text);
         }
         return this.translationService.save(translation);
       })
@@ -242,7 +245,7 @@ export class CourseTranslationComponent implements OnInit {
         if (!rcourse.error) {
           this.course = rcourse.data;
         }
-        console.log('Course saved: ', this.course);
+        logger.debug(() => 'Course saved: ' + JSON.stringify(this.course, null, 2));
         return rcourse;
       }));
   }

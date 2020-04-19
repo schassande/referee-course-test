@@ -1,3 +1,5 @@
+import { logApp } from 'src/app/logging-config';
+import { Category } from 'typescript-logging';
 import { UserService } from 'src/app/service/UserService';
 import { Component, OnInit, LOCALE_ID, Inject } from '@angular/core';
 import { NavController, AlertController } from '@ionic/angular';
@@ -8,6 +10,8 @@ import { CourseService } from 'src/app/service/CourseService';
 import { DateService } from 'src/app/service/DateService';
 import { SessionService } from 'src/app/service/SessionService';
 import { Observable } from 'rxjs';
+
+const logger = new Category('home', logApp);
 
 @Component({
   selector: 'app-home',
@@ -54,7 +58,7 @@ export class HomeComponent implements OnInit {
     // Update UI by showing a button to notify the user they can add to home screen
       this.showInstallBtn = true;
     });
-    window.addEventListener('appinstalled', (event) => console.log('App installed'));
+    window.addEventListener('appinstalled', (event) => logger.info(() => 'App installed'));
     this.loadTeacherSessions();
     this.loadLearnerSessions();
     this.loadCourses().subscribe();
@@ -121,9 +125,9 @@ export class HomeComponent implements OnInit {
     this.deferredPrompt.userChoice
       .then((choiceResult) => {
         if (choiceResult.outcome === 'accepted') {
-          console.log('User accepted the prompt');
+          logger.debug(() => 'User accepted the prompt');
         } else {
-          console.log('User dismissed the prompt');
+          logger.debug(() => 'User dismissed the prompt');
         }
         this.deferredPrompt = null;
       });

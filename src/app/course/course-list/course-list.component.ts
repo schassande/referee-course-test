@@ -1,9 +1,13 @@
+import { Category } from 'typescript-logging';
+import { logCourse } from 'src/app/logging-config';
 import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
 import { DateService } from 'src/app/service/DateService';
 import { AlertController, NavController } from '@ionic/angular';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Course } from 'src/app/model/model';
 import { CourseService } from 'src/app/service/CourseService';
+
+const logger = new Category('course-list', logCourse);
 
 @Component({
   selector: 'app-course-list',
@@ -35,6 +39,7 @@ export class CourseListComponent implements OnInit {
     this.searchCourses();
   }
   searchCourses(forceServer: boolean = false, event: any = null) {
+    logger.debug(() => 'searchCourses ' + this.searchInput);
     this.courseService.search(this.searchInput, forceServer ? 'server' : 'default').subscribe((rcourse) => {
       this.courses = rcourse.data;
     });
@@ -68,7 +73,7 @@ export class CourseListComponent implements OnInit {
   }
 
   onSwipe(event) {
-    // console.log('onSwipe', event);
+    logger.debug(() => 'onSwipe' + event);
     if (event.direction === 4) {
       this.navController.navigateRoot(`/home`);
     }

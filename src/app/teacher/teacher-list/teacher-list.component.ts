@@ -1,3 +1,4 @@
+import { Category } from 'typescript-logging';
 import { DateService } from 'src/app/service/DateService';
 import { UserSelectorComponent } from './../../main/widget/user-selector-component';
 import { User, SharedWith } from 'src/app/model/model';
@@ -5,6 +6,9 @@ import { AlertController, NavController, ModalController } from '@ionic/angular'
 import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
 import { UserService } from 'src/app/service/UserService';
 import { Component, OnInit } from '@angular/core';
+import { logTeacher } from 'src/app/logging-config';
+
+const logger = new Category('play', logTeacher);
 
 @Component({
   selector: 'app-teacher-list',

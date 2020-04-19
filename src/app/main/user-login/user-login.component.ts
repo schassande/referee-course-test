@@ -1,3 +1,4 @@
+import { Category } from 'typescript-logging';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { AppSettingsService } from 'src/app/service/AppSettingsService';
 import { LocalAppSettings } from 'src/app/model/settings';
@@ -9,6 +10,9 @@ import { Subject, from } from 'rxjs';
 import { NavController, LoadingController, AlertController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
 import { UserService } from 'src/app/service/UserService';
+import { logUser } from 'src/app/logging-config';
+
+const logger = new Category('login', logUser);
 
 @Component({
   selector: 'app-user-login',
@@ -39,7 +43,7 @@ export class UserLoginComponent implements OnInit {
       map((settings: LocalAppSettings) => {
         this.email = settings.lastUserEmail;
         this.password = settings.lastUserPassword;
-        // console.log('Set email and password from local settings: ', this.email, this.password);
+        logger.debug(() => 'Set email and password from local settings: ' + this.email + ' ' + this.password);
       })).subscribe();
   }
 

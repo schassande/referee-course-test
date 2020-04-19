@@ -1,3 +1,5 @@
+import { logApp } from 'src/app/logging-config';
+import { Category } from 'typescript-logging';
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { AlertController, ToastController, NavController } from '@ionic/angular';
@@ -10,6 +12,7 @@ import { User } from 'src/app/model/model';
 
 import { environment } from 'src/environments/environment';
 
+const logger = new Category('settings', logApp);
 
 /**
  * Generated class for the SettingsPage page.
@@ -116,7 +119,7 @@ export class SettingsPage implements OnInit {
 
   toggleDebugInfo() {
     this.showDebugInfo = ! this.showDebugInfo;
-    console.log('this.showDebugInfo =', this.showDebugInfo);
+    logger.debug(() => 'this.showDebugInfo =' + this.showDebugInfo);
   }
 
   onNbPeriodChange() {
@@ -132,15 +135,15 @@ export class SettingsPage implements OnInit {
     this.deferredPrompt.userChoice
       .then((choiceResult) => {
         if (choiceResult.outcome === 'accepted') {
-          console.log('User accepted the prompt');
+          logger.debug(() => 'User accepted the prompt');
         } else {
-          console.log('User dismissed the prompt');
+          logger.debug(() => 'User dismissed the prompt');
         }
         this.deferredPrompt = null;
       });
   }
   onSwipe(event) {
-    // console.log('onSwipe', event);
+    logger.debug(() => 'onSwipe ' + event);
     if (event.direction === 4) {
       this.navController.navigateRoot(`/home`);
     }

@@ -1,3 +1,5 @@
+import { Category } from 'typescript-logging';
+import { logUser } from 'src/app/logging-config';
 import { Component, OnInit } from '@angular/core';
 import { map, flatMap } from 'rxjs/operators';
 import { ActivatedRoute, ParamMap } from '@angular/router';
@@ -7,8 +9,8 @@ import { ResponseWithData } from 'src/app/service/response';
 import { UserService } from 'src/app/service/UserService';
 import { User, CONSTANTES } from 'src/app/model/model';
 
-
 import { PhotoEvent } from 'src/app/main/widget/camera-icon-component';
+const logger = new Category('edit', logUser);
 
 /**
  * Generated class for the UserNewPage page.
@@ -53,7 +55,7 @@ export class UserEditPage implements OnInit {
               });
             } else {
               this.user = res.data;
-              console.log('load user: ', this.user);
+              logger.debug(() => 'load user: ' + JSON.stringify(this.user, null, 2));
               this.ensureDataSharing();
             }
           });
@@ -66,7 +68,7 @@ export class UserEditPage implements OnInit {
 
   private ensureDataSharing() {
     if (!this.user.dataSharingAgreement) {
-      console.log('Add dataSharingAgreement field to the existing user.');
+      logger.debug(() => 'Add dataSharingAgreement field to the existing user.');
       this.user.dataSharingAgreement = {
         personnalInfoSharing: 'YES',
         photoSharing: 'YES',
@@ -127,17 +129,17 @@ export class UserEditPage implements OnInit {
             this.saving = false;
             this.error = response.error.error;
             if (response.error.code === 'auth/email-already-in-use') {
-              console.log('The email addresse is already used.');
+              logger.debug(() => 'The email addresse is already used.');
               this.toastController.create({ message: 'The email addresse is already used: ' + this.user.email, duration: 10000})
                 .then((toast) => toast.present());
             } else {
-              console.log('Error', response.error);
+              logger.warn(() => 'Error' + response.error);
               this.toastController.create({ message: 'Error when saving the user info: ' + response.error, duration: 10000})
                 .then((toast) => toast.present());
             }
           } else {
             this.user = response.data;
-            console.log('Saved user: ', this.user);
+            logger.debug(() => 'Saved user: ' + JSON.stringify(this.user, null, 2));
             if (this.user.accountStatus === 'VALIDATION_REQUIRED') {
               this.navController.navigateRoot('/user/waiting-validation');
             } else {
