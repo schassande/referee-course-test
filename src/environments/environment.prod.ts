@@ -8,5 +8,5 @@ export const environment = {
     storageBucket: 'referee-course-test.appspot.com',
     messagingSenderId: '18715023816'
   },
-  version: '1.0.6-2020-04-19T18:16:18.442Z'
+  version: '1.0.7-2020-04-19T20:06:48.722Z'
 };
