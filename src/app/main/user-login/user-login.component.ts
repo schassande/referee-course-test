@@ -43,7 +43,7 @@ export class UserLoginComponent implements OnInit {
       map((settings: LocalAppSettings) => {
         this.email = settings.lastUserEmail;
         this.password = settings.lastUserPassword;
-        logger.debug(() => 'Set email and password from local settings: ' + this.email + ' ' + this.password);
+        // logger.debug(() => 'Set email and password from local settings: ' + this.email + ' ' + this.password);
       })).subscribe();
   }
 

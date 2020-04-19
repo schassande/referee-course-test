@@ -136,19 +136,19 @@ export class SessionService extends RemotePersistentDataService<Session> {
             const rightAnswer = question.answers.filter(answer => answer.right);
             if (rightAnswer && rightAnswer.length && rightAnswer[0].answerId === pa.answerId) {
               if (pa.responseTime.getTime() < session.expireDate.getTime()) {
-                this.logger.debug(() => 'answer ' + pa.answerId + ' is good and on time');
+                // this.logger.debug(() => 'answer ' + pa.answerId + ' is good and on time');
                 serieResult.score += rightAnswer[0].point;
               } else {
-                this.logger.debug(() => 'answer ' + pa.answerId + ' is good but late');
+                // this.logger.debug(() => 'answer ' + pa.answerId + ' is good but late');
               }
             } else {
-              this.logger.debug(() => 'answer ' + pa.answerId + ' is wrong');
+              // this.logger.debug(() => 'answer ' + pa.answerId + ' is wrong');
             }
           } else {
-            this.logger.debug(() => 'computeNbRightAnswer: no response for question ' + question.questionId);
+            // this.logger.debug(() => 'computeNbRightAnswer: no response for question ' + question.questionId);
           }
         } else {
-          this.logger.debug(() => 'The question ' + question.questionId + ' has not been selected');
+          // this.logger.debug(() => 'The question ' + question.questionId + ' has not been selected');
         }
       });
       serieResult.pass = serieResult.score >= serie.requiredScore;
@@ -205,7 +205,7 @@ export class SessionService extends RemotePersistentDataService<Session> {
         const retainQuestionIds: string[] = serie.questions
           .filter(question => question.required)
           .map(question => question.questionId);
-        this.logger.debug(() => retainQuestionIds.length + ' questions required from serie ');
+        // this.logger.debug(() => retainQuestionIds.length + ' questions required from serie ');
         if (serie.nbQuestion > retainQuestionIds.length) {
           // there is not enough questions => look for the not required questions
           const othersQuestions: string[] = serie.questions
@@ -215,12 +215,12 @@ export class SessionService extends RemotePersistentDataService<Session> {
           while (serie.nbQuestion > retainQuestionIds.length) {
             const idx = (Math.random() * 100000) % othersQuestions.length;
             const retainQuestionId: string = othersQuestions.splice(idx, 1)[0];
-            this.logger.debug(() => 'Add question ' + retainQuestionId);
+            // this.logger.debug(() => 'Add question ' + retainQuestionId);
             retainQuestionIds.push(retainQuestionId);
           }
         }
         retainQuestionIds.forEach(qId => session.questionIds.push(qId));
-        this.logger.debug(() => retainQuestionIds.length + ' questions retains for the serie ');
+        // this.logger.debug(() => retainQuestionIds.length + ' questions retains for the serie ');
         this.shuffleArray(session.questionIds);
       } else if (serie.selectionMode === 'ALL') {
         serie.questions.forEach(question => session.questionIds.push(question.questionId));

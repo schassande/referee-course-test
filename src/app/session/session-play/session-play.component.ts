@@ -133,7 +133,7 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
   }
 
   autoClose() {
-    logger.debug(() => 'Auto close');
+    // logger.debug(() => 'Auto close');
     this.session.status = 'CLOSED';
     this.save().pipe(
       flatMap(() => this.sessionService.computeLearnerScores(this.session, this.course)),
@@ -187,11 +187,11 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
   }
 
   nextNoAnswerQuestion() {
-    logger.debug(() => 'nextNoAnswerQuestion()' + this.nbQuestion + ' ' + this.learnerAnswers.size + ' ' + this.answerValue);
+    // logger.debug(() => 'nextNoAnswerQuestion()' + this.nbQuestion + ' ' + this.learnerAnswers.size + ' ' + this.answerValue);
     if (this.nbQuestion > this.learnerAnswers.size) {
       while (this.answerValue !== '') {
         this.incQuestionIdx();
-        logger.debug(() => 'nextNoAnswerQuestion() questionIdx=' + this.questionIdx + ', answerValue=' + this.answerValue);
+        // logger.debug(() => 'nextNoAnswerQuestion() questionIdx=' + this.questionIdx + ', answerValue=' + this.answerValue);
       }
     }
   }
@@ -228,7 +228,7 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
         map((rpa) => {
           this.learnerAnswers.clear();
           rpa.data.forEach((pa) => {
-            logger.debug(() => 'loadAnswers(): ' + pa.questionId + ' ' + pa);
+            // logger.debug(() => 'loadAnswers(): ' + pa.questionId + ' ' + pa);
             this.learnerAnswers.set(pa.questionId, pa);
           });
           this.updateAnswer();
@@ -244,7 +244,7 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
     if (this.sessionExpired) {
       return;
     }
-    logger.debug(() => 'answerSelected:' + index);
+    // logger.debug(() => 'answerSelected:' + index);
     let pa: ParticipantQuestionAnswer = this.learnerAnswers.get(this.getAnswerKey());
     if (pa) {
       pa.answerId = this.question.answers[index].answerId;
@@ -278,7 +278,7 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
       this.answerValue = '';
     }
     this.changeDetectorRef.detectChanges();
-    logger.debug(() => 'updateAnswer(): ' + this.getAnswerKey() + ' ' + pa + ' ' + this.answerValue);
+    // logger.debug(() => 'updateAnswer(): ' + this.getAnswerKey() + ' ' + pa + ' ' + this.answerValue);
   }
 
   onSwipe(event) {
@@ -329,7 +329,7 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
         if (!rses.error) {
           this.session = rses.data;
         }
-        logger.debug(() => 'Session saved: ' + this.session);
+        // logger.debug(() => 'Session saved: ' + this.session);
         return rses;
       }));
   }

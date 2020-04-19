@@ -125,9 +125,9 @@ export class HomeComponent implements OnInit {
     this.deferredPrompt.userChoice
       .then((choiceResult) => {
         if (choiceResult.outcome === 'accepted') {
-          logger.debug(() => 'User accepted the prompt');
+          // logger.debug(() => 'User accepted the prompt');
         } else {
-          logger.debug(() => 'User dismissed the prompt');
+          // logger.debug(() => 'User dismissed the prompt');
         }
         this.deferredPrompt = null;
       });

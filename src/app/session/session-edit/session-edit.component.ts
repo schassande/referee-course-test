@@ -86,7 +86,7 @@ export class SessionEditComponent implements OnInit {
   }
 
   private loadSessionFromId(): Observable<any> {
-    logger.debug(() => 'load session by id: ' + this.sessionId);
+    // logger.debug(() => 'load session by id: ' + this.sessionId);
     this.loading = true;
     return this.sessionService.get(this.sessionId).pipe(
       map((rses) => {
@@ -132,7 +132,7 @@ export class SessionEditComponent implements OnInit {
         if (!rses.error) {
           this.session = rses.data;
         }
-        logger.debug(() => 'Session saved: ' + this.session);
+        // logger.debug(() => 'Session saved: ' + this.session);
         return rses;
       }));
   }
@@ -197,7 +197,7 @@ export class SessionEditComponent implements OnInit {
       this.session.courseName = null;
       this.course = null;
     }
-    logger.debug(() => 'onCourseIdChange(): ' + this.session.courseName);
+    // logger.debug(() => 'onCourseIdChange(): ' + this.session.courseName);
   }
 
   deleteTeacher(teacher: User, index: number) {

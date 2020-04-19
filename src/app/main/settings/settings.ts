@@ -119,7 +119,7 @@ export class SettingsPage implements OnInit {
 
   toggleDebugInfo() {
     this.showDebugInfo = ! this.showDebugInfo;
-    logger.debug(() => 'this.showDebugInfo =' + this.showDebugInfo);
+    // logger.debug(() => 'this.showDebugInfo =' + this.showDebugInfo);
   }
 
   onNbPeriodChange() {
@@ -135,15 +135,15 @@ export class SettingsPage implements OnInit {
     this.deferredPrompt.userChoice
       .then((choiceResult) => {
         if (choiceResult.outcome === 'accepted') {
-          logger.debug(() => 'User accepted the prompt');
+          // .debug(() => 'User accepted the prompt');
         } else {
-          logger.debug(() => 'User dismissed the prompt');
+         //  logger.debug(() => 'User dismissed the prompt');
         }
         this.deferredPrompt = null;
       });
   }
   onSwipe(event) {
-    logger.debug(() => 'onSwipe ' + event);
+    // logger.debug(() => 'onSwipe ' + event);
     if (event.direction === 4) {
       this.navController.navigateRoot(`/home`);
     }
