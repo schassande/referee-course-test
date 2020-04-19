@@ -130,7 +130,7 @@ export class UserService  extends RemotePersistentDataService<User> {
                 return this.getByEmail(email);
             }),
             catchError((err) => {
-                this.logger.debug(() => 'UserService.login(' + email + ', ' + password + ') error=', err);
+                this.logger.error('UserService.login(' + email + ', ' + password + ') error=', err);
                 this.loadingController.dismiss(null);
                 console.error(err);
                 if (err.code !== 'auth/network-request-failed') {
