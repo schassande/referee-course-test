@@ -23,6 +23,7 @@ Features :
 * During the creation of a session, the application selects the required questions and some randomly questions to reach the number of questions by each serie.
 * The application is open source and free.
 * The application is available in several languages: English, French.
+* The application sends an email to confirm the subscription.
 * The application has nothing specific to the referee aspect. It could be used to run general online exams.
 
 ### How control a session as teacher
@@ -56,5 +57,4 @@ Here is the list of next developpements:
 
 * Global switch of the language over the web site
 * Test the application with several series
-* Sent an email to confirm the subscription
 * Sent a certificat when a learner passes an exam

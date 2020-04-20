@@ -42,6 +42,7 @@
         "@ionic/angular": "^5.0.0",
         "@ionic/pwa-elements": "^1.5.1",
         "@ionic/storage": "^2.2.0",
+        "@types/nodemailer": "^6.4.0",
         "chart.js": "^2.9.3",
         "cordova-sqlite-storage": "^5.0.0",
         "core-js": "^2.5.4",

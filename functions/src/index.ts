@@ -1,3 +1,3 @@
-import { sendEmailConfirmation } from './user';
+import { sendEmailConfirmation as _sendEmailConfirmation } from './user';
 
-export const sendEmailConfirmSubscribe = sendEmailConfirmation;
+export const sendEmailConfirmation = _sendEmailConfirmation;

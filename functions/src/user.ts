@@ -1,5 +1,4 @@
 import * as functions from 'firebase-functions';
-/*
 import * as nodemailer from 'nodemailer';
 
 const gmailEmail = functions.config().gmail.email;
@@ -11,7 +10,7 @@ const mailTransport = nodemailer.createTransport({
     pass: gmailPassword,
   },
 });
-*/
+
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
 //
@@ -22,32 +21,33 @@ const mailTransport = nodemailer.createTransport({
 // TODO: Configure the `gmail.email` and `gmail.password` Google Cloud environment variables.
 
 // Sends an email confirmation when a user changes his mailing list subscription.
-export const sendEmailConfirmation = functions.firestore.document('/User/{uid}').onCreate(async (change) => {
-    console.log('user created: ' + JSON.stringify(change, null, 2));
-});
-/*
-    const val = change.val;
+export const sendEmailConfirmation = functions.firestore.document('User/{uid}').onCreate(async (snap, context) => {
+  // get user detail
+  const user: any = snap.data();
+  const email = user.email;
+  const firstName = user.firstName;
+  const lastName = user.lastName;
 
-
-  const mailOptions: any = {
-    from: '"CoachReferee" <coachreferee@gmail.com>',
-    to: val.email,
-  };
-
-  const subscribed = val.subscribedToMailingList;
 
   // Building Email message.
-  mailOptions.subject = subscribed ? 'Thanks and Welcome!' : 'Sad to see you go :`(';
-  mailOptions.text = subscribed ?
-      'Thanks you for subscribing to our referee exam application.' :
-      'I hereby confirm that your account has been dropped.';
-  
+  const mailOptions: any = {
+    from: `"CoachReferee" <${gmailEmail}>`,
+    to: email,
+    bcc: gmailEmail,
+    subject: 'Welcome CoachReferee Exam!',
+    html : `Hi ${firstName} ${lastName},<br>
+<p>Thanks you for subscribing to our referee exam application.<br>
+Please visit our application: <a href="https://exam.coachreferee.com">https://exam.coachreferee.com</a>.</p>
+<br>
+Best regards,<br>
+CoachReferee Examinator`
+  };
+  console.log('Sending message: ' + JSON.stringify(mailOptions, null, 2));
   try {
     await mailTransport.sendMail(mailOptions);
-    console.log(`New ${subscribed ? '' : 'un'}subscription confirmation email sent to:`, val.email);
+    console.log('New subscription confirmation email sent to:' + email);
   } catch(error) {
     console.error('There was an error while sending the email:', error);
   }
   return null;
 });
-*/
