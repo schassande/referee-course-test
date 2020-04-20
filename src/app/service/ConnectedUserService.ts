@@ -46,13 +46,13 @@ export class ConnectedUserService {
       // set the new credential or clean if user is
       this.credential = credential;
     } // else keep the credential because it is same user
-    // logger.info(() => 'User connected: ' + this.currentUser.email);
+    logger.info(() => 'User connected: ' + this.currentUser.email);
     this.$userConnectionEvent.emit(this.currentUser);
   }
   public userDisconnected() {
     this.currentUser = null;
     // keep the credential in case of
-    // logger.info(() => 'User disconnected.');
+    logger.info(() => 'User disconnected.');
     this.$userConnectionEvent.emit(this.currentUser);
   }
 }

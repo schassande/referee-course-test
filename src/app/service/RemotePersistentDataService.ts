@@ -44,7 +44,7 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
         if (id == null || id === '-1' || id === '') {
             return of({ error: null, data: null});
         }
-        // this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + '].get(' + id + ')');
+        this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + '].get(' + id + ')');
         return this.fireStoreCollection.doc<D>(id).get().pipe(
             catchError((err) => {
                 return of({ error: err, data: null});
@@ -95,11 +95,11 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
             }
             const docRef = this.fireStoreCollection.doc(data.id);
             // Get its id and set the id field
-            // this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + ']: Creating objet with new id: ' + data.id);
+            this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + ']: Creating objet with new id: ' + data.id);
             return this.manageWritePromise(docRef.set(data), data);
 
         } else {
-            // this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + ']: Saving: ' + data.id);
+            this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + ']: Saving: ' + data.id);
             data.dataStatus = 'CLEAN';
             data.lastUpdate = new Date();
             data.version ++;
@@ -109,22 +109,22 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
 
     manageWritePromise(promise: any, data: D): Observable<ResponseWithData<D>> {
         if (this.appSettingsService.settings.forceOffline) {
-            // this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + '](' + data.id
-            //     + '): offline mode, remote action is queued.');
+            this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + '](' + data.id
+                 + '): offline mode, remote action is queued.');
             // store the data but don't wait the end because the promise is resolved only when data are store on remote server
             promise.then((value) => {
                 // TODO emit an event to show data are synchronised.
-                // this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + '](' + data.id + ') data pushed on server.');
+                this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + '](' + data.id + ') data pushed on server.');
             });
             return of({ error: null, data});
         } else {
-            // this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + '](' + data.id
-             //    + '): online mode, wait server response.');
+            this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + '](' + data.id
+                + '): online mode, wait server response.');
             // Online mode, wait server response
             return from(promise).pipe(
                 map( () => {
-                    // this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + '](' + data.id
-                    //     + ') data pushed on server now.');
+                    this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + '](' + data.id
+                         + ') data pushed on server now.');
                     return { error: null, data};
                 }),
                 catchError((err) => {
@@ -140,7 +140,7 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
                 return from(value.get());
             }),
             catchError((err) => {
-                // this.logger.error('', err);
+                this.logger.error('', err);
                 return of({ error: err, data: null});
             }),
             map(this.docSnapToResponse.bind(this))
@@ -149,7 +149,7 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
 
     protected docSnapNTToResponse(docSnap: firestore.DocumentSnapshot): ResponseWithData<D> {
         const data: D = docSnap && docSnap.exists ? docSnap.data() as D : null;
-        // this.logger.debug(() => 'load item ' + docSnap.id + ' exists=' + docSnap.exists + ' + data=' + data);
+        this.logger.debug(() => 'load item ' + docSnap.id + ' exists=' + docSnap.exists + ' + data=' + data);
         if (data) {
             // store id inside persistent object
             data.id = docSnap.id;
@@ -160,7 +160,7 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
 
     protected docSnapToResponse(docSnap: DocumentSnapshot<D>): ResponseWithData<D> {
         const data: D = docSnap && docSnap.exists ? docSnap.data() : null;
-        // this.logger.debug(() => 'load item ' + docSnap.id + ' exists=' + docSnap.exists + ', data=' + JSON.stringify(data, null, 2));
+        this.logger.debug(() => 'load item ' + docSnap.id + ' exists=' + docSnap.exists + ', data=' + JSON.stringify(data, null, 2));
         if (data) {
             // store id inside persistent object
             data.id = docSnap.id;
@@ -172,27 +172,27 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
     private voidToObs(prom: Promise<void>, data: D): Observable<ResponseWithData<D>> {
         return from(prom).pipe(
             catchError((err) => {
-                // this.logger.error('', err);
+                this.logger.error('', err);
                 return of({ error: err, data: null});
             }),
             map(() => {
-                // this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + '].voidToObs(' + data.id + ')');
+                this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + '].voidToObs(' + data.id + ')');
                 return { error: null, data};
             })
         );
     }
     public all(): Observable<ResponseWithData<D[]>> {
-        // this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + '].all()');
+        this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + '].all()');
         return from(this.getCollectionRef().get()).pipe(
             map((qs: QuerySnapshot<D>) => this.snapshotToObs(qs)),
             catchError((err) => {
-                // this.logger.error('', err);
+                this.logger.error('', err);
                 return of({ error: err, data: null});
             })
         );
     }
     public allO(options: 'default' | 'server' | 'cache'): Observable<ResponseWithData<D[]>> {
-        // this.logger.debug(() => `DatabaseService[${this.getLocalStoragePrefix()}].all(${options})`);
+        this.logger.debug(() => `DatabaseService[${this.getLocalStoragePrefix()}].all(${options})`);
         let adjustedOptions = options;
         return this.appSettingsService.get().pipe(
             flatMap((las) => {
@@ -203,7 +203,7 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
             }),
             map((qs: QuerySnapshot<D>) => this.snapshotToObs(qs)),
             catchError((err) => {
-                // this.logger.error('', err);
+                this.logger.error('', err);
                 return of({ error: err, data: null});
             })
         );
@@ -255,12 +255,12 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
                 if (adjustedOptions === 'default') {
                     adjustedOptions = las.forceOffline ? 'cache' : 'server';
                 }
-                // this.logger.debug('query' + JSON.stringify(adjustedOptions, null, 2));
+                this.logger.debug(() => 'query' + JSON.stringify(adjustedOptions, null, 2));
                 return from(query.get({ source: adjustedOptions}));
             }),
             map((qs: QuerySnapshot<D>) => this.snapshotToObs(qs)),
             catchError((err) => {
-                // this.logger.error('', err);
+                this.logger.error('', err);
                 return of({ error: err, data: null});
             })
         );
@@ -276,7 +276,7 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
                 return from(query.limit(1).get({ source: options}));
             }),
             catchError((err) => {
-                // this.logger.error('', err);
+                this.logger.error('', err);
                 return of({ error: err, data: null});
             }),
             map(this.snapshotOneToObs.bind(this))
@@ -284,18 +284,18 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
     }
 
     public delete(id: string): Observable<Response> {
-        // this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + '].delete(' + id + ')');
+        this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + '].delete(' + id + ')');
         try {
             this.fireStoreCollection.doc(id).delete();
             return of({ error: null});
         } catch (err) {
-            // this.logger.error('', err);
+            this.logger.error('', err);
             return of({ error: err});
         }
     }
 
     public update(id: string, updater: PersistentDataUpdater<D>): Observable<ResponseWithData<D>> {
-        // this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + '].update(' + id + ')');
+        this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + '].update(' + id + ')');
         return this.get(id).pipe(
             flatMap((response: ResponseWithData<D>) => {
                 if (response.error) {
@@ -325,14 +325,14 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
 
     public preload(): Observable<Response> {
         if (this.preloaded) {
-            // this.logger.debug(() => 'preload[' + this.getLocalStoragePrefix() + ']: already cached');
+            this.logger.debug(() => 'preload[' + this.getLocalStoragePrefix() + ']: already cached');
             return of({ error: null});
         } else {
             let toast = null;
             return this.allO('cache').pipe(
                 flatMap( (resL) => {
                     if (resL.data.length === 0) {
-                        // this.logger.debug(() => 'preload[' + this.getLocalStoragePrefix() + ']: Loading from server');
+                        this.logger.debug(() => 'preload[' + this.getLocalStoragePrefix() + ']: Loading from server');
                         this.toastController.dismiss().then(() => {
                             this.toastController.create({ message: 'Loading ' + this.getLocalStoragePrefix() + 's...', position: 'bottom'})
                                 .then((alert) => {
@@ -347,13 +347,13 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
                             return of({ error: null});
                         }));
                     } else {
-                        // this.logger.debug(() => 'preload[' + this.getLocalStoragePrefix() + ']: already cached by firestore');
+                        this.logger.debug(() => 'preload[' + this.getLocalStoragePrefix() + ']: already cached by firestore');
                         this.preloaded = true;
                         return of({ error: null});
                     }
                 }),
                 catchError((err) => {
-                    // this.logger.error('', err);
+                    this.logger.error('', err);
                     return of({ error: err});
                 })
             ).pipe(

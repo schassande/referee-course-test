@@ -14,6 +14,7 @@
         "post-build": "node ./clean.apikey.js",
         "build-i18n:en": "ng build --output-path=www/en --aot --prod --base-href /en/ --i18n-file=src/locale/messages.en.xlf --i18n-format=xlf --i18n-locale=en",
         "build-i18n:fr": "ng build --output-path=www/fr --aot --prod --base-href /fr/ --i18n-file=src/locale/messages.fr.xlf --i18n-format=xlf --i18n-locale=fr",
+        "build-test": "ng build --output-path=www/test --aot --prod --base-href /test/ --i18n-file=src/locale/messages.en.xlf --i18n-format=xlf --i18n-locale=en",
         "build-i18n": "npm run pre-build && npm run build-i18n:en && npm run build-i18n:fr && npm run post-build",
         "commit-version": "git commit -a -m 'version'",
         "deploy": "firebase deploy --only hosting",
@@ -21,7 +22,8 @@
         "build-deploy": "npm run build && npm run deploy",
         "release-patch": "npm version patch && npm run build-deploy && npm run commit-version",
         "release-minor": "npm version minor && npm run build-deploy && npm run commit-version",
-        "release-major": "npm version major && npm run build-deploy && npm run commit-version"
+        "release-major": "npm version major && npm run build-deploy && npm run commit-version",
+        "deploy-test": "npm run pre-build && npm run build-test && npm run post-build && npm run deploy"
     },
     "private": true,
     "dependencies": {

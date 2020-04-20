@@ -54,7 +54,7 @@ export class CourseEditComponent implements OnInit {
   }
 
   private loadCourse(): Observable<any> {
-    // logger.debug(() => 'load course by id: ' + this.courseId);
+    logger.debug(() => 'load course by id: ' + this.courseId);
     this.loading = true;
     return this.courseService.get(this.courseId).pipe(
       map((rcourse) => this.course = rcourse.data),
@@ -75,7 +75,7 @@ export class CourseEditComponent implements OnInit {
   }
 
   private createNewCourse(): Observable<any> {
-    // logger.debug(() => 'Create new course');
+    logger.debug(() => 'Create new course');
     this.course = {
       id: '',
       dataRegion: 'Europe',
@@ -127,7 +127,7 @@ export class CourseEditComponent implements OnInit {
         if (!rcourse.error) {
           this.course = rcourse.data;
         }
-        // logger.debug(() => 'Course saved: ' + this.course);
+        logger.debug(() => 'Course saved: ' + this.course);
         return rcourse;
       }));
   }
@@ -143,7 +143,7 @@ export class CourseEditComponent implements OnInit {
       const reader: FileReader = new FileReader();
       reader.onloadend = () => {
         const importedCourse: Course = JSON.parse(reader.result.toString());
-        // logger.debug(() => 'Course imported: ' + JSON.stringify(importedCourse, null, 2));
+        logger.debug(() => 'Course imported: ' + JSON.stringify(importedCourse, null, 2));
         if (importedCourse.id === this.courseId) {
           this.course =  importedCourse;
           this.save().subscribe(() => {

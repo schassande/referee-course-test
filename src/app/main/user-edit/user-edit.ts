@@ -68,7 +68,7 @@ export class UserEditPage implements OnInit {
 
   private ensureDataSharing() {
     if (!this.user.dataSharingAgreement) {
-      // logger.debug(() => 'Add dataSharingAgreement field to the existing user.');
+      logger.debug(() => 'Add dataSharingAgreement field to the existing user.');
       this.user.dataSharingAgreement = {
         personnalInfoSharing: 'YES',
         photoSharing: 'YES',
@@ -129,17 +129,17 @@ export class UserEditPage implements OnInit {
             this.saving = false;
             this.error = response.error.error;
             if (response.error.code === 'auth/email-already-in-use') {
-              // .debug(() => 'The email addresse is already used.');
+              logger.debug(() => 'The email addresse is already used.');
               this.toastController.create({ message: 'The email addresse is already used: ' + this.user.email, duration: 10000})
                 .then((toast) => toast.present());
             } else {
-              // logger.warn(() => 'Error' + response.error);
+              logger.warn(() => 'Error' + response.error);
               this.toastController.create({ message: 'Error when saving the user info: ' + response.error, duration: 10000})
                 .then((toast) => toast.present());
             }
           } else {
             this.user = response.data;
-            // logger.debug(() => 'Saved user: ' + JSON.stringify(this.user, null, 2));
+            logger.debug(() => 'Saved user: ' + JSON.stringify(this.user, null, 2));
             if (this.user.accountStatus === 'VALIDATION_REQUIRED') {
               this.navController.navigateRoot('/user/waiting-validation');
             } else {

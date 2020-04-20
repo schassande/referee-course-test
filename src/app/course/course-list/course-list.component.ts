@@ -39,7 +39,7 @@ export class CourseListComponent implements OnInit {
     this.searchCourses();
   }
   searchCourses(forceServer: boolean = false, event: any = null) {
-    // logger.debug(() => 'searchCourses ' + this.searchInput);
+    logger.debug(() => 'searchCourses ' + this.searchInput);
     this.courseService.search(this.searchInput, forceServer ? 'server' : 'default').subscribe((rcourse) => {
       this.courses = rcourse.data;
     });
@@ -73,7 +73,7 @@ export class CourseListComponent implements OnInit {
   }
 
   onSwipe(event) {
-    // logger.debug(() => 'onSwipe' + event);
+    logger.debug(() => 'onSwipe' + event);
     if (event.direction === 4) {
       this.navController.navigateRoot(`/home`);
     }

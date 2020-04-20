@@ -23,13 +23,13 @@ export class EmailService {
           // Observe state change events such as progress, pause, and resume
           // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          // logger.debug(() => 'Upload is ' + progress + '% done');
+          logger.debug(() => 'Upload is ' + progress + '% done');
           switch (snapshot.state) {
             case firebase.storage.TaskState.PAUSED: // or 'paused'
-              // logger.debug(() => 'Upload is paused');
+              logger.debug(() => 'Upload is paused');
               break;
             case firebase.storage.TaskState.RUNNING: // or 'running'
-              // logger.debug(() => 'Upload is running');
+              logger.debug(() => 'Upload is running');
               break;
           }
         }, (error) => {
@@ -38,7 +38,7 @@ export class EmailService {
           // Handle successful uploads on complete
           // For instance, get the download URL: https://firebasestorage.googleapis.com/...
           uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-            // logger.debug(() => 'File available at' + downloadURL);
+            logger.debug(() => 'File available at ' + downloadURL);
           });
         }));
     }
