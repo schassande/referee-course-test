@@ -18,7 +18,8 @@
         "es6-promise-pool": "^2.5.0",
         "firebase-admin": "^8.9.2",
         "firebase-functions": "^3.3.0",
-        "nodemailer": "^6.4.3"
+        "nodemailer": "^6.4.3",
+        "pdf-creator-node": "^1.4.1"
     },
     "devDependencies": {
         "tslint": "^5.12.0",

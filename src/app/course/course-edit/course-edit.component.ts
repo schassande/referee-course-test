@@ -96,6 +96,7 @@ export class CourseEditComponent implements OnInit {
         requiredScore: 23,
         nbQuestion: 30,
         supportedLanguages: ['en'],
+        certificateTemplateUrl: '',
         series: [ {
           enabled: true,
           requiredScore: 27,

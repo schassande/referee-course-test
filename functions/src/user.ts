@@ -117,10 +117,10 @@ function deleteInactiveUser(inactiveUsers: UserToDelete[]): Promise<any>|void {
 /**
  * Returns the list of all inactive users.
  */
-async function getInactiveUsers(users:any = [], nextPageToken: any = null): Promise<UserToDelete[]> {
-  const result = await admin.auth().listUsers(1000, nextPageToken);
+async function getInactiveUsers(): Promise<UserToDelete[]> {
+  const result = await admin.auth().listUsers(1000);
   // Find users to delete 
-  let usersToDelete: UserToDelete[] = await Promise.all(result.users.map(async (user) => {
+  return (await Promise.all(result.users.map(async (user) => {
     const u2d: UserToDelete = { firebaseId: user.uid, appId: '',  toDelete: false }
   
     // not signed in in the last 30 days.
@@ -140,12 +140,5 @@ async function getInactiveUsers(users:any = [], nextPageToken: any = null): Prom
 
     u2d.toDelete = true;
     return Promise.resolve(u2d); // means delete
-  }));
-  usersToDelete = usersToDelete.filter(u => u.toDelete);
-
-  // Concat with list of previously found inactive users if there was more than 1000 users.
-  usersToDelete = users.concat(usersToDelete);
-  
-  // If there are more users to fetch we fetch them.
-  return result.pageToken ? getInactiveUsers(usersToDelete, result.pageToken) : Promise.resolve(usersToDelete);
+  }))).filter(u => u.toDelete);
 }
