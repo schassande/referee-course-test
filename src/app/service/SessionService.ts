@@ -8,6 +8,7 @@ import { ResponseWithData } from 'src/app/service/response';
 import { Observable, of, forkJoin } from 'rxjs';
 import { AppSettingsService } from './AppSettingsService';
 import { AngularFirestore, Query } from '@angular/fire/firestore';
+import { AngularFireFunctions } from '@angular/fire/functions';
 import { AlertController, ToastController } from '@ionic/angular';
 import { ConnectedUserService } from './ConnectedUserService';
 import { Injectable } from '@angular/core';
@@ -24,6 +25,7 @@ export class SessionService extends RemotePersistentDataService<Session> {
       readonly db: AngularFirestore,
       toastController: ToastController,
       appSettingsService: AppSettingsService,
+      private functions: AngularFireFunctions,
       private connectedUserService: ConnectedUserService,
       private dateService: DateService,
       private participantQuestionAnswerService: ParticipantQuestionAnswerService,
@@ -128,16 +130,18 @@ export class SessionService extends RemotePersistentDataService<Session> {
         percent: 0,
         pass: true,
       };
+      let nbSelectedQuestion = 0;
       serie.questions.forEach(question => {
         if (session.questionIds.indexOf(question.questionId) >= 0) {
+          nbSelectedQuestion ++;
           // the question of the serie has been selected.
           const pa = learnerAnswers.get(question.questionId);
           if (pa) {
             const rightAnswer = question.answers.filter(answer => answer.right);
             if (rightAnswer && rightAnswer.length && rightAnswer[0].answerId === pa.answerId) {
               if (pa.responseTime.getTime() < session.expireDate.getTime()) {
-                this.logger.debug(() => 'answer ' + pa.answerId + ' is good and on time');
                 serieResult.score += rightAnswer[0].point;
+                this.logger.debug(() => 'answer ' + pa.answerId + ' is good and on time, score=' + serieResult.score);
               } else {
                 this.logger.debug(() => 'answer ' + pa.answerId + ' is good but late');
               }
@@ -152,13 +156,13 @@ export class SessionService extends RemotePersistentDataService<Session> {
         }
       });
       serieResult.pass = serieResult.score >= serie.requiredScore;
-      serieResult.percent = Math.round(serieResult.score * 100 / serie.questions.length);
+      serieResult.percent = Math.round(serieResult.score * 100 / nbSelectedQuestion);
 
       testResult.score += serieResult.score;
-      testResult.pass = testResult.pass && (serie.passRequired || serieResult.pass);
+      testResult.pass = testResult.pass && (!serie.passRequired || serieResult.pass);
     });
     testResult.pass = testResult.pass && (testResult.score >= course.test.requiredScore);
-    testResult.percent = Math.round(testResult.score * 100 / course.test.nbQuestion);
+    testResult.percent = Math.round(testResult.score * 100 / session.questionIds.length);
     return testResult;
   }
 
@@ -261,4 +265,22 @@ export class SessionService extends RemotePersistentDataService<Session> {
     });
     session.participantIds.push(learner.id);
   }
+
+  public sendCertificate(learnerId: string, session: Session): Observable<CertificateResponse> {
+    if (!session || (session.status !== 'CORRECTION' && session.status !== 'CLOSED')) {
+      return of({error: 1});
+    }
+    const learners = session.participants.filter(participant => participant.person.personId === learnerId);
+    if (learners.length === 0 || learners[0].score <= 0 || !learners[0].pass) {
+      return of({error: 2});
+    }
+    this.logger.debug(() => 'sendCertificate(sessionId=' + session.id + ', learnerId=' + learnerId + ')');
+    const callable = this.functions.httpsCallable('sendCertificate');
+    return callable({ sessionId: session.id, learnerId });
+  }
+}
+
+export interface CertificateResponse {
+  url?: string;
+  error?: number;
 }

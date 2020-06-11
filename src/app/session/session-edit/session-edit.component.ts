@@ -1,6 +1,5 @@
 import { Category } from 'typescript-logging';
 import { ToastrService } from 'ngx-toastr';
-import { DurationUnit } from './../../model/model';
 import { UserService } from 'src/app/service/UserService';
 import { UserSelectorComponent } from './../../main/widget/user-selector-component';
 import { ActivatedRoute } from '@angular/router';
@@ -13,9 +12,8 @@ import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
 import { CourseService } from 'src/app/service/CourseService';
 import { DateService } from 'src/app/service/DateService';
 import { ResponseWithData } from 'src/app/service/response';
-import { Session, Course, User, SharedWith } from 'src/app/model/model';
-import { SessionService } from 'src/app/service/SessionService';
-import { TranslationService } from 'src/app/service/TranslationService';
+import { Session, Course, User, SharedWith, SessionParticipant } from 'src/app/model/model';
+import { SessionService, CertificateResponse } from 'src/app/service/SessionService';
 import * as moment from 'moment';
 import { logSession } from 'src/app/logging-config';
 
@@ -258,5 +256,15 @@ export class SessionEditComponent implements OnInit {
     if (event.direction === 4) {
       this.navController.navigateRoot(`/session`);
     }
+  }
+
+  sendCertificate(learner: SessionParticipant, index: number) {
+    this.sessionService.sendCertificate(learner.person.personId, this.session).subscribe((response: CertificateResponse) => {
+      if (response.error) {
+        logger.error('Error Certificate generation: ' + response.error, null);
+      } else {
+        logger.info('Certificate available: ' + response.url);
+      }
+    })
   }
 }

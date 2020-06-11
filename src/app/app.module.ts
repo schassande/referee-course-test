@@ -16,7 +16,7 @@ import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFireStorageModule } from '@angular/fire/storage';
-import { AngularFireFunctionsModule } from '@angular/fire/functions';
+import { AngularFireFunctionsModule, REGION, ORIGIN } from '@angular/fire/functions';
 import { AngularFireMessagingModule } from '@angular/fire/messaging';
 import { IonicStorageModule } from '@ionic/storage';
 import { ToastrModule } from 'ngx-toastr';
@@ -72,6 +72,8 @@ export class CustomHammerConfig extends HammerGestureConfig {}
     StatusBar,
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    // { provide: REGION, useValue: 'us-central1' },
+    // { provide: ORIGIN, useValue: 'http://localhost:5005' },
     AppSettingsService,
     ClubService,
     ConnectedUserService,

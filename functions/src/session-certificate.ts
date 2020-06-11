@@ -4,6 +4,8 @@ import * as admin from 'firebase-admin';
 import * as nodemailer from 'nodemailer';
 import * as fs from 'fs';
 import * as os from 'os';
+import * as cors from 'cors';
+import * as express from 'express';
 
 const pdf = require('pdf-creator-node');
 const firestore = admin.firestore();
@@ -18,22 +20,48 @@ const mailTransport = nodemailer.createTransport({
   },
 });
 
-export const sendCertificate = functions.https.onRequest(async (req, res) => {
 
-    const sessionId = req.params.sessionId;
-    const learnerId = req.params.learnerId;
+const app = express();
+// Automatically allow cross-origin requests
+app.use(cors({ origin: true }));
+
+// Expose Express API as a single Cloud Function:
+export const sendCertificate = functions.https.onRequest(app);
+
+// build multiple CRUD interfaces:
+// export const sendCertificate = functions.https.onRequest(async (req, res) => {
+app.post('/', async (req:any, res:any) => {
+    if (!req.body || !req.body.data) {
+        console.log('No body content')
+        res.send({ code: 1});
+        return;
+    }
+    const sessionId = req.body.data.sessionId;
+    const learnerId = req.body.data.learnerId;
+    console.log('sessionId=' + sessionId + ', learnerId=' + learnerId);
+    if (!sessionId || !learnerId) {
+        res.send({ code: 1});
+        return;
+    }
     const learner: User = (await firestore.doc(`User/${learnerId}`).get()) as unknown as User;
+    console.log('learner=' + JSON.stringify(learner, null, 2));
     const session: Session = (await firestore.doc(`Session/${sessionId}`).get()) as unknown as Session;
+    console.log('session=' + JSON.stringify(session, null, 2));
     const code = check(learner, session);
+    console.log('code=' + code);
     if (code) {
         res.send({ code});
         return;
     }
     const tempLocalDir = os.tmpdir();
     const course: Course = (await firestore.doc(`Course/${session.courseId}`).get()) as unknown as Course;
+    console.log('course=' + JSON.stringify(course, null, 2));
     const part: SessionParticipant = session.participants.find(
         participant => participant.person.personId === learner.id) as SessionParticipant;
-    const certificateFile = generateCertificate(part, session, learner, course.test.certificateTemplateUrl, tempLocalDir);
+    console.log('part=' + JSON.stringify(part, null, 2));
+    const certificateTemplateUrl = course.test.certificateTemplateUrl;
+    const certificateFile = generateCertificate(part, session, learner, certificateTemplateUrl, tempLocalDir);
+    console.log('certificateFile=' + certificateFile);
 
   // Building Email message.
   const mailOptions: any = {
@@ -73,8 +101,13 @@ function check(learner: User, session: Session): number {
     if (!learner) {
         return 3;
     }
+    console.log('check: session.participants=' + session.participants);
+    if (!session.participants) {
+        return 6;
+    }
     const part: SessionParticipant|undefined = session.participants
         .find(participant => participant.person.personId === learner.id);
+    console.log('part=' + JSON.stringify(part, null, 2));
     if (!part) {
         return 4;
     }

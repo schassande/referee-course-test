@@ -59,12 +59,16 @@ export class CourseEditComponent implements OnInit {
     return this.courseService.get(this.courseId).pipe(
       map((rcourse) => this.course = rcourse.data),
       flatMap(() => {
-        const obs: Observable<any>[] = [];
+        const obs: Observable<any>[] = [of('')];
+        let lang = this.connectedUserService.getLang();
+        if (this.course.test.supportedLanguages.indexOf(lang) < 0) {
+          lang = this.course.test.supportedLanguages[0];
+        }
         this.course.test.series.forEach(serie => {
           serie.questions.forEach(question => {
-            obs.push(this.translationService.translate(question));
+            obs.push(this.translationService.translate(question, lang));
             question.answers.forEach(answer => {
-              obs.push(this.translationService.translate(answer));
+              obs.push(this.translationService.translate(answer, lang));
             });
           });
         });
@@ -127,6 +131,7 @@ export class CourseEditComponent implements OnInit {
       map((rcourse) => {
         if (!rcourse.error) {
           this.course = rcourse.data;
+          this.courseId = this.course.id;
         }
         logger.debug(() => 'Course saved: ' + this.course);
         return rcourse;
@@ -162,26 +167,36 @@ export class CourseEditComponent implements OnInit {
   }
 
   exportCourse() {
-    // get a new instance of the course in order to clean the I18N texts
-    this.courseService.get(this.courseId).pipe(
+    this.save().pipe(
+      // get a new instance of the course in order to clean the I18N texts
+      flatMap(() => this.courseService.get(this.courseId)),
       map((rcourse) => {
-        // clean i18n texts
-        rcourse.data.test.series.forEach(serie => {
-          serie.questions.forEach(question => {
-            delete question.text;
-            question.answers.forEach(answer => delete answer.text);
+        if (rcourse.data) {
+          // clean i18n texts
+          rcourse.data.test.series.forEach(serie => {
+            serie.questions.forEach(question => {
+              delete question.text;
+              question.answers.forEach(answer => delete answer.text);
+            });
           });
-        });
-        const content = JSON.stringify(rcourse.data, null, 2);
-        const oMyBlob = new Blob([content], {type : 'text/csv'});
-        const url = URL.createObjectURL(oMyBlob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Course_${this.course.name.replace(' ', '_')}_${
-          this.dateService.date2string(new Date())}.json`;
-        a.click();
-        window.URL.revokeObjectURL(url);
-        a.remove();
+          const content = JSON.stringify(rcourse.data, null, 2);
+          const oMyBlob = new Blob([content], {type : 'text/csv'});
+          const url = URL.createObjectURL(oMyBlob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `Course_${this.course.name.replace(' ', '_')}_${
+            this.dateService.date2string(new Date())}.json`;
+          a.click();
+          window.URL.revokeObjectURL(url);
+          a.remove();
+        } else {
+          this.toastController.create({
+            message: 'Couse cannot be download.',
+            position: 'bottom',
+            duration: 4000,
+            translucent: true
+          }).then((alert) => alert.present());
+        }
       })
     ).subscribe();
   }

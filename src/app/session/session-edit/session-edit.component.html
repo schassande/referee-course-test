@@ -115,6 +115,7 @@
                         <span>Score:{{learner.score}} ({{learner.percent}}%), Required:{{learner.requiredScore}}, Total:{{course.test.nbQuestion}}</span>
                     </div>
                 </ion-label>
+                <ion-icon *ngIf="!readonly && learner.score >= 0 && learner.pass" slot="end" name="medal-outline" (click)="sendCertificate(learner, index)"></ion-icon>
                 <ion-icon *ngIf="!readonly" slot="end" name="trash" (click)="deleteLearner(learner, index)"></ion-icon>
             </ion-item>
         </ion-item-group>

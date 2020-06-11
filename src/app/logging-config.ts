@@ -3,7 +3,7 @@ import { CategoryServiceControlImpl } from 'typescript-logging/dist/commonjs/con
 
 // Optionally change default settings, in this example set default logging to Info.
 // Without changing configuration, categories will log to Error.
-const catConfig: CategoryConfiguration = new CategoryConfiguration(LogLevel.Warn);
+const catConfig: CategoryConfiguration = new CategoryConfiguration(LogLevel.Debug);
 CategoryServiceFactory.setDefaultConfiguration(catConfig);
 
 // Create categories, they will autoregister themselves, one category without parent (root) and a child category.

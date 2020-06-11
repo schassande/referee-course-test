@@ -77,6 +77,7 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
       flatMap(() => this.sessionService.get(this.sessionId)),
       flatMap((rses) => {
         this.session = rses.data;
+        this.nbQuestion = this.session.questionIds.length;
         this.checkExpiration();
         this.intervalId = setInterval(this.checkExpiration.bind(this), 1000);
         return this.checkSession();
@@ -86,11 +87,9 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
       flatMap(() => this.courseService.get(this.session.courseId)),
       map((rcourse) => {
         this.course = rcourse.data;
-        this.nbQuestion = 0;
-        this.course.test.series.forEach(s => this.nbQuestion += s.questions.length);
         const intersec = this.connectedUserService.getCurrentUser().speakingLanguages
           .filter(value => -1 !== this.course.test.supportedLanguages.indexOf(value));
-        this.lang = intersec ? intersec[0] : this.course.test.supportedLanguages[0];
+        this.lang = intersec.length ? intersec[0] : this.course.test.supportedLanguages[0];
         this.setQuestion();
       }),
 

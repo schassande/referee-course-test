@@ -6,7 +6,9 @@ export const environment = {
     databaseURL: 'https://referee-course-test.firebaseio.com',
     projectId: 'referee-course-test',
     storageBucket: 'referee-course-test.appspot.com',
-    messagingSenderId: '18715023816'
+    messagingSenderId: '18715023816',
+    functionRegion: 'us-central1',
+    functionOrigin: 'https://referee-course-test.web.app'
   },
-  version: '1.0.9-2020-04-20T20:32:39.753Z'
+  version: '1.0.9-2020-05-03T13:15:37.663Z'
 };

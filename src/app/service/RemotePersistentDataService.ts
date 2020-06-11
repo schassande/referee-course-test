@@ -57,9 +57,11 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
     }
 
     protected adjustDate(d: any, dateService: DateService): Date {
-        if (d && !(d instanceof Date) ) {
+        if (d === null) {
+            return null;
+        } else if (d && !(d instanceof Date) ) {
             if (typeof d === 'string') {
-                return dateService.string2date(d as string, null);
+                return dateService.string2date(d as string);
             } else {
                 return d.toDate();
             }

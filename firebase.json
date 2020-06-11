@@ -40,5 +40,11 @@
                 }]
             }
         ]
+    },
+    "emulators": {
+        "database": {
+            "host": "localhost",
+            "port": "9000"
+        }
     }
 }
