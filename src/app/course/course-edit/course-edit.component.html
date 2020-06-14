@@ -98,7 +98,9 @@
             <ion-item *ngFor="let question of serie.questions">
                 <div>
                     <p style="font-weight: bold;">{{question.questionId}}: {{question.text}}</p>
-                    <p *ngFor="let answer of question.answers" style="margin-left: 10px;">{{answer.answerId}} {{answer.right ? '*' : '-'}} {{answer.text}}</p>
+                    <p *ngFor="let answer of question.answers" style="margin-left: 10px;">
+                        <span [ngClass]="{ 'right-answer' : answer.right}">{{answer.answerId}}</span> - {{answer.text}}
+                    </p>
                 </div>
             </ion-item>
         </ion-item-group>
