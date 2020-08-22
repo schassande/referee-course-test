@@ -14,33 +14,9 @@
 
 <ion-content (swipe)="onSwipe($event)">
     <ion-fab *ngIf="session" vertical="bottom" horizontal="end" slot="fixed">
-        <ion-row>
-            <ion-col *ngIf="isTeacher && (session.status === 'REGISTRATION' || session.status === 'STOPPED')">
-                <ion-fab-button (click)="start()">
-                    <ion-icon name="play-outline"></ion-icon>
-                </ion-fab-button>
-            </ion-col>
-            <ion-col *ngIf="isTeacher && (session.status === 'STARTED')">
-                <ion-fab-button (click)="stop()" style='--background:red; font-size: 1.6em; margin-bottom: 10px;'>
-                    <ion-icon name="stop-outline"></ion-icon>
-                </ion-fab-button>
-            </ion-col>
-            <ion-col *ngIf="isTeacher && session.status === 'STOPPED'">
-                <ion-fab-button (click)="correction()" style='--background:yellow; font-size: 1.6em; margin-bottom: 10px;'>
-                    <ion-icon name="checkmark-done-outline"></ion-icon>
-                </ion-fab-button>
-            </ion-col>
-            <ion-col *ngIf="isTeacher && session.status === 'CORRECTION'">
-                <ion-fab-button (click)="close()" style='--background:red; font-size: 1.6em; margin-bottom: 10px;'>
-                    <ion-icon name="close-outline"></ion-icon>
-                </ion-fab-button>
-            </ion-col>
-            <ion-col>
-                <ion-fab-button (click)="loadData()" style='--background:green;'>
-                    <ion-icon name="reload-outline"></ion-icon>
-                </ion-fab-button>
-            </ion-col>
-        </ion-row>
+        <ion-fab-button (click)="loadData()" style='--background:green;'>
+            <ion-icon name="reload-outline"></ion-icon>
+        </ion-fab-button>
     </ion-fab>
     <div *ngIf="loading" style="margin: 20px auto; text-align: center;">
         <ion-spinner name="bubbles"></ion-spinner>
@@ -65,7 +41,7 @@
                 <ion-item *ngFor="let answer of question.answers; let index = index;" (click)="answerSelected(index)" [ngClass]="{'rightAnswer': showRightAnswer && answer.right}">
                     <ion-label class="answer">{{answerLetters[index]}} - {{answer.text}}</ion-label>
                     <ion-icon *ngIf="sessionExpired && answerValue && answerValue === index.toString()" slot="end" name="radio-button-on-outline"></ion-icon>
-                    <ion-radio *ngIf="!sessionExpired" slot="end" value="{{index}}"></ion-radio>
+                    <ion-radio *ngIf="!sessionExpired && !showRightAnswer" slot="end" value="{{index}}"></ion-radio>
                 </ion-item>
             </ion-radio-group>
         </ion-list>
@@ -92,4 +68,25 @@
             </div>
         </div>
     </div>
+    <section style="margin-top: 20px;" *ngIf="session && isTeacher">
+        <header>Teacher panel control</header>
+        <div style="text-align: center;">
+            <ion-button routerLink="/session/edit/{{session.id}}" size="large">
+                <ion-icon name="create-outline"></ion-icon>&nbsp;Edit
+            </ion-button>
+            <ion-button (click)="start()" *ngIf="session.status === 'REGISTRATION' || session.status === 'STOPPED'" size="large" color="success">
+                <ion-icon name="play-outline"></ion-icon>&nbsp;Start
+            </ion-button>
+            <ion-button (click)="stop()" *ngIf="session.status === 'STARTED'" size="large" color="danger">
+                <ion-icon name="stop-outline"></ion-icon>&nbsp;Stop
+            </ion-button>
+            <ion-button (click)="correction()" *ngIf="session.status === 'STOPPED'" size="large" color="warning">
+                <ion-icon name="checkmark-done-outline"></ion-icon>&nbsp;Correction
+            </ion-button>
+            <ion-button (click)="close()" *ngIf="session.status === 'CORRECTION'" size="large" color="danger">
+                <ion-icon name="close-outline"></ion-icon>&nbsp;Close
+            </ion-button>
+        </div>
+    </section>
+    <div style="height: 100px;"></div>
 </ion-content>

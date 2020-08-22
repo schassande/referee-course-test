@@ -293,6 +293,9 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
     this.lang = newLang;
     this.loadTranslation().subscribe();
   }
+  edit() {
+    this.navController.navigateRoot(`/session/edit/${this.session.id}`);
+  }
   start() {
     this.session.status = 'STARTED';
     this.session.startDate = new Date();

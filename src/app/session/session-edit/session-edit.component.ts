@@ -139,8 +139,8 @@ export class SessionEditComponent implements OnInit {
     this.alertCtrl.create({
       message: 'Do you want to add teaches or learners?',
       buttons: [
-        { text: 'Learner', handler: () => this.add('Learner') },
-        { text: 'Teacher', handler: () => this.add('Teacher') },
+        { text: 'Learner', handler: () => this.addLearner() },
+        { text: 'Teacher', handler: () => this.addTeacher() },
         { text: 'Cancel', role: 'cancel'}
       ]
     }).then( (alert) => alert.present() );
@@ -179,6 +179,13 @@ export class SessionEditComponent implements OnInit {
       }
     });
     modal.present();
+  }
+
+  addLearner(){
+    this.add('Learner');
+  }
+  addTeacher(){
+    this.add('Teacher');
   }
 
   private addToSet(item: string, list: string[]) {
@@ -237,6 +244,21 @@ export class SessionEditComponent implements OnInit {
     this.session.status = 'CLOSED';
     this.save().subscribe(() => this.toastrService.success('The exam has been closed.', '', this.toastCfg));
   }
+  delete() {
+    this.alertCtrl.create({
+      message: 'Do you reaaly want to delete this session?',
+      buttons: [
+        { text: 'Cancel', role: 'cancel'},
+        {
+          text: 'Delete',
+          handler: () => {
+            this.sessionService.delete(this.session.id)
+              .subscribe(() => this.navController.navigateRoot('/session'));
+          }
+        }
+      ]
+    }).then( (alert) => alert.present() );
+  }
   exportResults() {
     const sep = ',';
     const content = this.session.participants.map(p => {
@@ -251,6 +273,9 @@ export class SessionEditComponent implements OnInit {
     window.URL.revokeObjectURL(url);
     a.remove();
 
+  }
+  reload() {
+    // TODO
   }
   onSwipe(event) {
     if (event.direction === 4) {

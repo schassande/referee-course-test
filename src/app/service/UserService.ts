@@ -2,7 +2,7 @@ import { DataRegion } from './../model/model';
 import { AngularFireFunctions } from '@angular/fire/functions';
 import { LocalAppSettings } from './../model/settings';
 import { AppSettingsService } from './AppSettingsService';
-import { AlertController, ToastController, LoadingController } from '@ionic/angular';
+import { AlertController, ToastController, LoadingController, NavController } from '@ionic/angular';
 
 import { ResponseWithData, Response } from './response';
 import { Observable, of, from, Subject, forkJoin } from 'rxjs';
@@ -25,6 +25,7 @@ export class UserService  extends RemotePersistentDataService<User> {
         appSettingsService: AppSettingsService,
         private alertCtrl: AlertController,
         private loadingController: LoadingController,
+        private navController: NavController,
         private auth: AngularFireAuth,
         private angularFireFunctions: AngularFireFunctions
     ) {
@@ -384,7 +385,10 @@ export class UserService  extends RemotePersistentDataService<User> {
             from(this.auth.currentUser).pipe(
                 flatMap((u) => from(u.delete())),
                 flatMap(() => this.delete(user.id)),
-                map(() => this.connectedUserService.userDisconnected())
+                map(() => {
+                    this.connectedUserService.userDisconnected();
+                    this.navController.navigateRoot('/user/login');
+                })
             ).subscribe();
         } else {
             this.delete(user.id).subscribe();

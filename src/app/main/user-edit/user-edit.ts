@@ -166,9 +166,8 @@ export class UserEditPage implements OnInit {
         { text: 'Cancel', role: 'cancel'},
         {
           text: 'Delete',
-          handler: () => {
+          handler: () => { 
             this.userService.deleteAccount(this.user);
-            this.navController.navigateRoot('/user/login');
           }
         }
       ]
