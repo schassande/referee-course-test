@@ -50,25 +50,25 @@
     </ion-list>
     <section style="text-align: center;" *ngIf="!loading">
         <ion-button routerLink="/session/play/{{session.id}}" *ngIf="session.status !== 'CLOSED' && session.status !== 'REGISTRATION' && session.id" size="large">
-            <ion-icon name="eye-outline"></ion-icon>&nbsp;View
+            <ion-icon name="eye-outline"></ion-icon>&nbsp;<span i18n="@@session-edit.action.view">View</span>
         </ion-button>
         <ion-button (click)="start()" *ngIf="isTeacher && (session.status === 'REGISTRATION' || session.status === 'STOPPED')" size="large" color="success">
-            <ion-icon name="play-outline"></ion-icon>&nbsp;Start
+            <ion-icon name="play-outline"></ion-icon>&nbsp;<span i18n="@@session-edit.action.start">Start</span>
         </ion-button>
         <ion-button (click)="stop()" *ngIf="isTeacher && session.id && (session.status === 'STARTED')" size="large" color="danger">
-            <ion-icon name="stop-outline"></ion-icon>&nbsp;Stop
+            <ion-icon name="stop-outline"></ion-icon>&nbsp;<span i18n="@@session-edit.action.stop">Stop</span>
         </ion-button>
         <ion-button (click)="correction()" *ngIf="isTeacher && session.id && session.status === 'STOPPED'" size="large" color="warning">
-            <ion-icon name="checkmark-done-outline"></ion-icon>&nbsp;Correction
+            <ion-icon name="checkmark-done-outline"></ion-icon>&nbsp;<span i18n="@@session-edit.action.correction">Correction</span>
         </ion-button>
         <ion-button (click)="computeScores()" *ngIf="isTeacher && session.id && (session.status === 'CORRECTION')" size="large">
-            <ion-icon name="calculator-outline"></ion-icon>&nbsp;Scores
+            <ion-icon name="calculator-outline"></ion-icon>&nbsp;<span i18n="@@session-edit.action.scores">Scores</span>
         </ion-button>
         <ion-button (click)="exportResults()" *ngIf="isTeacher && session.id && (session.status === 'CORRECTION' || session.status === 'CLOSED')" size="large">
-            <ion-icon name="download-outline"></ion-icon>&nbsp;Export
+            <ion-icon name="download-outline"></ion-icon>&nbsp;<span i18n="@@session-edit.action.export">Export</span>
         </ion-button>
         <ion-button (click)="close()" *ngIf="isTeacher && session.id && session.status === 'CORRECTION'" size="large" color="danger">
-            <ion-icon name="close-outline"></ion-icon>&nbsp;Close
+            <ion-icon name="close-outline"></ion-icon>&nbsp;<span i18n="@@session-edit.action.close">Close</span>
         </ion-button>
     </section>
     <ion-list *ngIf="!loading">

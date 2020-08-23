@@ -88,19 +88,19 @@
         <header>Teacher panel control</header>
         <div style="text-align: center;">
             <ion-button routerLink="/session/edit/{{session.id}}" size="large">
-                <ion-icon name="create-outline"></ion-icon>&nbsp;Edit
+                <ion-icon name="create-outline"></ion-icon>&nbsp;<span i18n="@@session-play.action.edit">Edit</span>
             </ion-button>
             <ion-button (click)="start()" *ngIf="session.status === 'REGISTRATION' || session.status === 'STOPPED'" size="large" color="success">
-                <ion-icon name="play-outline"></ion-icon>&nbsp;Start
+                <ion-icon name="play-outline"></ion-icon>&nbsp;<span i18n="@@session-play.action.start">Start</span>
             </ion-button>
             <ion-button (click)="stop()" *ngIf="session.status === 'STARTED'" size="large" color="danger">
-                <ion-icon name="stop-outline"></ion-icon>&nbsp;Stop
+                <ion-icon name="stop-outline"></ion-icon>&nbsp;<span i18n="@@session-play.action.stop">Stop</span>
             </ion-button>
             <ion-button (click)="correction()" *ngIf="session.status === 'STOPPED'" size="large" color="warning">
-                <ion-icon name="checkmark-done-outline"></ion-icon>&nbsp;Correction
+                <ion-icon name="checkmark-done-outline"></ion-icon>&nbsp;<span i18n="@@session-play.action.correction">Correction</span>
             </ion-button>
             <ion-button (click)="close()" *ngIf="session.status === 'CORRECTION'" size="large" color="danger">
-                <ion-icon name="close-outline"></ion-icon>&nbsp;Close
+                <ion-icon name="close-outline"></ion-icon>&nbsp;<span i18n="@@session-play.action.close">Close</span>
             </ion-button>
         </div>
         <ion-item-group style="border-left: 1px solid lightgrey; border-right: 1px solid lightgrey;" *ngIf="course">

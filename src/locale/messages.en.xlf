@@ -4,7 +4,7 @@
     <body>
       <trans-unit id="home.page-title" datatype="html">
         <source>Test Course Referee App</source>
-        <target>Test Course Referee App</target>
+        <target>Test Course App</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/home/home.component.html</context>
           <context context-type="linenumber">4</context>
@@ -88,6 +88,20 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/home/home.component.html</context>
           <context context-type="linenumber">88</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.group-session-exam.title" datatype="html">
+        <source>Create a group session</source>
+        <target>Create a group session</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/main/home/home.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.group-session-exam.description" datatype="html">
+        <source>To start an exam for a group of participants, please select the test name.</source>
+        <target>To start an exam for a group of participants, please select the test name.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/main/home/home.component.html</context>
         </context-group>
       </trans-unit>
       <trans-unit id="setting.title" datatype="html">
@@ -590,6 +604,57 @@
           <context context-type="linenumber">108</context>
         </context-group>
       </trans-unit>
+
+      <trans-unit id="session-edit.action.view" datatype="html">
+        <source>View</source>
+        <target>View</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/session/session-edit/session-edit.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="session-edit.action.start" datatype="html">
+        <source>Start</source>
+        <target>Start</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/session/session-edit/session-edit.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="session-edit.action.stop" datatype="html">
+        <source>Stop</source>
+        <target>Stop</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/session/session-edit/session-edit.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="session-edit.action.correction" datatype="html">
+        <source>Correction</source>
+        <target>Correction</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/session/session-edit/session-edit.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="session-edit.action.scores" datatype="html">
+        <source>Scores</source>
+        <target>Scores</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/session/session-edit/session-edit.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="session-edit.action.export" datatype="html">
+        <source>Export</source>
+        <target>Export</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/session/session-edit/session-edit.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="session-edit.action.close" datatype="html">
+        <source>Close</source>
+        <target>Close</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/session/session-edit/session-edit.component.html</context>
+        </context-group>
+      </trans-unit>
+
       <trans-unit id="session-list.title" datatype="html">
         <source>Sessions</source>
         <target>Sessions</target>
@@ -676,6 +741,41 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/session/session-play/session-play.component.html</context>
           <context context-type="linenumber">103</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="session-play.action.edit" datatype="html">
+        <source>Edit</source>
+        <target>Edit</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/session/session-play/session-play.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="session-play.action.start" datatype="html">
+        <source>Start</source>
+        <target>Start</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/session/session-play/session-play.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="session-play.action.stop" datatype="html">
+        <source>Stop</source>
+        <target>Stop</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/session/session-play/session-play.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="session-play.action.correction" datatype="html">
+        <source>Correction</source>
+        <target>Correction</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/session/session-play/session-play.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="session-play.action.close" datatype="html">
+        <source>Close</source>
+        <target>Close</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/session/session-play/session-play.component.html</context>
         </context-group>
       </trans-unit>
       <trans-unit id="teacher-list.title" datatype="html">
