@@ -114,6 +114,7 @@ export class SessionService extends RemotePersistentDataService<Session> {
         requiredScore: 0,
         percent: 0,
         pass: true,
+        answeredQuestions: 0,
         seriesResult: []
       };
     } else {
@@ -121,6 +122,7 @@ export class SessionService extends RemotePersistentDataService<Session> {
       testResult.requiredScore = course.test.requiredScore;
       testResult.percent = 0;
       testResult.pass = true;
+      testResult.answeredQuestions = 0;
       testResult.seriesResult = [];
     }
     course.test.series.forEach(serie => {
@@ -128,42 +130,86 @@ export class SessionService extends RemotePersistentDataService<Session> {
         score: 0,
         requiredScore: serie.requiredScore,
         percent: 0,
+        answeredQuestions: 0,
         pass: true,
       };
       let nbSelectedQuestion = 0;
       serie.questions.forEach(question => {
-        if (session.questionIds.indexOf(question.questionId) >= 0) {
+        if (this.checkQuestionAnswer(course, session, question, learnerAnswers, serieResult)) {
           nbSelectedQuestion ++;
-          // the question of the serie has been selected.
-          const pa = learnerAnswers.get(question.questionId);
-          if (pa) {
-            const rightAnswer = question.answers.filter(answer => answer.right);
-            if (rightAnswer && rightAnswer.length && rightAnswer[0].answerId === pa.answerId) {
-              if (pa.responseTime.getTime() < session.expireDate.getTime()) {
-                serieResult.score += rightAnswer[0].point;
-                this.logger.debug(() => 'answer ' + pa.answerId + ' is good and on time, score=' + serieResult.score);
-              } else {
-                this.logger.debug(() => 'answer ' + pa.answerId + ' is good but late');
-              }
-            } else {
-              this.logger.debug(() => 'answer ' + pa.answerId + ' is wrong');
-            }
-          } else {
-            this.logger.debug(() => 'computeNbRightAnswer: no response for question ' + question.questionId);
-          }
-        } else {
-          this.logger.debug(() => 'The question ' + question.questionId + ' has not been selected');
         }
       });
       serieResult.pass = serieResult.score >= serie.requiredScore;
       serieResult.percent = Math.round(serieResult.score * 100 / nbSelectedQuestion);
+      this.logger.debug(() => 'Serie result: score=' + serieResult.score + ', pass=' + serieResult.pass
+        + ', percent=' + serieResult.percent + ', requiredScore=' + serie.requiredScore);
 
       testResult.score += serieResult.score;
       testResult.pass = testResult.pass && (!serie.passRequired || serieResult.pass);
+      testResult.answeredQuestions += serieResult.answeredQuestions;
+      this.logger.debug(() => 'Test result: score=' + testResult.score + ', pass=' + testResult.pass
+        + 'answeredQuestions=' + testResult.answeredQuestions);
     });
     testResult.pass = testResult.pass && (testResult.score >= course.test.requiredScore);
     testResult.percent = Math.round(testResult.score * 100 / session.questionIds.length);
+    this.logger.debug(() => '=> Test result: score=' + testResult.score + ', pass=' + testResult.pass
+      + ', percent=' + testResult.percent);
     return testResult;
+  }
+
+  /**
+   *
+   * @return true if the question has been selected and if the question has answer(s).
+   */
+  private checkQuestionAnswer(course: Course,
+                              session: Session,
+                              question: Question,
+                              learnerAnswers: Map<string, ParticipantQuestionAnswer>,
+                              serieResult: ParticipantResult): boolean {
+    if (session.questionIds.indexOf(question.questionId) < 0) {
+      this.logger.debug(() => 'The question ' + question.questionId + ' has not been selected');
+      return false;
+    }
+    // the question of the serie has been selected.
+    const pa = learnerAnswers.get(question.questionId);
+    if (!pa) {
+      this.logger.debug(() => 'computeNbRightAnswer: no response for question ' + question.questionId);
+      return false;
+    }
+    const rightAnswers = question.answers.filter(answer => answer.right);
+    if (!rightAnswers || !rightAnswers.length) {
+      this.logger.debug(() => 'No right answer to the question ' + question.questionId);
+      return false;
+    }
+    if (pa.responseTime.getTime() > session.expireDate.getTime()) {
+      this.logger.debug(() => 'Answer ' + pa.answerId + ' is late');
+      return true;
+    }
+    serieResult.answeredQuestions++;
+    if (pa.answerId && ! pa.answerIds) {
+      pa.answerIds = [pa.answerId];
+    }
+    let points = 0;
+    let error = false;
+    rightAnswers.forEach((rightAnswer, idx) => {
+      const found: boolean = pa.answerIds.indexOf(rightAnswer.answerId) >= 0;
+      if (found) {
+        points += rightAnswer.point;
+        this.logger.debug(() => 'Right answer ' + rightAnswer.answerId + ' has been found, points=' + points);
+      } else {
+        error = true;
+        this.logger.debug(() => 'Right answer' + rightAnswer.answerId + '  has not been found among participant answers.');
+      }
+    });
+    if (error || points === 0) {
+      this.logger.debug(() => 'Wrong answer to the question ' + question.questionId);
+    } else if (rightAnswers.length === pa.answerIds.length) {
+      serieResult.score += points;
+      this.logger.debug(() => 'Right answer(s) to the question ' + question.questionId + ', score=' + serieResult.score);
+    } else {
+      this.logger.debug(() => 'More answer than expected to the question ' + question.questionId);
+    }
+    return true;
   }
 
   public getByKeyCode(keyCode: string): Observable<ResponseWithData<Session>> {
@@ -261,6 +307,7 @@ export class SessionService extends RemotePersistentDataService<Session> {
       score: -1,
       requiredScore: -1,
       percent: -1,
+      answeredQuestions: 0,
       seriesResult: []
     });
     session.participantIds.push(learner.id);

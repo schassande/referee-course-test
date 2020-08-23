@@ -288,8 +288,9 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
     public delete(id: string): Observable<Response> {
         this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + '].delete(' + id + ')');
         try {
-            this.fireStoreCollection.doc(id).delete();
-            return of({ error: null});
+            return from(this.fireStoreCollection.doc(id).delete()).pipe(map(() => {
+                return { error: null};
+                }));
         } catch (err) {
             this.logger.error('', err);
             return of({ error: err});

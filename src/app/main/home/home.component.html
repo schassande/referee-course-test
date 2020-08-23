@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <span slot="start" style="margin-left: 10px;"><img src="assets/imgs/logo.png" height="30" /></span>
-        <ion-title style="text-align: center;" i18n="@@home.page-title">Test Course Referee App</ion-title>
+        <ion-title style="text-align: center;" i18n="@@home.page-title">Test Course App</ion-title>
         <ion-buttons slot="end">
             <ion-menu-button autoHide="false" menu="main"></ion-menu-button>
         </ion-buttons>
@@ -14,7 +14,8 @@
         </ion-card-header>
         <ion-card-content>
             <ion-item *ngFor="let session of teacherSessions" routerLink="/session/edit/{{session.id}}">
-                <ion-label>{{dateService.date2string(session.startDate)}} / {{session.courseName}} / {{session.keyCode}} / {{session.status}}
+                <ion-label>{{dateService.date2string(session.startDate)}} / {{session.courseName}}
+                    <br><span style="margin-left:60px;">{{session.keyCode}} / {{session.status}}</span>
                     <div *ngIf="session.autoPlay"><span i18n="@@session.individual-learner">Individual learner</span>: {{session.participants[0].person.firstName}} {{session.participants[0].person.lastName}}</div>
                 </ion-label>
             </ion-item>
@@ -38,9 +39,27 @@
             </ion-list>
         </ion-card-content>
     </ion-card>
+    <ion-card *ngIf="isTeacher && groupCourses && groupCourses.length" style='--background: lightgrey;'>
+        <ion-card-header>
+            <ion-card-title i18n="@@home.group-session-exam.title">Create a group session</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+            <p i18n="@@home.group-session-exam.description">To start an exam for a group of participants, please select the test name.</p>
+            <ion-list style="margin: 20px 0 20px 20px;">
+                <ion-select [(ngModel)]="groupCourseId" class="instantSelect">
+                    <ion-select-option *ngFor="let course of groupCourses" value="{{course.id}}"><span style="padding: 5px;">{{course.name}}</span></ion-select-option>
+                </ion-select>
+            </ion-list>
+            <div style="text-align: right;">
+                <ion-button (click)="createGroupSession()" shape="round" class="instantButton">
+                    <ion-icon name="arrow-forward-outline"></ion-icon>
+                </ion-button>
+            </div>
+        </ion-card-content>
+    </ion-card>
     <ion-card style='--background: lightgrey;'>
         <ion-card-header>
-            <ion-card-title i18n="@@home.register-session">Register to an existing session</ion-card-title>
+            <ion-card-title i18n="@@home.register-session">Register to an existing group session</ion-card-title>
         </ion-card-header>
         <ion-card-content>
             <div class="keyCodeLine">
@@ -55,7 +74,7 @@
             </div>
         </ion-card-content>
     </ion-card>
-    <ion-card *ngIf="courses && courses.length" style='--background: lightgrey;'>
+    <ion-card *ngIf="individualCourses && individualCourses.length" style='--background: lightgrey;'>
         <ion-card-header>
             <ion-card-title i18n="@@home.individual-online-exam.title">Individual online instant exam</ion-card-title>
         </ion-card-header>
@@ -64,8 +83,8 @@
             <ion-list style="margin: 20px 0 20px 20px;">
                 <ion-item>
                     <ion-label position="floating">Course</ion-label>
-                    <ion-select [(ngModel)]="courseId" class="instantSelect">
-                        <ion-select-option *ngFor="let course of courses" value="{{course.id}}"><span style="padding: 5px;">{{course.name}}</span></ion-select-option>
+                    <ion-select [(ngModel)]="individualCourseId" class="instantSelect">
+                        <ion-select-option *ngFor="let course of individualCourses" value="{{course.id}}"><span style="padding: 5px;">{{course.name}}</span></ion-select-option>
                     </ion-select>
                 </ion-item>
                 <ion-item>

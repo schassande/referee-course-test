@@ -28,10 +28,13 @@ export class HomeComponent implements OnInit {
   sessionCode: string;
   learnerSessions: Session[] = [];
   teacherSessions: Session[] = [];
-  courses: Course[] = [];
-  courseId: string;
+  individualCourses: Course[] = [];
+  individualCourseId: string;
+  groupCourses: Course[] = [];
+  groupCourseId: string;
   teachers: User[] = [];
   teacherId: string;
+  isTeacher = false;
 
   constructor(
       private alertCtrl: AlertController,
@@ -66,10 +69,19 @@ export class HomeComponent implements OnInit {
   }
 
   loadCourses(): Observable<any> {
-    return this.courseService.findAllowedAlone().pipe(
+    return this.courseService.all().pipe(
       map((rcourses) => {
-        this.courses = rcourses.data;
-        this.courseId = this.courses && this.courses.length ? this.courses[0].id : null;
+        if (rcourses.data) {
+          this.individualCourses = rcourses.data
+            .filter((course) => course.enabled && course.allowedAlone && course.dataRegion === this.currentUser.dataRegion);
+          if (this.individualCourses.length > 0) {
+            this.individualCourseId = this.individualCourses[0].id;
+          }
+          this.groupCourses = rcourses.data.filter((course) => course.enabled && course.dataRegion === this.currentUser.dataRegion);
+          if (this.groupCourses.length > 0) {
+            this.groupCourseId = this.groupCourses[0].id;
+          }
+        }
         })
     );
   }
@@ -77,13 +89,33 @@ export class HomeComponent implements OnInit {
     return this.userService.findTeachers(null, this.currentUser.dataRegion).pipe(
       map((rusers) => {
         this.teachers = rusers.data;
-        this.teacherId = this.teachers && this.teachers.length ? this.teachers[0].id : null;
+        if (this.teachers && this.teachers.length > 0) {
+          // Pick up randomly a teacher
+            const teacherIdx: number = Math.round(Math.random() * 10000) % this.teachers.length;
+            this.teacherId = this.teachers[teacherIdx].id;
+            this.isTeacher = this.teachers.filter(t => t.id === this.currentUser.id).length > 0;
+          } else {
+            this.teacherId = null;
+            this.isTeacher = false;
+            }
       })
     );
   }
-
+  createGroupSession() {
+    const course: Course = this.individualCourses.find(c => c.id === this.individualCourseId);
+    const teacher: User = this.teachers.find(u => u.id === this.currentUser.id); // teacher is the current user
+    if (!course && !teacher) {
+      return;
+    }
+    const session: Session = this.sessionService.newSession(course, teacher, this.currentUser.dataRegion);
+    this.sessionService.save(session).subscribe((rsess) => {
+      if (rsess.data) {
+        this.navController.navigateRoot(`/session/edit/${rsess.data.id}`);
+      }
+    });
+  }
   runInstantSession() {
-    const course: Course = this.courses.find(c => c.id === this.courseId);
+    const course: Course = this.individualCourses.find(c => c.id === this.individualCourseId);
     const teacher: User = this.teachers.find(u => u.id === this.teacherId);
     if (!course && !teacher) {
       return;
@@ -96,6 +128,7 @@ export class HomeComponent implements OnInit {
     const participant: SessionParticipant = {
       person: this.userService.userToPersonRef(this.currentUser),
       questionAnswerIds: [],
+      answeredQuestions: 0,
       seriesResult: [],
       pass: false,
       score: -1,
@@ -162,22 +195,25 @@ export class HomeComponent implements OnInit {
         this.alertCtrl.create({ message: error, buttons: [{ text: 'Ok'}]}).then(a => a.present());
         return;
       }
-      const sIdx = session.participantIds.indexOf(this.currentUser.id);
-      if (sIdx >= 0) {
-        // already participant
-        this.routeLearnerSession(rsess.data);
-      } else {
-        // add the learner
-        this.sessionService.addLearner(session, this.currentUser);
-        // save the session
-        this.sessionService.save(session)
-          // got to the session
-          .subscribe((rsess2) => this.routeLearnerSession(rsess2.data));
+      let sIdx = session.teacherIds.indexOf(this.currentUser.id);
+      if (sIdx >= 0) { // already the teacher
+        this.navController.navigateRoot('/session/edit/' +  session.id);
+        return;
       }
+      if (sIdx >= 0) { // already participant
+        this.routeLearnerSession(rsess.data);
+        return;
+      }
+      // add the learner
+      this.sessionService.addLearner(session, this.currentUser);
+      // save the session
+      this.sessionService.save(session)
+        // got to the session
+        .subscribe((rsess2) => this.routeLearnerSession(rsess2.data));
     });
   }
   routeLearnerSession(session) {
-    if (session.status === 'REGISTRATION' || session.status === 'CLOSED') {
+    if (session.status === 'CLOSED') {
       this.navController.navigateRoot('/session/edit/' +  session.id);
     } else {
       this.navController.navigateRoot('/session/play/' +  session.id);

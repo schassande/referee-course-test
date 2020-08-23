@@ -114,6 +114,9 @@ export class UserEditPage implements OnInit {
     if (!this.isValidString(this.user.email, 5, 50)) {
       this.error.push(('Invalid email: 5 to 50 chars'));
     }
+    if (!this.user.id && !this.isValidString(this.user.password, 6, 20)) {
+      this.error.push(('Invalid password: 6 to 20 chars'));
+    }
     return this.error.length === 0;
   }
   isValidString(str: string, minimalLength: number = 0, maximalLength: number = 100): boolean {
@@ -167,7 +170,7 @@ export class UserEditPage implements OnInit {
         {
           text: 'Delete',
           handler: () => { 
-            this.userService.deleteAccount(this.user);
+            this.userService.deleteUser(this.user).subscribe();
           }
         }
       ]

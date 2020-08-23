@@ -1,8 +1,8 @@
 export interface Response {
-    error: {
-        errorCode: number;
+    error?: {
+        errorCode?: number;
         code?: string;
-        error: any;
+        error?: any;
     };
 }
 export interface ResponseWithData<D> extends Response {

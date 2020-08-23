@@ -91,32 +91,49 @@ export class UserService  extends RemotePersistentDataService<User> {
         }
     }
 
-    public delete(id: string): Observable<Response> {
+    public deleteUser(user: User): Observable<Response> {
+        this.logger.debug(() => 'UserService.deleteUser(appId=' + user.id + ', firebaseId=' + user.accountId + ')');
         // check the user to delete is the current user.
-        if (this.connectedUserService.getCurrentUser().id !== id) {
+        if (this.connectedUserService.getCurrentUser().id !== user.id) {
             return of({error: {error: 'Not current user', errorCode: 1}});
         }
-        // First delete user from database
-        return super.delete(id).pipe(
-            flatMap( (res) => {
-                if (res.error != null) {
-                    this.logger.debug(() => 'Error on delete' + res.error);
-                    return of (res);
-                } else {
-                    // then delete the user from firestore user auth database
-                    return from(this.auth.currentUser).pipe(
-                        flatMap((user) => {
-                            return from(user.delete());
-                        }),
-                        map(() => {
-                            return {error: null};
-                        }),
-                        catchError((err) => {
-                            console.error(err);
-                            return of({error: err});
-                        })
-                    );
+        // Check the user to delete is the current auth user
+        let userfb: firebase.User = null;
+        return from(this.auth.currentUser).pipe(
+            map((userFB: firebase.User) => {
+                userfb = userFB;
+                if (!userfb) {
+                    throw new Error('Error on delete: this.auth.user return invalid user: ' + userfb);
+                    return of({ error: { error : 'Technical Error', errorCode: 99, code: '' }});
+                } else if (userfb.uid !== user.accountId) {
+                    throw new Error('Error on delete: this.auth.user.uid (' + userfb.uid
+                        + ') different from user.accountId (' + user.accountId + ')');
                 }
+                return userfb;
+            }),
+            // First delete user from database
+            flatMap(() => super.delete(user.id)),
+            map((res) => {
+                if (res.error != null) {
+                    this.logger.debug(() => 'Error on delete: ' + res.error);
+                    throw res.error;
+                }
+                return res;
+            }),
+            // then delete Firebase user
+            flatMap((res) => {
+                this.logger.debug(() => 'delete firebase user ' + user.accountId);
+                return from(userfb.delete());
+            }),
+            // then disconnect user
+            map(() => {
+                this.connectedUserService.userDisconnected();
+                this.navController.navigateRoot('/user/login');
+                return {error: null};
+            }),
+            catchError((err) => {
+                this.logger.error('Error on delete: ' + err, err);
+                return of({ error: { error : err, errorCode: 99, code: 'Technical error' } });
             })
         );
     }
@@ -379,20 +396,6 @@ export class UserService  extends RemotePersistentDataService<User> {
             club: null,
             teacherQualifications: []
         } as User;
-    }
-    deleteAccount(user: User) {
-        if (user.id ===  this.connectedUserService.getCurrentUser().id) {
-            from(this.auth.currentUser).pipe(
-                flatMap((u) => from(u.delete())),
-                flatMap(() => this.delete(user.id)),
-                map(() => {
-                    this.connectedUserService.userDisconnected();
-                    this.navController.navigateRoot('/user/login');
-                })
-            ).subscribe();
-        } else {
-            this.delete(user.id).subscribe();
-        }
     }
     public sendNewAccountToAdmin(userId: string): Observable<any> {
         return this.angularFireFunctions.httpsCallable('sendNewAccountToAdmin')({userId});

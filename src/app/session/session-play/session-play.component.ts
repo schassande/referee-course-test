@@ -29,7 +29,7 @@ const logger = new Category('play', logSession);
 export class SessionPlayComponent implements OnInit, OnDestroy {
   readonly toastCfg = { timeOut: 3000, positionClass: 'toast-bottom-right-custom' };
 
-  loading = false;
+  loading: string = null;
   sessionId: string;
   session: Session;
   course: Course;
@@ -48,6 +48,7 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
   isTeacher = false;
   participantResult: TestParticipantResult = null;
   remainingTime: string;
+  refreshingStat = false;
 
   constructor(
     private alertCtrl: AlertController,
@@ -68,7 +69,7 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
   }
 
   loadData() {
-    this.loading = true;
+    this.loading = 'Loading the session ...';
     // load params
     this.route.paramMap.pipe(
       map((params) => this.sessionId = params.get('id')),
@@ -84,6 +85,7 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
       }),
 
       // load course
+      map(() => this.loading = 'Loading the course ...'),
       flatMap(() => this.courseService.get(this.session.courseId)),
       map((rcourse) => {
         this.course = rcourse.data;
@@ -94,20 +96,24 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
       }),
 
       // load translationService
+      map(() => this.loading = 'Loading the translations ...'),
       flatMap(() => this.loadTranslation()),
       // load participant answers
+      map(() => this.loading = 'Loading your previous answers ...'),
       flatMap(() => this.loadAnswers()),
       map(() => {
         if (this.session.status === 'CORRECTION') {
+          map(() => this.loading = 'Computing result ...'),
           this.participantResult = this.sessionService.computeParticipantResult(this.course, this.session, this.learnerAnswers);
         }
       }),
       map(() => {
         if (this.session.autoPlay) {
+          map(() => this.loading = 'Lauching Autoplay ...'),
           this.autoPlay();
         }
       }),
-      map(() => this.loading = false)
+      map(() => this.loading = null)
     ).subscribe();
   }
 
@@ -116,6 +122,7 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
     } else if (this.session.status === 'STOPPED') {
     }
   }
+
   public ngOnDestroy() {
     if (this.intervalId) {
       clearInterval(this.intervalId);
@@ -147,10 +154,11 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
     if (!this.session) {
       errorMsg = 'The session does not exist.';
       newRoute = '/home';
-    } else if (this.session.status !== 'STARTED'
+    } else if (this.session.status !== 'REGISTRATION'
+        && this.session.status !== 'STARTED'
         && this.session.status !== 'STOPPED'
         && this.session.status !== 'CORRECTION') {
-      errorMsg = 'The session is not started.';
+      errorMsg = 'The session is not accessible.';
       newRoute = '/session/edit/' + this.sessionId;
     } else {
       const isLearner = this.session.participantIds.indexOf(this.connectedUserService.getCurrentUser().id) >= 0;
@@ -310,7 +318,13 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
     this.session.expireDate = new Date();
     this.save().subscribe(() => this.toastrService.success('The exam has been stopped.', '', this.toastCfg));
   }
-
+  refreshLearnerResult() {
+    if (this.refreshingStat) {
+      return;
+    }
+    this.refreshingStat = true;
+    this.sessionService.computeLearnerScores(this.session, this.course).subscribe(() => this.refreshingStat = false);
+  }
   correction() {
     this.session.status = 'CORRECTION';
     this.sessionService.computeLearnerScores(this.session, this.course).pipe(

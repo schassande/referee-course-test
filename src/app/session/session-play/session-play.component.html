@@ -19,15 +19,24 @@
         </ion-fab-button>
     </ion-fab>
     <div *ngIf="loading" style="margin: 20px auto; text-align: center;">
-        <ion-spinner name="bubbles"></ion-spinner>
+        <ion-spinner name="bubbles"></ion-spinner>&nbsp;{{loading}}
     </div>
 
-    <div *ngIf="!loading && session && session.status !== 'CLOSED'">
+    <div *ngIf="!loading && session && session.status === 'REGISTRATION'">
+        <div style="text-align: center; margin: 10px auto; font-size: 1.3em;">{{course.name}}</div>
+        <div style="text-align: center; margin: 10px auto; font-size: 1em;">Session: {{session.keyCode}}</div>
+        <div style="text-align: center; margin: 30px auto; font-size: 1em;"><b>The session is not yet started.</b><br>Please hold the teacher starts it.<br>Then, refresh the page<br>(ue the bottom right button).</div>
+    </div>
+    <div *ngIf="!loading && session && session.status !== 'CLOSED' && session.status !== 'REGISTRATION'">
+        <div style="text-align: center; margin: 10px auto; font-size: 1.3em;">{{course.name}}</div>
+        <div style="text-align: center; margin: 10px auto; font-size: 1em;">Session: {{session.keyCode}}</div>
         <div class="questionNumberLine">
             <ion-button shape="round" (click)="decQuestionIdx()" class="questionButton" style="margin-left: 20px;">
                 <ion-icon name="arrow-back-outline"></ion-icon>
             </ion-button>
-            <div class="questionNumber"><span i18n="@@session-play.question">Question</span> {{questionIdx + 1}}/{{questions.length}}</div>
+            <div class="questionNumber"><span i18n="@@session-play.question">Question</span> {{questionIdx + 1}}/{{questions.length}}
+                <span *ngIf="isTeacher">({{question.questionId}})</span>
+            </div>
             <ion-button shape="round" (click)="incQuestionIdx()" class="questionButton">
                 <ion-icon name="arrow-forward-outline"></ion-icon>
             </ion-button>
@@ -37,19 +46,26 @@
             <ion-item>
                 <ion-label innerHtml="{{question.text}}" class="question"></ion-label>
             </ion-item>
-            <ion-radio-group name="question" [(ngModel)]="answerValue">
+            <ion-radio-group name="question" [(ngModel)]="answerValue" *ngIf="!question.questionType || question.questionType === 'UNIQUE'">
                 <ion-item *ngFor="let answer of question.answers; let index = index;" (click)="answerSelected(index)" [ngClass]="{'rightAnswer': showRightAnswer && answer.right}">
                     <ion-label class="answer">{{answerLetters[index]}} - {{answer.text}}</ion-label>
                     <ion-icon *ngIf="sessionExpired && answerValue && answerValue === index.toString()" slot="end" name="radio-button-on-outline"></ion-icon>
                     <ion-radio *ngIf="!sessionExpired && !showRightAnswer" slot="end" value="{{index}}"></ion-radio>
                 </ion-item>
             </ion-radio-group>
+            <div *ngIf="question.questionType === 'COMBINATION'">
+                <ion-item *ngFor="let answer of question.answers; let index = index;" (click)="answerSelected(index)" [ngClass]="{'rightAnswer': showRightAnswer && answer.right}">
+                    <ion-label class="answer">{{answerLetters[index]}} - {{answer.text}}</ion-label>
+                    <ion-icon *ngIf="sessionExpired && answerValue && answerValue === index.toString()" slot="end" name="radio-button-on-outline"></ion-icon>
+                    <ion-checkbox *ngIf="!sessionExpired && !showRightAnswer" slot="end" value="{{index}}"></ion-checkbox>
+                </ion-item>
+            </div>
         </ion-list>
         <div class="questionNumberLine">
-            <div class="questionNumber" *ngIf="session.status === 'CORRECTION'" [ngClass]="{'testPass': participantResult.pass, 'testFail': !participantResult.pass}">
+            <div class="questionNumber" *ngIf="!isTeacher && session.status === 'CORRECTION'" [ngClass]="{'testPass': participantResult.pass, 'testFail': !participantResult.pass}">
                 <span i18n="@@session-play.score">Score</span>: {{participantResult.score}}/{{participantResult.requiredScore}}, {{participantResult.percent}}%
             </div>
-            <div class="questionNumber"><span i18n="@@session-play.question-no-answer">Questions without answer</span>: {{nbQuestion - learnerAnswers.size}}/{{nbQuestion}}
+            <div class="questionNumber" *ngIf="!isTeacher"><span i18n="@@session-play.question-no-answer">Questions without answer</span>: {{nbQuestion - learnerAnswers.size}}/{{nbQuestion}}
                 <ion-button shape="round" (click)="nextNoAnswerQuestion()" class="questionButton" *ngIf="nbQuestion > learnerAnswers.size">
                     <ion-icon name="search-outline"></ion-icon>
                 </ion-button>
@@ -87,6 +103,24 @@
                 <ion-icon name="close-outline"></ion-icon>&nbsp;Close
             </ion-button>
         </div>
+        <ion-item-group style="border-left: 1px solid lightgrey; border-right: 1px solid lightgrey;" *ngIf="course">
+            <ion-item-divider color="light" style="text-align: center; font-size: 1.2em; padding: 10px;">
+                <ion-label><span i18n="@@session-edit.learners">Learners</span> ({{session.participants.length}})</ion-label>
+                <ion-button slot="end" (click)="refreshLearnerResult()" *ngIf="session.status !== 'CLOSED'">
+                    <ion-icon name="reload-outline" *ngIf="!refreshingStat"></ion-icon>
+                    <ion-spinner name="bubbles" *ngIf="refreshingStat"></ion-spinner>
+                </ion-button>
+            </ion-item-divider>
+            <ion-item *ngFor="let learner of session.participants; let index = index;">
+                <ion-label style="border: none;" class="listItemButton">
+                    {{learner.person.firstName}} {{learner.person.lastName}}
+                    <div *ngIf="learner.score >= 0" [ngClass]="{'testPass': learner.pass, 'testFail': !learner.pass}" style="margin-top: 5px;">
+                        <span>{{learner.pass ? 'PASS' : 'FAIL'}}</span>&nbsp;
+                        <span>Answers:{{learner.answeredQuestions}}/{{course.test.nbQuestion}}, Right:{{learner.score}}/{{course.test.nbQuestion}} ({{learner.percent}}%), Required:{{learner.requiredScore}}</span>
+                    </div>
+                </ion-label>
+            </ion-item>
+        </ion-item-group>
     </section>
     <div style="height: 100px;"></div>
 </ion-content>

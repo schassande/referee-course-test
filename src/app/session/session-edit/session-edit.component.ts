@@ -75,7 +75,12 @@ export class SessionEditComponent implements OnInit {
 
   loadCourses(): Observable<any> {
     return this.courseService.all().pipe(
-      map((rcourses) => this.courses = rcourses.data)
+      map((rcourses) => {
+        if (rcourses.data) {
+          // filter to keep only enabled courses
+          this.courses = rcourses.data.filter((course) => course.enabled);
+        }
+      })
     );
   }
 
@@ -115,7 +120,7 @@ export class SessionEditComponent implements OnInit {
     if (this.readonly) {
       this.navController.navigateRoot('/session');
     } else {
-      this.save().pipe(
+      this.save(false).pipe(
         map((rses) => {
           if (!rses.error) {
             this.navController.navigateRoot('/session');
@@ -124,13 +129,18 @@ export class SessionEditComponent implements OnInit {
     }
   }
 
-  save(): Observable<ResponseWithData<Session>> {
+  save(canNavigation: boolean = true): Observable<ResponseWithData<Session>> {
+    const sid = this.session.id;
     return this.sessionService.save(this.session).pipe(
       map((rses) => {
         if (!rses.error) {
           this.session = rses.data;
         }
         logger.debug(() => 'Session saved: ' + this.session);
+        if (canNavigation && !sid && this.session.id) {
+          // the session has been created, then move to edit page
+          this.navController.navigateRoot(`/session/edit/{this.session.id}`);
+        }
         return rses;
       }));
   }
@@ -162,6 +172,7 @@ export class SessionEditComponent implements OnInit {
                 score: -1,
                 requiredScore: -1,
                 percent: -1,
+                answeredQuestions: 0,
                 seriesResult: []
               });
               this.session.participantIds.push(user.id);
@@ -176,6 +187,7 @@ export class SessionEditComponent implements OnInit {
             }
           });
         }
+        this.save().subscribe();
       }
     });
     modal.present();
@@ -220,29 +232,29 @@ export class SessionEditComponent implements OnInit {
       this.session.startDate,
       this.course.test.duration,
       this.course.test.durationUnit);
-    this.save().subscribe(() => this.toastrService.success('The exam has been started.', '', this.toastCfg));
+    this.save(true).subscribe(() => this.toastrService.success('The exam has been started.', '', this.toastCfg));
     }
   stop() {
     this.session.status = 'STOPPED';
     this.session.expireDate = new Date();
-    this.save().subscribe(() => this.toastrService.success('The exam has been stopped.', '', this.toastCfg));
+    this.save(true).subscribe(() => this.toastrService.success('The exam has been stopped.', '', this.toastCfg));
   }
   correction() {
     this.session.status = 'CORRECTION';
     this.sessionService.computeLearnerScores(this.session, this.course).pipe(
-      flatMap(() => this.save()),
+      flatMap(() => this.save(true)),
       map(() => this.toastrService.success('Marking step of the exam.', '', this.toastCfg))
     ).subscribe();
   }
   computeScores() {
     this.sessionService.computeLearnerScores(this.session, this.course).pipe(
-      flatMap(() => this.save()),
+      flatMap(() => this.save(true)),
       map(() => this.toastrService.success('Scores have been computed.', '', this.toastCfg))
     ).subscribe();
   }
   close() {
     this.session.status = 'CLOSED';
-    this.save().subscribe(() => this.toastrService.success('The exam has been closed.', '', this.toastCfg));
+    this.save(true).subscribe(() => this.toastrService.success('The exam has been closed.', '', this.toastCfg));
   }
   delete() {
     this.alertCtrl.create({
