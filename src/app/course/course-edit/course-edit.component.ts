@@ -9,7 +9,7 @@ import { Observable, of, forkJoin } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { DateService } from 'src/app/service/DateService';
 import { CourseService } from 'src/app/service/CourseService';
-import { AlertController, NavController, ToastController } from '@ionic/angular';
+import { AlertController, NavController, ToastController, LoadingController } from '@ionic/angular';
 import { Course, Translation, Translatable } from 'src/app/model/model';
 import { Component, OnInit, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 
@@ -33,6 +33,7 @@ export class CourseEditComponent implements OnInit {
     private courseService: CourseService,
     private connectedUserService: ConnectedUserService,
     private dateService: DateService,
+    private loadingController: LoadingController,
     private navController: NavController,
     private route: ActivatedRoute,
     private toastController: ToastController,
@@ -146,9 +147,11 @@ export class CourseEditComponent implements OnInit {
 
   importCourse(event) {
     if (!this.readonly) {
+      this.loadingController.create({ message: 'Analysing file ...', translucent: true}).then((l) => l.present());
       const reader: FileReader = new FileReader();
       reader.onloadend = () => {
         const importedCourse: Course = JSON.parse(reader.result.toString());
+        this.loadingController.dismiss();
         logger.debug(() => 'Course imported: ' + JSON.stringify(importedCourse, null, 2));
         if (importedCourse.id === this.courseId) {
           this.course =  importedCourse;

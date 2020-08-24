@@ -9,7 +9,6 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable, forkJoin, NEVER, of } from 'rxjs';
 import { map, flatMap } from 'rxjs/operators';
 
-import { UserService } from 'src/app/service/UserService';
 import { TranslationService } from 'src/app/service/TranslationService';
 import { SessionService } from 'src/app/service/SessionService';
 import { DateService } from 'src/app/service/DateService';
@@ -28,23 +27,37 @@ const logger = new Category('play', logSession);
 })
 export class SessionPlayComponent implements OnInit, OnDestroy {
   readonly toastCfg = { timeOut: 3000, positionClass: 'toast-bottom-right-custom' };
-
+  /** Indicate if the data are loading. The value is the name of the data. Null means nothing is loading. */
   loading: string = null;
+  /** The identifier of the session */
   sessionId: string;
+  /** The session of course */
   session: Session;
+  /** the course */
   course: Course;
+  /** The language to use for the exam */
   lang: string;
-
+  /** Index of the current question */
   questionIdx = 0;
+  /** The current question */
   question: Question = null;
+  /** The current series of questions */
   questions: Question[] = [];
+  /** The letter to use as visible identifier of the answers */
   answerLetters: string[] = ['A', 'B', 'C', ' D', 'E', 'F', 'G', 'H', 'I', 'J'];
+  /** Is the identifier of the answer choosen by the particpiant in case of question.questionType === 'UNIQUE' */
   answerValue = '';
+  /** Is an boolean arrary of the checked answer in case of question.questionType === 'COMBINATION' */
+  answerValues: boolean[] = [];
+  /** The answers of the participant. key is the questionId, value is the answer to a question by the participant */
   learnerAnswers: Map<string, ParticipantQuestionAnswer> = new Map<string, ParticipantQuestionAnswer>();
   nbQuestion = 0;
+  /** Indicate is the session is expired/stopped */
   sessionExpired = false;
+  /** Indicate if the right answer must be visible */
   showRightAnswer = false;
   intervalId;
+  /** Indicate is the user is the teacher of the session */
   isTeacher = false;
   participantResult: TestParticipantResult = null;
   remainingTime: string;
@@ -101,9 +114,9 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
       // load participant answers
       map(() => this.loading = 'Loading your previous answers ...'),
       flatMap(() => this.loadAnswers()),
+      map(() => this.loading = 'Computing result ...'),
       map(() => {
         if (this.session.status === 'CORRECTION') {
-          map(() => this.loading = 'Computing result ...'),
           this.participantResult = this.sessionService.computeParticipantResult(this.course, this.session, this.learnerAnswers);
         }
       }),
@@ -196,12 +209,22 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
   nextNoAnswerQuestion() {
     logger.debug(() => 'nextNoAnswerQuestion()' + this.nbQuestion + ' ' + this.learnerAnswers.size + ' ' + this.answerValue);
     if (this.nbQuestion > this.learnerAnswers.size) {
-      while (this.answerValue !== '') {
+      while (this.hasAnswer()) {
         this.incQuestionIdx();
-        logger.debug(() => 'nextNoAnswerQuestion() questionIdx=' + this.questionIdx + ', answerValue=' + this.answerValue);
+        logger.debug(() => 'nextNoAnswerQuestion() questionIdx=' + this.questionIdx
+          + ', answerValue=' + this.answerValue + ', answerValues=' + this.answerValues);
       }
     }
   }
+
+  hasAnswer(): boolean {
+    if (this.question.questionType === 'COMBINATION') {
+      return this.answerValues.filter(av => av).length > 0;
+    } else {
+      return this.answerValue !== '';
+    }
+  }
+
   incQuestionIdx() {
     this.questionIdx = (this.questionIdx + 1) % this.questions.length;
     this.question = this.questions[this.questionIdx];
@@ -253,24 +276,40 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
     }
     logger.debug(() => 'answerSelected:' + index);
     let pa: ParticipantQuestionAnswer = this.learnerAnswers.get(this.getAnswerKey());
-    if (pa) {
-      pa.answerId = this.question.answers[index].answerId;
-      pa.responseTime = new Date();
-      pa.lastUpdate = new Date();
-    } else {
+    if (!pa) {
       pa = {
         id: '',
         version: 0,
         creationDate: new Date(),
         dataRegion: this.connectedUserService.getCurrentUser().dataRegion,
         dataStatus: 'NEW',
-        lastUpdate: new Date(),
-        responseTime: new Date(),
-        answerId: this.question.answers[index].answerId,
+        lastUpdate: null,
+        responseTime: null,
+        answerId: '',
+        answerIds: [],
         learnerId: this.connectedUserService.getCurrentUser().id,
         questionId: this.question.questionId,
         sessionId: this.sessionId,
       };
+    }
+    pa.responseTime = new Date();
+    pa.lastUpdate = new Date();
+    if (this.question.questionType === 'COMBINATION') {
+      // question can have several right answers
+      // update the local value
+      this.answerValues[index] = !this.answerValues[index];
+      // update the value in the business object
+      const idx = pa.answerIds.indexOf(this.question.answers[index].answerId);
+      if (this.answerValues[index] && idx < 0) {
+        // answer is checked value and the array does not contain the answer id => add it
+        pa.answerIds.push(this.question.answers[index].answerId);
+      } else if (!this.answerValues[index] && idx >= 0)  {
+        // Answer is NOT checked and the array contains the answer id => remove it
+        pa.answerIds.splice(idx, 1);
+      }
+    } else {
+      // question can have only one right answer
+      pa.answerId = this.question.answers[index].answerId;
     }
     this.participantQuestionAnswerService.save(pa).subscribe((rpqa) => {
       this.learnerAnswers.set(this.getAnswerKey(), rpqa.data);
@@ -280,12 +319,21 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
   updateAnswer() {
     const pa: ParticipantQuestionAnswer = this.learnerAnswers.get(this.getAnswerKey());
     if (pa) {
-      this.answerValue = '' + this.question.answers.findIndex(a => a.answerId === pa.answerId);
+      // the particiant already answered to the question => Set the local value from the participant answer
+      if (this.question.questionType === 'COMBINATION') {
+        this.answerValues = this.question.answers.map(a => pa.answerIds.indexOf(a.answerId) >= 0);
+        this.answerValue = '';
+      } else {
+        this.answerValue = '' + this.question.answers.findIndex(a => a.answerId === pa.answerId);
+        this.answerValues = this.question.answers.map(a => false);
+      }
     } else {
+      // The participant didn't answer to the question
+      this.answerValues = this.question.answers.map(a => false);
       this.answerValue = '';
     }
     this.changeDetectorRef.detectChanges();
-    logger.debug(() => 'updateAnswer(): ' + this.getAnswerKey() + ' ' + pa + ' ' + this.answerValue);
+    logger.debug(() => 'updateAnswer(): ' + this.getAnswerKey() + ' ' + pa + ' ' + this.answerValue + ' ' + this.answerValues);
   }
 
   onSwipe(event) {

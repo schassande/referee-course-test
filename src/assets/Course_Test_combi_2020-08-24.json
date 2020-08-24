@@ -1,0 +1,103 @@
+{
+    "id": "2gHZjiYF64jakytje94x",
+    "name": "Test combi",
+    "enabled": true,
+    "allowedAlone": false,
+    "dataRegion": "Europe",
+    "theme": "blue",
+    "level": 1,
+    "dataStatus": "CLEAN",
+    "creationDate": "2020-08-24T06:38:43.157Z",
+    "version": 1598251084424,
+    "lastUpdate": "2020-08-24T06:38:54.667Z",
+    "test": {
+        "duration": 30,
+        "durationUnit": "m",
+        "enabled": true,
+        "requiredScore": 3,
+        "nbQuestion": 6,
+        "version": "1.0",
+        "supportedLanguages": ["en"],
+        "certificateTemplateUrl": "",
+        "series": [{
+            "serieName": "Serie1",
+            "selectionMode": "ALL",
+            "passRequired": true,
+            "requiredScore": 0,
+            "enabled": true,
+            "nbQuestion": 6,
+            "questions": [{
+                    "questionId": "Q1",
+                    "key": "test.combi.Q1",
+                    "questionType": "UNIQUE",
+                    "enabled": true,
+                    "answers": [
+                        { "key": "test.combi.Q1.A", "answerId": "A", "point": 0, "right": false },
+                        { "key": "test.combi.Q1.B", "answerId": "B", "point": 1, "right": true },
+                        { "key": "test.combi.Q1.C", "answerId": "C", "point": 0, "right": false },
+                        { "key": "test.combi.Q1.D", "answerId": "D", "point": 0, "right": false }
+                    ]
+                },
+                {
+                    "questionId": "Q2",
+                    "key": "test.combi.Q2",
+                    "questionType": "COMBINATION",
+                    "enabled": true,
+                    "answers": [
+                        { "key": "test.combi.Q2.A", "answerId": "A", "point": 1, "right": true },
+                        { "key": "test.combi.Q2.B", "answerId": "B", "point": 0, "right": true },
+                        { "key": "test.combi.Q2.C", "answerId": "C", "point": 0, "right": false },
+                        { "key": "test.combi.Q2.D", "answerId": "D", "point": 0, "right": false }
+                    ]
+                },
+                {
+                    "questionId": "Q3",
+                    "key": "test.combi.Q3",
+                    "questionType": "COMBINATION",
+                    "enabled": true,
+                    "answers": [
+                        { "key": "test.combi.Q3.A", "answerId": "A", "point": 0, "right": false },
+                        { "key": "test.combi.Q3.B", "answerId": "B", "point": 0, "right": false },
+                        { "key": "test.combi.Q3.C", "answerId": "C", "point": 1, "right": true },
+                        { "key": "test.combi.Q3.D", "answerId": "D", "point": 0, "right": true }
+                    ]
+                },
+                {
+                    "questionId": "Q4",
+                    "key": "test.combi.Q4",
+                    "enabled": true,
+                    "answers": [
+                        { "key": "test.combi.Q4.A", "answerId": "A", "point": 1, "right": true },
+                        { "key": "test.combi.Q4.B", "answerId": "B", "point": 0, "right": false },
+                        { "key": "test.combi.Q4.C", "answerId": "C", "point": 0, "right": false },
+                        { "key": "test.combi.Q4.D", "answerId": "D", "point": 0, "right": false }
+                    ]
+                },
+                {
+                    "questionId": "Q5",
+                    "key": "test.combi.Q5",
+                    "questionType": "COMBINATION",
+                    "enabled": true,
+                    "answers": [
+                        { "key": "test.combi.Q5.A", "answerId": "A", "point": 0, "right": false },
+                        { "key": "test.combi.Q5.B", "answerId": "B", "point": 0, "right": false },
+                        { "key": "test.combi.Q5.C", "answerId": "C", "point": 1, "right": true },
+                        { "key": "test.combi.Q5.D", "answerId": "D", "point": 0, "right": false }
+                    ]
+                },
+                {
+                    "questionId": "Q6",
+                    "key": "test.combi.Q6",
+                    "questionType": "COMBINATION",
+                    "enabled": true,
+                    "answers": [
+                        { "key": "test.combi.Q6.A", "answerId": "A", "point": 1, "right": true },
+                        { "key": "test.combi.Q6.B", "answerId": "B", "point": 0, "right": true },
+                        { "key": "test.combi.Q6.C", "answerId": "C", "point": 0, "right": true },
+                        { "key": "test.combi.Q6.D", "answerId": "D", "point": 0, "right": true }
+                    ]
+                }
+            ]
+        }]
+    }
+}

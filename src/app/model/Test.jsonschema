@@ -1,0 +1,262 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$ref": "#/definitions/Course",
+    "definitions": {
+        "Course": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "number"
+                },
+                "creationDate": {
+                    "type": "object",
+                    "additionalProperties": false
+                },
+                "lastUpdate": {
+                    "type": "object",
+                    "additionalProperties": false
+                },
+                "dataStatus": {
+                    "$ref": "#/definitions/DataStatus"
+                },
+                "dataRegion": {
+                    "$ref": "#/definitions/DataRegion"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "level": {
+                    "type": "number"
+                },
+                "theme": {
+                    "type": "string"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "test": {
+                    "$ref": "#/definitions/Test"
+                },
+                "allowedAlone": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "allowedAlone",
+                "creationDate",
+                "dataRegion",
+                "dataStatus",
+                "enabled",
+                "id",
+                "lastUpdate",
+                "level",
+                "name",
+                "test",
+                "theme",
+                "version"
+            ],
+            "additionalProperties": false
+        },
+        "DataStatus": {
+            "type": "string",
+            "enum": [
+                "CLEAN",
+                "NEW",
+                "DIRTY",
+                "REMOVED"
+            ]
+        },
+        "DataRegion": {
+            "type": "string",
+            "enum": [
+                "Australia",
+                "New Zealand",
+                "Europe",
+                "South Africa",
+                "USA"
+            ]
+        },
+        "Test": {
+            "type": "object",
+            "properties": {
+                "version": {
+                    "type": "string"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "duration": {
+                    "type": "number"
+                },
+                "durationUnit": {
+                    "$ref": "#/definitions/DurationUnit"
+                },
+                "series": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/QuestionSerie"
+                    }
+                },
+                "requiredScore": {
+                    "type": "number"
+                },
+                "nbQuestion": {
+                    "type": "number"
+                },
+                "supportedLanguages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "certificateTemplateUrl": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "version",
+                "enabled",
+                "duration",
+                "durationUnit",
+                "series",
+                "requiredScore",
+                "nbQuestion",
+                "supportedLanguages",
+                "certificateTemplateUrl"
+            ],
+            "additionalProperties": false
+        },
+        "DurationUnit": {
+            "type": "string",
+            "enum": [
+                "m",
+                "h",
+                "d"
+            ]
+        },
+        "QuestionSerie": {
+            "type": "object",
+            "properties": {
+                "serieName": {
+                    "type": "string"
+                },
+                "questions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Question"
+                    }
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "requiredScore": {
+                    "type": "number"
+                },
+                "passRequired": {
+                    "type": "boolean"
+                },
+                "nbQuestion": {
+                    "type": "number"
+                },
+                "selectionMode": {
+                    "$ref": "#/definitions/SelectionMode"
+                }
+            },
+            "required": [
+                "questions",
+                "enabled",
+                "requiredScore",
+                "passRequired",
+                "nbQuestion",
+                "selectionMode"
+            ],
+            "additionalProperties": false
+        },
+        "Question": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "type": "string"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "questionId": {
+                    "type": "string"
+                },
+                "imageId": {
+                    "type": "string"
+                },
+                "answers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Answer"
+                    }
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "required": {
+                    "type": "boolean"
+                },
+                "questionType": {
+                    "$ref": "#/definitions/QuestionType"
+                }
+            },
+            "required": [
+                "answers",
+                "enabled",
+                "key",
+                "questionId",
+                "required"
+            ],
+            "additionalProperties": false
+        },
+        "Answer": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "type": "string"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "answerId": {
+                    "type": "string"
+                },
+                "imageId": {
+                    "type": "string"
+                },
+                "right": {
+                    "type": "boolean"
+                },
+                "point": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "answerId",
+                "key",
+                "point"
+            ],
+            "additionalProperties": false
+        },
+        "QuestionType": {
+            "type": "string",
+            "enum": [
+                "UNIQUE",
+                "COMBINATION"
+            ]
+        },
+        "SelectionMode": {
+            "type": "string",
+            "enum": [
+                "ALL",
+                "RANDOM"
+            ]
+        }
+    }
+}

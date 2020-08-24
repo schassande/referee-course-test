@@ -111,7 +111,8 @@ export class SessionService extends RemotePersistentDataService<Session> {
     if (!testResult) {
       testResult = {
         score: 0,
-        requiredScore: 0,
+        requiredScore: course.test.requiredScore,
+        maxScore: 0,
         percent: 0,
         pass: true,
         answeredQuestions: 0,
@@ -119,6 +120,7 @@ export class SessionService extends RemotePersistentDataService<Session> {
       };
     } else {
       testResult.score = 0;
+      testResult.maxScore = 0;
       testResult.requiredScore = course.test.requiredScore;
       testResult.percent = 0;
       testResult.pass = true;
@@ -129,6 +131,7 @@ export class SessionService extends RemotePersistentDataService<Session> {
       const serieResult: ParticipantResult = {
         score: 0,
         requiredScore: serie.requiredScore,
+        maxScore: 0,
         percent: 0,
         answeredQuestions: 0,
         pass: true,
@@ -140,15 +143,16 @@ export class SessionService extends RemotePersistentDataService<Session> {
         }
       });
       serieResult.pass = serieResult.score >= serie.requiredScore;
-      serieResult.percent = Math.round(serieResult.score * 100 / nbSelectedQuestion);
+      serieResult.percent = Math.round(serieResult.score * 100 / serieResult.maxScore);
       this.logger.debug(() => 'Serie result: score=' + serieResult.score + ', pass=' + serieResult.pass
         + ', percent=' + serieResult.percent + ', requiredScore=' + serie.requiredScore);
 
       testResult.score += serieResult.score;
+      testResult.maxScore += serieResult.maxScore;
       testResult.pass = testResult.pass && (!serie.passRequired || serieResult.pass);
       testResult.answeredQuestions += serieResult.answeredQuestions;
       this.logger.debug(() => 'Test result: score=' + testResult.score + ', pass=' + testResult.pass
-        + 'answeredQuestions=' + testResult.answeredQuestions);
+        + ', answeredQuestions=' + testResult.answeredQuestions);
     });
     testResult.pass = testResult.pass && (testResult.score >= course.test.requiredScore);
     testResult.percent = Math.round(testResult.score * 100 / session.questionIds.length);
@@ -171,9 +175,10 @@ export class SessionService extends RemotePersistentDataService<Session> {
       return false;
     }
     // the question of the serie has been selected.
+    serieResult.maxScore += question.answers.map(a => a.right ? a.point : 0).reduce((p, c) => p + c);
     const pa = learnerAnswers.get(question.questionId);
     if (!pa) {
-      this.logger.debug(() => 'computeNbRightAnswer: no response for question ' + question.questionId);
+      this.logger.debug(() => 'The participant did not answer to the question ' + question.questionId);
       return false;
     }
     const rightAnswers = question.answers.filter(answer => answer.right);
@@ -182,11 +187,14 @@ export class SessionService extends RemotePersistentDataService<Session> {
       return false;
     }
     if (pa.responseTime.getTime() > session.expireDate.getTime()) {
-      this.logger.debug(() => 'Answer ' + pa.answerId + ' is late');
+      this.logger.debug(() => 'Participant answer of the question '  + question.questionId + ' is late');
       return true;
     }
+    this.logger.debug(() => 'Checking the participant answer of the question ' + question.questionId
+      + ': answerIds=' + pa.answerIds + ', answerId=' + pa.answerId);
     serieResult.answeredQuestions++;
-    if (pa.answerId && ! pa.answerIds) {
+    if (pa.answerId && (!pa.answerIds || pa.answerIds.length === 0)) {
+      this.logger.debug(() => 'Set pa.answerId (' + pa.answerId + ') into pa.answerIds');
       pa.answerIds = [pa.answerId];
     }
     let points = 0;
@@ -198,7 +206,7 @@ export class SessionService extends RemotePersistentDataService<Session> {
         this.logger.debug(() => 'Right answer ' + rightAnswer.answerId + ' has been found, points=' + points);
       } else {
         error = true;
-        this.logger.debug(() => 'Right answer' + rightAnswer.answerId + '  has not been found among participant answers.');
+        this.logger.debug(() => 'Right answer ' + rightAnswer.answerId + '  has not been found among participant answers.');
       }
     });
     if (error || points === 0) {
@@ -306,6 +314,7 @@ export class SessionService extends RemotePersistentDataService<Session> {
       pass: false,
       score: -1,
       requiredScore: -1,
+      maxScore: 0,
       percent: -1,
       answeredQuestions: 0,
       seriesResult: []

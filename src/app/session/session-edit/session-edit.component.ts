@@ -171,6 +171,7 @@ export class SessionEditComponent implements OnInit {
                 pass: false,
                 score: -1,
                 requiredScore: -1,
+                maxScore: 0,
                 percent: -1,
                 answeredQuestions: 0,
                 seriesResult: []

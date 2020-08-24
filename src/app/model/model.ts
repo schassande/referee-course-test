@@ -153,6 +153,7 @@ export interface ParticipantResult {
   /** score */
   score: number;
   requiredScore: number;
+  maxScore: number;
   /** score as percent */
   percent: number;
   answeredQuestions: number;

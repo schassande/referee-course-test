@@ -56,16 +56,16 @@
             <div *ngIf="question.questionType === 'COMBINATION'">
                 <ion-item *ngFor="let answer of question.answers; let index = index;" (click)="answerSelected(index)" [ngClass]="{'rightAnswer': showRightAnswer && answer.right}">
                     <ion-label class="answer">{{answerLetters[index]}} - {{answer.text}}</ion-label>
-                    <ion-icon *ngIf="sessionExpired && answerValue && answerValue === index.toString()" slot="end" name="radio-button-on-outline"></ion-icon>
-                    <ion-checkbox *ngIf="!sessionExpired && !showRightAnswer" slot="end" value="{{index}}"></ion-checkbox>
+                    <ion-icon *ngIf="sessionExpired && answerValues[index]" slot="end" name="radio-button-on-outline"></ion-icon>
+                    <ion-checkbox *ngIf="!sessionExpired && !showRightAnswer" slot="end" checked="{{answerValues[index]}}"></ion-checkbox>
                 </ion-item>
             </div>
         </ion-list>
         <div class="questionNumberLine">
             <div class="questionNumber" *ngIf="!isTeacher && session.status === 'CORRECTION'" [ngClass]="{'testPass': participantResult.pass, 'testFail': !participantResult.pass}">
-                <span i18n="@@session-play.score">Score</span>: {{participantResult.score}}/{{participantResult.requiredScore}}, {{participantResult.percent}}%
+                <span i18n="@@session-play.score">Score</span>: {{participantResult.score}}/{{participantResult.maxScore}} (req: {{participantResult.requiredScore}}), {{participantResult.percent}}%,
             </div>
-            <div class="questionNumber" *ngIf="!isTeacher"><span i18n="@@session-play.question-no-answer">Questions without answer</span>: {{nbQuestion - learnerAnswers.size}}/{{nbQuestion}}
+            <div class="questionNumber" *ngIf="!isTeacher && (nbQuestion - learnerAnswers.size) > 0"><span i18n="@@session-play.question-no-answer">Questions without answer</span>: {{nbQuestion - learnerAnswers.size}}/{{nbQuestion}}
                 <ion-button shape="round" (click)="nextNoAnswerQuestion()" class="questionButton" *ngIf="nbQuestion > learnerAnswers.size">
                     <ion-icon name="search-outline"></ion-icon>
                 </ion-button>

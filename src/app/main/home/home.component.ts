@@ -102,7 +102,7 @@ export class HomeComponent implements OnInit {
     );
   }
   createGroupSession() {
-    const course: Course = this.individualCourses.find(c => c.id === this.individualCourseId);
+    const course: Course = this.groupCourses.find(c => c.id === this.groupCourseId);
     const teacher: User = this.teachers.find(u => u.id === this.currentUser.id); // teacher is the current user
     if (!course && !teacher) {
       return;
@@ -133,6 +133,7 @@ export class HomeComponent implements OnInit {
       pass: false,
       score: -1,
       requiredScore: course.test.requiredScore,
+      maxScore: 0,
       percent: -1
     };
     session.participants.push(participant);
