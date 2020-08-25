@@ -97,9 +97,9 @@
             </ion-item-divider>
             <ion-item *ngFor="let question of serie.questions">
                 <div>
-                    <p style="font-weight: bold;">{{question.questionId}}: {{question.text}}</p>
+                    <p style="font-weight: bold;">{{question.questionId}}: <span innerHtml="{{question.text}}"></span></p>
                     <p *ngFor="let answer of question.answers" style="margin-left: 10px;">
-                        <span [ngClass]="{ 'right-answer' : answer.right}">{{answer.answerId}}</span> - {{answer.text}}
+                        <span [ngClass]="{ 'right-answer' : answer.right}">{{answer.answerId}}</span> - <span innerHtml="{{answer.text}}"></span>
                     </p>
                 </div>
             </ion-item>
