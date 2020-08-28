@@ -1,6 +1,5 @@
 import { logCourse } from 'src/app/logging-config';
 import { Category } from 'typescript-logging';
-import { LANGUAGES } from './../../model/model';
 import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
 import { TranslationService } from 'src/app/service/TranslationService';
 import { ResponseWithData } from 'src/app/service/response';
@@ -9,11 +8,12 @@ import { Observable, of, forkJoin } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { DateService } from 'src/app/service/DateService';
 import { CourseService } from 'src/app/service/CourseService';
-import { AlertController, NavController, ToastController, LoadingController } from '@ionic/angular';
-import { Course, Translation, Translatable } from 'src/app/model/model';
-import { Component, OnInit, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
+import { NavController, ToastController, LoadingController } from '@ionic/angular';
+import { Course, Question } from 'src/app/model/model';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 
 import * as csv from 'csvtojson';
+import { Answer } from 'functions/src/model';
 const logger = new Category('course-edit', logCourse);
 
 @Component({
@@ -28,6 +28,7 @@ export class CourseEditComponent implements OnInit {
   course: Course;
   @ViewChild('inputCourse', null) inputCourse: ElementRef;
   readonly = false;
+  editMode = false;
 
   constructor(
     private courseService: CourseService,
@@ -100,21 +101,23 @@ export class CourseEditComponent implements OnInit {
         durationUnit: 'm',
         requiredScore: 23,
         nbQuestion: 30,
-        supportedLanguages: ['en'],
+        supportedLanguages: ['EN'],
         certificateTemplateUrl: '',
         series: [ {
           enabled: true,
-          requiredScore: 27,
+          requiredScore: 0,
           passRequired: true,
           questions: [],
-          nbQuestion: 30,
+          nbQuestion: 0,
           selectionMode: 'RANDOM'
         }]
       }
     };
     return of({ error: null, data: this.course});
   }
-
+  goToTranslation() {
+    this.save().subscribe(() => this.navController.navigateRoot(`/course/translation/${this.courseId}`));
+  }
   saveNback() {
     this.save().pipe(
       map((rcourse) => {
@@ -127,6 +130,10 @@ export class CourseEditComponent implements OnInit {
   save(): Observable<ResponseWithData<Course>> {
     if (this.readonly) {
       return of({ data: this.course, error: null});
+    }
+    logger.debug(() => 'before saving. this.course.id: ' + this.course.id);
+    if (!this.course.id) {
+      this.courseService.generateQuestions(this.course);
     }
     return this.courseService.save(this.course).pipe(
       map((rcourse) => {
@@ -202,6 +209,70 @@ export class CourseEditComponent implements OnInit {
         }
       })
     ).subscribe();
+  }
+
+  onToggleMulti(question: Question) {
+    if (this.readonly || !this.editMode) {
+      return;
+    }
+    if (question.questionType === 'UNIQUE') {
+      question.questionType = 'COMBINATION';
+
+    } else if (question.questionType === 'COMBINATION') {
+      question.questionType = 'UNIQUE';
+      const rightAnswers = question.answers.filter(a => a.right);
+      if (rightAnswers.length > 1) {
+        rightAnswers.forEach((rightAnswer, index) => {
+          if (index > 0) {
+            rightAnswer.right = false;
+            rightAnswer.point = 0;
+          }
+        });
+      }
+    }
+  }
+
+  toggleRightAnswer(question: Question, answer: Answer): boolean {
+    if (this.readonly || !this.editMode) {
+      return;
+    }
+    const rightAnswers: Answer[] = question.answers.filter((a) => a.right);
+    if (answer.right) {
+      // the user askes to mark the answer as wrong.
+      if (question.questionType === 'UNIQUE') {
+        // one right answer is required => ignore the user demand
+        return false;
+
+      } else if (question.questionType === 'COMBINATION') {
+        if (rightAnswers.length < 2) {
+          // one right answer is required => ignore the user demand
+          return false;
+        }
+        const prevPoint = answer.point;
+        answer.point = 0;
+        answer.right = false;
+        if (prevPoint) {
+          // reallocate the point to the first right answer
+          question.answers.filter((a) => a.right)[0].point = prevPoint;
+        }
+        return true;
+      }
+
+    } else if (!answer.right) {
+      // the user askes to mark an answer as right.
+
+      if (question.questionType === 'UNIQUE') {
+        // switch the point from the other right answer
+        answer.right = true;
+        answer.point = rightAnswers[0].point;
+        rightAnswers[0].right = false;
+        rightAnswers[0].point = 0;
+
+      } else if (question.questionType === 'COMBINATION') {
+        answer.right = true;
+        answer.point = 0;
+      }
+    }
   }
 
   onSwipe(event) {

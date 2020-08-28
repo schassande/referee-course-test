@@ -5,7 +5,7 @@
                 <ion-icon name="arrow-back"></ion-icon>
             </ion-button>
         </ion-buttons>
-        <ion-title style="text-align: center;" i18n="@@course.edit.title">Test Edit</ion-title>
+        <ion-title style="text-align: center;" i18n="@@course.edit.title">Test Edition</ion-title>
         <ion-buttons slot="end">
             <ion-menu-button autoHide="false" menu="main"></ion-menu-button>
         </ion-buttons>
@@ -89,7 +89,25 @@
             <div *ngFor="let lang of course.test.supportedLanguages" style="text-align: left;">
                 <img src="assets/flags/{{ lang.toUpperCase() }}.png" height="30px">
             </div>
-            <ion-button slot="end" routerLink="/course/translation/{{courseId}}">Manage</ion-button>
+            <ion-button slot="end" (click)="goToTranslation()" i18n="@@course-edit.manage-translation">Manage</ion-button>
+        </ion-item>
+        <ion-item>
+            <div style="text-align: center; margin: 10px auto;">
+                <div style="text-align: center; margin: 10px auto;">
+                    <ion-button (click)="editMode = !editMode">
+                        <span *ngIf="editMode" i18n="@@course-edit.edition-mode.switch-off">Switch off the edition mode</span>
+                        <span *ngIf="!editMode" i18n="@@course-edit.edition-mode.switch-on">Switch on the edition mode</span>
+                    </ion-button>
+                </div>
+                <div *ngIf="editMode" style="text-align: left;">
+                    <p i18n="@@course-edit.edition-mode">Edition mode</p>
+                    <ul>
+                        <li i18n="@@course-edit.desc-switch-multi">Click on a question to switch between a question having one or several answers.</li>
+                        <li i18n="@@course-edit.desc-switch-right">Click on an answer to switch between right/wrong answer</li>
+                    </ul>
+                </div>
+
+            </div>
         </ion-item>
         <ion-item-group style="border-left: 1px solid lightgrey; border-right: 1px solid lightgrey;" *ngFor="let serie of course.test.series; let index = index">
             <ion-item-divider color="light" style="text-align: center; font-size: 1.2em; padding: 10px;">
@@ -97,8 +115,13 @@
             </ion-item-divider>
             <ion-item *ngFor="let question of serie.questions">
                 <div>
-                    <p style="font-weight: bold;">{{question.questionId}}: <span innerHtml="{{question.text}}"></span></p>
-                    <p *ngFor="let answer of question.answers" style="margin-left: 10px;">
+                    <p style="font-weight: bold;" (click)="onToggleMulti(question)">
+                        {{question.questionId}}:
+                        <span innerHtml="{{question.text}}"></span>&nbsp;
+                        <span *ngIf="question.questionType === 'UNIQUE'" i18n="@@course-edit.question-single">(Single)</span>
+                        <span *ngIf="question.questionType === 'COMBINATION'" i18n="@@course-edit.question-multi">(Multi)</span>
+                    </p>
+                    <p *ngFor="let answer of question.answers" style="margin-left: 10px;" (click)="toggleRightAnswer(question, answer)">
                         <span [ngClass]="{ 'right-answer' : answer.right}">{{answer.answerId}}</span> - <span innerHtml="{{answer.text}}"></span>
                     </p>
                 </div>

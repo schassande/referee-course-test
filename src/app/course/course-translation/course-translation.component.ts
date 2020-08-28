@@ -69,10 +69,12 @@ export class CourseTranslationComponent implements OnInit {
     );
   }
   compute(): Observable<any> {
+    logger.debug(() => 'Compute()');
     this.computeKeys();
     return this.computeMissingTransactions();
   }
   computeKeys() {
+    logger.debug(() => 'computeKeys()');
     this.keys = [];
     this.course.test.series.forEach(serie => {
       serie.questions.forEach(question => {
@@ -84,12 +86,19 @@ export class CourseTranslationComponent implements OnInit {
     });
   }
   computeMissingTransactions(): Observable<any> {
+    logger.debug(() => 'computeMissingTransactions(): supportedLanguages.length=' + this.course.test.supportedLanguages.length);
+    if (this.course.test.supportedLanguages.length === 0) {
+      return of('');
+    }
     return forkJoin(this.course.test.supportedLanguages
       .map(lang => this.computeMissingTransactionsByLang(lang)));
   }
 
   computeMissingTransactionsByLang(lang: string): Observable<any> {
     this.missingTranslations[lang] = [];
+    if (this.keys.length === 0) {
+      return of('');
+    }
     return forkJoin(this.keys.map(key => {
       return this.translationService.getTranslation(key, lang).pipe(
         map((trans) => {

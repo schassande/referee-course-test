@@ -516,6 +516,62 @@
           <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="course-edit.manage-translation" datatype="html">
+        <source>Manage</source>
+        <target>Manage</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="course-edit.edition-mode" datatype="html">
+        <source>Edition mode</source>
+        <target>Mode edition des questions</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="course-edit.desc-switch-multi" datatype="html">
+        <source>Click on a question to switch between a question having one or several answers.</source>
+        <target>Cliquer sur une question pour la basculer en mode reponse unique/multiple.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="course-edit.desc-switch-right" datatype="html">
+        <source>Click on an answer to switch between right/wrong answer.</source>
+        <target>Cliquer sur une reponse la basculer en bonne ou mauvaise reponse.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="course-edit.edition-mode.switch-off" datatype="html">
+        <source>Switch off the edition mode</source>
+        <target>Sortir du mode edition</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="course-edit.edition-mode.switch-on" datatype="html">
+        <source>Switch on the edition mode</source>
+        <target>Basculer en mode edition</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="course-edit.question-single" datatype="html">
+        <source>(Single)</source>
+        <target>(Unique)</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="course-edit.question-multi" datatype="html">
+        <source>(Multi)</source>
+        <target>(Multi)</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="course.translation.title" datatype="html">
         <source>Test translation</source>
         <target>Traduction test</target>

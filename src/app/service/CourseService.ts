@@ -1,3 +1,6 @@
+import { logCourse } from 'src/app/logging-config';
+import { Category } from 'typescript-logging';
+import { Question } from 'src/app/model/model';
 import { DateService } from './DateService';
 import { map } from 'rxjs/operators';
 import { Observable, forkJoin } from 'rxjs';
@@ -9,6 +12,8 @@ import { ConnectedUserService } from './ConnectedUserService';
 import { Injectable } from '@angular/core';
 import { RemotePersistentDataService } from './RemotePersistentDataService';
 import { Course } from '../model/model';
+
+const logger = new Category('course-service', logCourse);
 
 @Injectable({
   providedIn: 'root'
@@ -59,5 +64,28 @@ export class CourseService extends RemotePersistentDataService<Course> {
             return this.stringContains(str, course.name);
         })
         : this.all(options);
+  }
+
+  public generateQuestions(course: Course) {
+    const keyPrefix: string = course.name.trim().toLowerCase().replace(/\s/g, '');
+    for (let i = 0; i < course.test.nbQuestion; i++) {
+      const questionId = 'Q' + (i + 1);
+      const questionKey = keyPrefix + '.' + questionId;
+      const question: Question = {
+        questionId,
+        key: questionKey,
+        questionType: 'UNIQUE',
+        text: 'Question ' + questionId,
+        enabled: true,
+        required: false,
+        answers: [
+          {answerId: 'A', point: 1, key: questionKey + '.A', text: 'Answer A', right: true},
+          {answerId: 'B', point: 0, key: questionKey + '.B', text: 'Answer B', right: false},
+          {answerId: 'C', point: 0, key: questionKey + '.C', text: 'Answer C', right: false}
+        ]
+      };
+      logger.debug(() => 'Adding question ' + questionId + ' (' + questionKey + ') to the course ' + course.name);
+      course.test.series[0].questions.push(question);
+    }
   }
 }
