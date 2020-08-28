@@ -1,21 +1,21 @@
-import { Category } from 'typescript-logging';
-import { ToastrService } from 'ngx-toastr';
-import { UserService } from 'src/app/service/UserService';
-import { UserSelectorComponent } from './../../main/widget/user-selector-component';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AlertController, NavController, ModalController } from '@ionic/angular';
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { map, flatMap } from 'rxjs/operators';
-import { Observable, of, forkJoin } from 'rxjs';
-
+import { AlertController, ModalController, NavController } from '@ionic/angular';
+import * as moment from 'moment';
+import { ToastrService } from 'ngx-toastr';
+import { Observable, of } from 'rxjs';
+import { flatMap, map } from 'rxjs/operators';
+import { logSession } from 'src/app/logging-config';
+import { Course, Session, SessionParticipant, SharedWith, User } from 'src/app/model/model';
 import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
 import { CourseService } from 'src/app/service/CourseService';
 import { DateService } from 'src/app/service/DateService';
 import { ResponseWithData } from 'src/app/service/response';
-import { Session, Course, User, SharedWith, SessionParticipant } from 'src/app/model/model';
-import { SessionService, CertificateResponse } from 'src/app/service/SessionService';
-import * as moment from 'moment';
-import { logSession } from 'src/app/logging-config';
+import { CertificateResponse, SessionService } from 'src/app/service/SessionService';
+import { UserService } from 'src/app/service/UserService';
+import { Category } from 'typescript-logging';
+import { UserSelectorComponent } from './../../main/widget/user-selector-component';
+
 
 const logger = new Category('edit', logSession);
 
@@ -34,6 +34,7 @@ export class SessionEditComponent implements OnInit {
   readonly = false;
   isTeacher = false;
   math = Math;
+  forceNoRandom = false;
 
   constructor(
     public alertCtrl: AlertController,
@@ -156,6 +157,12 @@ export class SessionEditComponent implements OnInit {
     }).then( (alert) => alert.present() );
   }
 
+  onForceNoRandom() {
+    logger.debug(() => 'onForceNoRandom(): forceNoRandom=' + this.forceNoRandom);
+    this.sessionService.selectQuestions(this.session, this.course, this.forceNoRandom);
+    this.save().subscribe();
+  }
+
   async add(role: string = 'Learner') {
     const modal = await this.modalController.create({ component: UserSelectorComponent});
     modal.onDidDismiss().then( (data) => {
@@ -201,19 +208,14 @@ export class SessionEditComponent implements OnInit {
     this.add('Teacher');
   }
 
-  private addToSet(item: string, list: string[]) {
-    if (!list.includes(item)) {
-      list.push(item);
-    }
-  }
-
   onCourseIdChange() {
     if (this.session.courseId) {
       this.course = this.courses.find(c => c.id === this.session.courseId);
-      this.session.courseName = this.course ? this.course.name : null;
     } else {
-      this.session.courseName = null;
       this.course = null;
+    }
+    if (this.sessionService.changeCourse(this.session, this.course, this.forceNoRandom)) {
+      this.save().subscribe();
     }
     logger.debug(() => 'onCourseIdChange(): ' + this.session.courseName);
   }

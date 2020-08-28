@@ -46,6 +46,10 @@
                 <ion-input *ngIf="readonly && session.status !== 'REGISTRATION'" type="text" [(ngModel)]="expireDate" readonly="true" style="text-align: right;"></ion-input>
                 <ion-datetime *ngIf="!readonly && session.status !== 'REGISTRATION'" displayFormat="YYYY-MM-DD HH:mm" pickerFormat="YYYY-MM-DD HH:mm" [(ngModel)]="expireDate" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" style="text-align: center;"></ion-datetime>
             </ion-item>
+            <ion-item *ngIf="session.status == 'REGISTRATION'">
+                <ion-label i18n="@@session-edit.force-no-random">No Random:</ion-label>
+                <ion-toggle [(ngModel)]="forceNoRandom" (ionChange)="onForceNoRandom()"></ion-toggle>
+            </ion-item>
         </ion-item-group>
     </ion-list>
     <section style="text-align: center;" *ngIf="!loading">

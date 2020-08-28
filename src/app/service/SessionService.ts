@@ -1,7 +1,7 @@
 import { UserService } from 'src/app/service/UserService';
 import { map } from 'rxjs/operators';
 import { ParticipantQuestionAnswerService } from 'src/app/service/ParticipantQuestionAnswerService';
-import { DurationUnit, Course, ParticipantQuestionAnswer, Question, User } from 'src/app/model/model';
+import { DurationUnit, Course, ParticipantQuestionAnswer, Question, User, QuestionSerie } from 'src/app/model/model';
 import { ParticipantResult, SessionParticipant, TestParticipantResult, DataRegion } from './../model/model';
 import { DateService } from 'src/app/service/DateService';
 import { ResponseWithData } from 'src/app/service/response';
@@ -248,42 +248,75 @@ export class SessionService extends RemotePersistentDataService<Session> {
       participantIds: [],
       questionIds: []
     };
-    this.randomizeQuestions(session, course);
+    this.selectQuestions(session, course);
     return session;
   }
 
-  private randomizeQuestions(session: Session, course: Course) {
+  public changeCourse(session: Session, course: Course, forceNoRandom = false): boolean {
+    if (course) {
+      if (session.courseId !== course.id) {
+        session.courseId = course.id;
+        session.courseName = course.name;
+        this.selectQuestions(session, course, forceNoRandom);
+        return true;
+      }
+    }  else {
+      session.courseId = null;
+      session.courseName = null;
+      session.questionIds = [];
+      return true;
+    }
+    return false;
+  }
+  public selectQuestions(session: Session, course: Course, forceNoRandom = false) {
+    session.questionIds = [];
     // for each serie extract the required number of question
-    course.test.series.forEach(serie => {
-        if (!serie.selectionMode) {
-          serie.selectionMode = 'RANDOM';
-        }
-        if (serie.selectionMode === 'RANDOM') {
-        // extract required questions
-        const retainQuestionIds: string[] = serie.questions
-          .filter(question => question.required)
-          .map(question => question.questionId);
-        this.logger.debug(() => retainQuestionIds.length + ' questions required from serie ');
-        if (serie.nbQuestion > retainQuestionIds.length) {
-          // there is not enough questions => look for the not required questions
-          const othersQuestions: string[] = serie.questions
-            .filter(question => !question.required)
-            .map(question => question.questionId);
-          // add the missing questions to reach the number
-          while (serie.nbQuestion > retainQuestionIds.length) {
-            const idx = (Math.random() * 100000) % othersQuestions.length;
-            const retainQuestionId: string = othersQuestions.splice(idx, 1)[0];
-            this.logger.debug(() => 'Add question ' + retainQuestionId);
-            retainQuestionIds.push(retainQuestionId);
+    course.test.series.forEach((serie, serieIdx) => {
+      this.logger.debug(() => 'Looking for ' + serie.nbQuestion + ' question in the serie '
+        + serieIdx + ' with mode ' + serie.selectionMode + '. Nb question available: ' + serie.questions.length);
+      if (!serie.selectionMode) {
+        serie.selectionMode = 'RANDOM';
+      }
+      if (serie.selectionMode === 'RANDOM' && !forceNoRandom) {
+        this.selectRamdomQuestionsSerie(session, serie);
+
+      } else if (serie.selectionMode === 'ALL' || forceNoRandom) {
+        serie.questions.forEach((question, index) => {
+          if (serie.nbQuestion < 1 || index < serie.nbQuestion) { // limit to the number of questions if defined
+            this.logger.debug(() => 'Add question ' + question.questionId);
+            session.questionIds.push(question.questionId);
           }
-        }
-        retainQuestionIds.forEach(qId => session.questionIds.push(qId));
-        this.logger.debug(() => retainQuestionIds.length + ' questions retains for the serie ');
-        this.shuffleArray(session.questionIds);
-      } else if (serie.selectionMode === 'ALL') {
-        serie.questions.forEach(question => session.questionIds.push(question.questionId));
+        });
       }
     });
+    this.logger.debug(() => 'Session has ' + session.questionIds.length  + ' questions.');
+  }
+  private selectRamdomQuestionsSerie(session: Session, serie: QuestionSerie) {
+    // extract required questions
+    const retainQuestionIds: string[] = serie.questions
+      .filter(question => question.required)
+      .map(question => question.questionId);
+    this.logger.debug(() => retainQuestionIds.length + ' questions required from serie ');
+    if (serie.nbQuestion > retainQuestionIds.length) {
+      // there is not enough questions => look for the not required questions
+      const othersQuestions: string[] = serie.questions
+        .filter(question => !question.required)
+        .map(question => question.questionId);
+      // add the missing questions to reach the number
+      while (serie.nbQuestion > retainQuestionIds.length) {
+        const idx = (Math.random() * 100000) % othersQuestions.length;
+        const retainQuestionId: string = othersQuestions.splice(idx, 1)[0];
+        this.logger.debug(() => 'Add question ' + retainQuestionId);
+        retainQuestionIds.push(retainQuestionId);
+      }
+    }
+    retainQuestionIds.forEach((qId, index) => {
+      if (serie.nbQuestion < 1 || index < serie.nbQuestion) { // limit to the number of questions if defined
+        session.questionIds.push(qId);
+      }
+    });
+    this.logger.debug(() => retainQuestionIds.length + ' questions retains for the serie ');
+    this.shuffleArray(session.questionIds);
   }
   /** Shuffle the content of an array */
   public shuffleArray(array: any[]) {
