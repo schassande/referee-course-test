@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, flatMap } from 'rxjs/operators';
 import { LocalAppSettings } from './../model/settings';
 import { Storage } from '@ionic/storage';
 import { Injectable } from '@angular/core';
@@ -49,6 +49,16 @@ export class AppSettingsService extends LocalSingletonDataService<LocalAppSettin
             this.settings = setting;
             this.save(setting).subscribe();
         });
+    }
+    public setLastUserObs(email: string, password: string): Observable<LocalAppSettings> {
+        return this.get().pipe(
+            flatMap((setting: LocalAppSettings) => {
+                setting.lastUserEmail = email;
+                setting.lastUserPassword = password;
+                this.settings = setting;
+                return this.save(setting);
+            })
+        );
     }
     public setServerUrl(serverUrl: string) {
         this.get().subscribe((setting: LocalAppSettings) => {

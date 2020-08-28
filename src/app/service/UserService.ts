@@ -72,14 +72,19 @@ export class UserService  extends RemotePersistentDataService<User> {
                         // Send an email to admin with the account to validate
                         this.sendNewAccountToAdmin(ruser.data.id);
                         this.sendNewAccountToUser(ruser.data.id);
-                        this.appSettingsService.setLastUser(user.email, password);
-                        if (ruser.data.accountStatus === 'ACTIVE') {
-                            return this.autoLogin();
-                        }
+                        return this.appSettingsService.setLastUserObs(user.email, password).pipe(
+                            map(() => ruser)
+                        );
                     } else {
                         this.logger.debug(() => 'Error on the user creation: ' + ruser.error);
+                        throw new Error('' + ruser.error);
                     }
-                    return of(ruser);
+                }),
+                flatMap((ruser) => {
+                    // Autologin if the user is active
+                    if (ruser.data.accountStatus === 'ACTIVE') {
+                        return this.autoLogin();
+                    }
                 }),
                 catchError((err) => {
                     this.logger.error('Error on the user creation: ', err);
@@ -197,12 +202,17 @@ export class UserService  extends RemotePersistentDataService<User> {
         this.connectedUserService.userDisconnected();
     }
 
+    private dismissLoadingWindow(): Observable<any> {
+        return from(this.loadingController.getTop().then(ctrl => ctrl ? from(ctrl.dismiss()) : of('')));
+    }
+
     /**
      * Try to autologin an user with data stored from local storage.
      */
     public autoLogin(): Observable<ResponseWithData<User>> {
         let loading = null;
-        return from(this.loadingController.create({ message: 'Auto login...', translucent: true})).pipe(
+        return this.dismissLoadingWindow().pipe(
+            flatMap(() => from(this.loadingController.create({ message: 'Auto login...', translucent: true}))),
             flatMap( (ctrl) => {
                 loading = ctrl;
                 loading.present();

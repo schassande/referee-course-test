@@ -124,12 +124,14 @@ export class UserEditPage implements OnInit {
   }
 
   public newUser(event) {
+    this.loadingCtrl.create({ message: 'Saving...', translucent: true}).then((ctrl) => ctrl.present());
     if (this.isValid()) {
       this.saving = true;
       this.userService.save(this.user).pipe(
         map((response: ResponseWithData<User>) => {
           if (response.error) {
             this.saving = false;
+            this.loadingCtrl.dismiss();
             this.error = response.error.error;
             if (response.error.code === 'auth/email-already-in-use') {
               logger.debug(() => 'The email addresse is already used.');
