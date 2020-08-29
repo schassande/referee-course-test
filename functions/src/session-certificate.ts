@@ -59,13 +59,9 @@ app.post('/', async (req:any, res:any) => {
         return;
     }
     const course: Course = await getCourse(session.courseId);
-    const part: SessionParticipant = getSessionParticipant(session, learnerId)
-
+    const part: SessionParticipant = getSessionParticipant(session, learnerId);
     const certificateFile = await generateCertificate(part, session, learner, course.test.certificateTemplateUrl);
-    console.log('certificateFile=' + certificateFile);
-
-    const email = buildEmail(session, learner, certificateFile);
-    console.log('Sending message: ' + JSON.stringify(email, null, 2));
+    const email = await buildEmail(session, learner, certificateFile);
     try {
       const info: nodemailer.SentMessageInfo = await mailTransport.sendMail(email);
       console.log('Certificate email sent to ' + learner.email + ':' + JSON.stringify(info, null, 2));
@@ -79,7 +75,7 @@ app.post('/', async (req:any, res:any) => {
 function getSessionParticipant(session: Session, userId: string) {
     const part: SessionParticipant = session.participants.find(
         participant => participant.person.personId === userId) as SessionParticipant;
-    console.log('part=' + JSON.stringify(part, null, 2));
+    // console.log('part=' + JSON.stringify(part, null, 2));
     return part;
 }
 async function getUser(learnerId: string): Promise<User> {
@@ -90,7 +86,7 @@ async function getUser(learnerId: string): Promise<User> {
     } else {
         learner = {} as User;
     }
-    console.log('learner=' + JSON.stringify(learner, null, 2));
+    // console.log('learner=' + JSON.stringify(learner, null, 2));
     return learner;
 }
 
@@ -102,7 +98,7 @@ async function getSession(sessionId: string): Promise<Session> {
     } else {
         session = {} as Session;
     }
-    console.log('session=' + JSON.stringify(session, null, 2));
+    // console.log('session=' + JSON.stringify(session, null, 2));
     return session;
 }
 
@@ -114,7 +110,7 @@ async function getCourse(courseId: string): Promise<Course> {
     } else {
         course = {} as Course;
     }
-    console.log('course=' + JSON.stringify(course, null, 2));
+    // console.log('course=' + JSON.stringify(course, null, 2));
     return course;
 }
 
@@ -145,24 +141,54 @@ function check(learner: User|null, session: Session|null): number {
     return 0;
 }
 
-function generateCertificate(participant: SessionParticipant, 
+async function generateCertificate(participant: SessionParticipant, 
                              session: Session, 
                              learner: User, 
                              certificateTemplateUrl: string): Promise<string> {
     const tempLocalDir = os.tmpdir();     
     // Read HTML Template
-    const html = fs.readFileSync(certificateTemplateUrl, 'utf8');
+    const template = fs.readFileSync(certificateTemplateUrl, 'utf8');
+    const awardDate = adjustDate(session.expireDate);
+    const awardDateStr: string = awardDate.getFullYear()
+        + '/' + (awardDate.getMonth()+1)
+        + '/' + awardDate.getDate();
+
     const options = { format: 'A4', orientation: 'landscape', border: '10mm' };
-    const outputFile = tempLocalDir + `/Exam_Certificate_${session.id}_${learner.id}.pdf`;
+    const outputFile = tempLocalDir + `/Exam_Certificate_${session.id}_${learner.id}_${new Date().getTime()}.pdf`;
+    console.log('certificateFile=' + outputFile);
     const document = {
-        html: html,
-        data: { learner, session, participant },
+        html: template,
+        data: { 
+            learner : learner.firstName + ' ' + learner.lastName, 
+            score: participant.percent +'%',
+            teacher: session.teachers[0].firstName + ' ' + session.teachers[0].lastName,
+            awardDate: awardDateStr
+        },
         path: outputFile
     };
-    return pdf.create(document, options).then((res: any) => {
-        console.log('Generate pdf: ' + res);
-        return outputFile;
-    });
+    const res = await pdf.create(document, options);
+    console.log('Generated pdf: ' + res);
+    return outputFile;
+}
+function adjustDate(d: any): Date {
+    if (d === null) {
+        return new Date();
+    } else if (d && !(d instanceof Date) ) {
+        if (typeof d === 'string') {
+            return string2date(d);
+        } else {
+            return d.toDate();
+        }
+    } else {
+        return d as Date;
+    }
+}
+function string2date(dateStr: string, aDate: Date = new Date()): Date {
+    const elements = dateStr.split('-');
+    aDate.setFullYear(Number.parseInt(elements[0], 0));
+    aDate.setMonth(Number.parseInt(elements[1], 0) - 1);
+    aDate.setDate(Number.parseInt(elements[2], 0));
+    return aDate;
 }
 
 function buildEmail(session: Session, learner: User, certificateFile: any): Mail.Options {
@@ -183,5 +209,6 @@ CoachReferee Examinator`,
         filename: `Certificate ${session.courseName} ${learner.firstName} ${learner.lastName}.pdf`
     }]
   };
+  // console.log('Email message: ' + JSON.stringify(mailOptions, null, 2));
   return mailOptions;
 }

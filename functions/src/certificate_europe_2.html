@@ -52,21 +52,20 @@
 <body class="content">
     <div class="text-panel">
         <div class="text-certificate">This certificate is award to</div>
-        <div class="text-learner">Simon Taloyr</div>
-        <div class="text-passing">for passing the <span class="course-name">Referee Level 1</span><span class="exam"> Exam</span> with a score of 85%</div>
+        <div class="text-learner">${learner}</div>
+        <div class="text-passing">for passing the <span class="course-name">Referee Level 1</span><span class="exam"> Exam</span> with a score of ${score}</div>
     </div>
     <table class="footer">
         <tr>
             <td class="award-panel">
                 <div class="award-title">Award by</div>
-                <div class="award-teacher">Sebastien Chassande-Barrioz</div>
+                <div class="award-teacher">${teacher}</div>
             </td>
             <td class="date-panel">
                 <div class="date-title">Date awarded</div>
-                <div class="date-value">2020/04/21</div>
+                <div class="date-value">${awardDate}</div>
             </td>
         </tr>
     </table>
 </body>
-
 </html>
