@@ -6,6 +6,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as cors from 'cors';
 import * as express from 'express';
+import Mail = require('nodemailer/lib/mailer');
 
 const pdf = require('pdf-creator-node');
 const firestore = admin.firestore();
@@ -43,28 +44,130 @@ app.post('/', async (req:any, res:any) => {
         res.send({ code: 1});
         return;
     }
-    const learner: User = (await firestore.doc(`User/${learnerId}`).get()) as unknown as User;
-    console.log('learner=' + JSON.stringify(learner, null, 2));
-    const session: Session = (await firestore.doc(`Session/${sessionId}`).get()) as unknown as Session;
-    console.log('session=' + JSON.stringify(session, null, 2));
-    const code = check(learner, session);
-    console.log('code=' + code);
-    if (code) {
-        res.send({ code});
+    const  learner: User = await getUser(learnerId);
+    const session: Session = await getSession(sessionId);
+    try { 
+        const code = check(learner, session);
+        console.log('code=' + code);
+        if (code) {
+            res.send({ code});
+            return;
+        }
+    } catch(err) {
+        console.log(err);
+        res.send({ code: 99});
         return;
     }
-    const tempLocalDir = os.tmpdir();
-    const course: Course = (await firestore.doc(`Course/${session.courseId}`).get()) as unknown as Course;
-    console.log('course=' + JSON.stringify(course, null, 2));
-    const part: SessionParticipant = session.participants.find(
-        participant => participant.person.personId === learner.id) as SessionParticipant;
-    console.log('part=' + JSON.stringify(part, null, 2));
-    const certificateTemplateUrl = course.test.certificateTemplateUrl;
-    const certificateFile = generateCertificate(part, session, learner, certificateTemplateUrl, tempLocalDir);
+    const course: Course = await getCourse(session.courseId);
+    const part: SessionParticipant = getSessionParticipant(session, learnerId)
+
+    const certificateFile = await generateCertificate(part, session, learner, course.test.certificateTemplateUrl);
     console.log('certificateFile=' + certificateFile);
 
+    const email = buildEmail(session, learner, certificateFile);
+    console.log('Sending message: ' + JSON.stringify(email, null, 2));
+    try {
+      const info: nodemailer.SentMessageInfo = await mailTransport.sendMail(email);
+      console.log('Certificate email sent to ' + learner.email + ':' + JSON.stringify(info, null, 2));
+      res.send({ code: 0, info});
+    } catch(error) {
+      console.error('There was an error while sending the email:', error);
+      res.send({ code: 10, error});
+    }
+});
+
+function getSessionParticipant(session: Session, userId: string) {
+    const part: SessionParticipant = session.participants.find(
+        participant => participant.person.personId === userId) as SessionParticipant;
+    console.log('part=' + JSON.stringify(part, null, 2));
+    return part;
+}
+async function getUser(learnerId: string): Promise<User> {
+    const doc = await firestore.doc(`User/${learnerId}`).get();
+    let  learner: User;
+    if (doc.exists) {
+        learner = doc.data() as unknown as User;
+    } else {
+        learner = {} as User;
+    }
+    console.log('learner=' + JSON.stringify(learner, null, 2));
+    return learner;
+}
+
+async function getSession(sessionId: string): Promise<Session> {
+    const doc = await firestore.doc(`Session/${sessionId}`).get();
+    let  session: Session;
+    if (doc.exists) {
+        session = doc.data() as unknown as Session;
+    } else {
+        session = {} as Session;
+    }
+    console.log('session=' + JSON.stringify(session, null, 2));
+    return session;
+}
+
+async function getCourse(courseId: string): Promise<Course> {
+    const doc = await firestore.doc(`Course/${courseId}`).get();
+    let  course: Course;
+    if (doc.exists) {
+        course = doc.data() as unknown as Course;
+    } else {
+        course = {} as Course;
+    }
+    console.log('course=' + JSON.stringify(course, null, 2));
+    return course;
+}
+
+function check(learner: User|null, session: Session|null): number {
+    if (!session) {
+        return 1;
+    }
+    if (session.status !== 'CORRECTION' && session.status !== 'CLOSED') {
+        return 2;
+    }
+    if (!learner) {
+        return 3;
+    }
+    console.log('check: session.participantIds=' + session.participantIds);
+    if (!session.participants) {
+        return 6;
+    }
+
+    const partIdx: number = session.participantIds.indexOf(learner.id);
+    if (partIdx < 0) {
+        return 4;
+    }
+    const part: SessionParticipant = session.participants[partIdx]; 
+    console.log('part=' + JSON.stringify(part, null, 2));
+    if (!part.pass) {
+        return 5;
+    }
+    return 0;
+}
+
+function generateCertificate(participant: SessionParticipant, 
+                             session: Session, 
+                             learner: User, 
+                             certificateTemplateUrl: string): Promise<string> {
+    const tempLocalDir = os.tmpdir();     
+    // Read HTML Template
+    const html = fs.readFileSync(certificateTemplateUrl, 'utf8');
+    const options = { format: 'A4', orientation: 'landscape', border: '10mm' };
+    const outputFile = tempLocalDir + `/Exam_Certificate_${session.id}_${learner.id}.pdf`;
+    const document = {
+        html: html,
+        data: { learner, session, participant },
+        path: outputFile
+    };
+    return pdf.create(document, options).then((res: any) => {
+        console.log('Generate pdf: ' + res);
+        return outputFile;
+    });
+}
+
+function buildEmail(session: Session, learner: User, certificateFile: any): Mail.Options {
   // Building Email message.
-  const mailOptions: any = {
+  const mailOptions: Mail.Options = {
     from: `"CoachReferee" <${gmailEmail}>`,
     to: learner.email,
     bcc: gmailEmail,
@@ -80,60 +183,5 @@ CoachReferee Examinator`,
         filename: `Certificate ${session.courseName} ${learner.firstName} ${learner.lastName}.pdf`
     }]
   };
-  console.log('Sending message: ' + JSON.stringify(mailOptions, null, 2));
-  try {
-    await mailTransport.sendMail(mailOptions);
-    console.log('Certificate email sent to:' + learner.email);
-  } catch(error) {
-    console.error('There was an error while sending the email:', error);
-  }
-  return null;
-    res.send("Hello");
-});
-
-function check(learner: User, session: Session): number {
-    if (!session) {
-        return 1;
-    }
-    if (session.status !== 'CORRECTION' && session.status === 'CLOSED') {
-        return 2;
-    }
-    if (!learner) {
-        return 3;
-    }
-    console.log('check: session.participants=' + session.participants);
-    if (!session.participants) {
-        return 6;
-    }
-    const part: SessionParticipant|undefined = session.participants
-        .find(participant => participant.person.personId === learner.id);
-    console.log('part=' + JSON.stringify(part, null, 2));
-    if (!part) {
-        return 4;
-    }
-    if (!part.pass) {
-        return 5;
-    }
-    return 0;
-}
-
-function generateCertificate(participant: SessionParticipant, 
-                             session: Session, 
-                             learner: User, 
-                             certificateTemplateUrl: string, 
-                             tempLocalDir: string): Promise<string> {
-     
-    // Read HTML Template
-    const html = fs.readFileSync(certificateTemplateUrl, 'utf8');
-    const options = { format: 'A4', orientation: 'landscape', border: '10mm' };
-    const outputFile = tempLocalDir + './output.pdf';
-    const document = {
-        html: html,
-        data: { learner, session, participant },
-        path: outputFile
-    };
-    return pdf.create(document, options).then((res: any) => {
-        console.log('Generate pdf: ' + res);
-        return outputFile;
-    });
+  return mailOptions;
 }
