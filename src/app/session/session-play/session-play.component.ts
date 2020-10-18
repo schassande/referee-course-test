@@ -311,9 +311,22 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
       // question can have only one right answer
       pa.answerId = this.question.answers[index].answerId;
     }
-    this.participantQuestionAnswerService.save(pa).subscribe((rpqa) => {
-      this.learnerAnswers.set(this.getAnswerKey(), rpqa.data);
-    });
+    this.saveAnswer(pa);
+  }
+
+  private saveAnswer(pa: ParticipantQuestionAnswer, retryCount: number = 2) {
+    this.participantQuestionAnswerService.save(pa).subscribe(
+      (rpqa) => this.learnerAnswers.set(this.getAnswerKey(), rpqa.data),
+      (err) => {
+        console.error(`The answer of the question ${pa.questionId} hadn't be saved on server, retry #${retryCount}: ${err}`);
+        if (retryCount > 0) {
+          this.saveAnswer(pa, retryCount - 1);
+        } else {
+          this.toastrService.error(`The answer of the question ${pa.questionId} hadn't registered with success, please retry.`);
+          this.loadAnswers().subscribe();
+        }
+      }
+    );
   }
 
   updateAnswer() {
