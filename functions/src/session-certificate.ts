@@ -8,7 +8,8 @@ import * as cors from 'cors';
 import * as express from 'express';
 import Mail = require('nodemailer/lib/mailer');
 
-const pdf = require('pdf-creator-node');
+const path = require('path');
+const pdf = require('html-pdf');
 const firestore = admin.firestore();
 
 const gmailEmail = functions.config().gmail.email;
@@ -59,18 +60,118 @@ app.post('/', async (req:any, res:any) => {
         return;
     }
     const course: Course = await getCourse(session.courseId);
+    if (!course) {
+        console.log('Course has not been found! ' + session.courseId);
+        res.send({ code: 7});
+        return;
+    }
+    // fs.readdirSync('/workspace/').forEach(file => {
+    //     console.log('LS /workspace/: ' + file);
+    // });
+    // fs.readdirSync('./').forEach(file => {
+    //     console.log('LS ./: ' + file);
+    // });
+    
     const part: SessionParticipant = getSessionParticipant(session, learnerId);
-    const certificateFile = await generateCertificate(part, session, learner, course.test.certificateTemplateUrl);
-    const email = await buildEmail(session, learner, certificateFile);
     try {
-      const info: nodemailer.SentMessageInfo = await mailTransport.sendMail(email);
-      console.log('Certificate email sent to ' + learner.email + ':' + JSON.stringify(info, null, 2));
-      res.send({ code: 0, info});
+        const certificateFile = await generateCertificate(part, session, learner, course.test.certificateTemplateUrl);
+        console.log('certificateFile: ' + certificateFile);
+        if (!certificateFile) {
+            res.send({ code: 11});
+            return;
+        }
+        const email = await buildEmail(session, learner, certificateFile);
+        const info: nodemailer.SentMessageInfo = await mailTransport.sendMail(email);
+        console.log('Certificate email sent to ' + learner.email + ':' + JSON.stringify(info, null, 2));
+        res.send({ code: 0, info});
+        // delete file
+        fs.unlinkSync(certificateFile);
     } catch(error) {
       console.error('There was an error while sending the email:', error);
       res.send({ code: 10, error});
     }
 });
+
+function generateCertificate(participant: SessionParticipant, 
+                             session: Session, 
+                             learner: User, 
+                             certificateTemplateUrl: string): Promise<string> {
+    const tempLocalDir = os.tmpdir();     
+    // Read HTML Template
+    const template = fs.readFileSync(certificateTemplateUrl, 'utf8');
+    const awardDate = adjustDate(session.expireDate);
+    const awardDateStr: string = awardDate.getFullYear()
+        + '/' + (awardDate.getMonth()+1)
+        + '/' + awardDate.getDate();
+    const html = template
+        .replace('${learner}', learner.firstName + ' ' + learner.lastName)
+        .replace('${score}', participant.percent +'%')
+        .replace('${teacher}', session.teachers[0].firstName + ' ' + session.teachers[0].lastName)
+        .replace('${awardDate}', awardDateStr);
+    const options = { 
+        height: "800px",
+        width: "1200px",
+        type: 'png',
+        quality: 75,
+        border: '0',
+        base: '/workspace/src'
+    };
+
+    const outputFile = path.join(tempLocalDir, `Exam_Certificate_${session.id}_${learner.id}_${new Date().getTime()}.png`);
+    return new Promise<string>((resolve, reject) => {
+        pdf.create(html, options).toFile(outputFile, (err: any, res: any) => {
+            if (err) {
+                console.log('Pdf generation: err=' + err);
+                reject(err);
+            } else {
+                console.log('Pdf generated: ' + outputFile);
+                resolve(outputFile);
+            }
+       });
+    });
+}
+function adjustDate(d: any): Date {
+    if (d === null) {
+        return new Date();
+    } else if (d && !(d instanceof Date) ) {
+        if (typeof d === 'string') {
+            return string2date(d);
+        } else {
+            return d.toDate();
+        }
+    } else {
+        return d as Date;
+    }
+}
+function string2date(dateStr: string, aDate: Date = new Date()): Date {
+    const elements = dateStr.split('-');
+    aDate.setFullYear(Number.parseInt(elements[0], 0));
+    aDate.setMonth(Number.parseInt(elements[1], 0) - 1);
+    aDate.setDate(Number.parseInt(elements[2], 0));
+    return aDate;
+}
+
+function buildEmail(session: Session, learner: User, certificateFile: any): Mail.Options {
+  // Building Email message.
+  const mailOptions: Mail.Options = {
+    from: `"CoachReferee" <${gmailEmail}>`,
+    to: learner.email,
+    bcc: gmailEmail,
+    subject: `${session.courseName} Exam passed : Congratulations`,
+    html : `Hi ${learner.firstName} ${learner.lastName},<br>
+<p>Congratulation ! You passed the ${session.courseName} exam. The certificate is joined to this email.<br>
+Thanks for using our application <a href="https://exam.coachreferee.com">https://exam.coachreferee.com</a>.</p>
+<br>
+Best regards,<br>
+CoachReferee Examinator`,
+    attachments: [ { 
+        path : certificateFile, 
+        filename: `Certificate ${session.courseName} ${learner.firstName} ${learner.lastName}.png`
+    }]
+  };
+  // console.log('Email message: ' + JSON.stringify(mailOptions, null, 2));
+  return mailOptions;
+}
 
 function getSessionParticipant(session: Session, userId: string) {
     const part: SessionParticipant = session.participants.find(
@@ -124,91 +225,13 @@ function check(learner: User|null, session: Session|null): number {
     if (!learner) {
         return 3;
     }
-    console.log('check: session.participantIds=' + session.participantIds);
-    if (!session.participants) {
-        return 6;
-    }
-
-    const partIdx: number = session.participantIds.indexOf(learner.id);
-    if (partIdx < 0) {
+    const part: SessionParticipant = getSessionParticipant(session, learner.id); 
+    if (!part) {
         return 4;
     }
-    const part: SessionParticipant = session.participants[partIdx]; 
-    console.log('part=' + JSON.stringify(part, null, 2));
     if (!part.pass) {
         return 5;
     }
+    console.log('Session and learner are valid');
     return 0;
-}
-
-async function generateCertificate(participant: SessionParticipant, 
-                             session: Session, 
-                             learner: User, 
-                             certificateTemplateUrl: string): Promise<string> {
-    const tempLocalDir = os.tmpdir();     
-    // Read HTML Template
-    const template = fs.readFileSync(certificateTemplateUrl, 'utf8');
-    const awardDate = adjustDate(session.expireDate);
-    const awardDateStr: string = awardDate.getFullYear()
-        + '/' + (awardDate.getMonth()+1)
-        + '/' + awardDate.getDate();
-
-    const options = { format: 'A4', orientation: 'landscape', border: '10mm' };
-    const outputFile = tempLocalDir + `/Exam_Certificate_${session.id}_${learner.id}_${new Date().getTime()}.pdf`;
-    console.log('certificateFile=' + outputFile);
-    const document = {
-        html: template,
-        data: { 
-            learner : learner.firstName + ' ' + learner.lastName, 
-            score: participant.percent +'%',
-            teacher: session.teachers[0].firstName + ' ' + session.teachers[0].lastName,
-            awardDate: awardDateStr
-        },
-        path: outputFile
-    };
-    const res = await pdf.create(document, options);
-    console.log('Generated pdf: ' + res);
-    return outputFile;
-}
-function adjustDate(d: any): Date {
-    if (d === null) {
-        return new Date();
-    } else if (d && !(d instanceof Date) ) {
-        if (typeof d === 'string') {
-            return string2date(d);
-        } else {
-            return d.toDate();
-        }
-    } else {
-        return d as Date;
-    }
-}
-function string2date(dateStr: string, aDate: Date = new Date()): Date {
-    const elements = dateStr.split('-');
-    aDate.setFullYear(Number.parseInt(elements[0], 0));
-    aDate.setMonth(Number.parseInt(elements[1], 0) - 1);
-    aDate.setDate(Number.parseInt(elements[2], 0));
-    return aDate;
-}
-
-function buildEmail(session: Session, learner: User, certificateFile: any): Mail.Options {
-  // Building Email message.
-  const mailOptions: Mail.Options = {
-    from: `"CoachReferee" <${gmailEmail}>`,
-    to: learner.email,
-    bcc: gmailEmail,
-    subject: `${session.courseName} Exam passed : Congratulations`,
-    html : `Hi ${learner.firstName} ${learner.lastName},<br>
-<p>Congratulation ! You passed the ${session.courseName} exam. The certificate is joined to this email.<br>
-Thanks for using our application <a href="https://exam.coachreferee.com">https://exam.coachreferee.com</a>.</p>
-<br>
-Best regards,<br>
-CoachReferee Examinator`,
-    attachments: [ { 
-        path : certificateFile, 
-        filename: `Certificate ${session.courseName} ${learner.firstName} ${learner.lastName}.pdf`
-    }]
-  };
-  // console.log('Email message: ' + JSON.stringify(mailOptions, null, 2));
-  return mailOptions;
 }

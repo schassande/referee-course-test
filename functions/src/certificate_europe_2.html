@@ -4,28 +4,39 @@
 <head>
     <meta charset="utf-8" />
     <title>Referee Level 1 Exam Certificate</title>
-    <link rel="icon" type="image/png" href="assets/icon/favicon.png" />
     <style>
+        .panel-bkg {
+            position: absolute;
+            z-index: 1;
+        }
+        
         .content {
-            background-image: url('./imgs/euro_level_1.png');
-            background-size: 1296px;
-            background-position: top center;
-            background-repeat: no-repeat;
             text-align: center;
             margin: 0 auto;
             font-size: 1.5em;
             font-family: Verdana, Geneva, Tahoma, sans-serif;
+            position: relative;
+            height: 800px;
+        }
+        
+        .main-panel {
+            position: absolute;
+            top: 0;
+            height: 800px;
+            z-index: 2;
+            margin: 360px auto 0 140px;
         }
         
         .footer {
+            z-index: 3;
             text-align: center;
             margin: 0 auto;
         }
         /* ============================ */
         
         .text-panel {
-            margin-top: 440px;
-            margin-bottom: 35px;
+            margin: 0 auto 35px auto;
+            z-index: 3;
         }
         
         .course-name,
@@ -49,23 +60,31 @@
     </style>
 </head>
 
-<body class="content">
-    <div class="text-panel">
-        <div class="text-certificate">This certificate is award to</div>
-        <div class="text-learner">${learner}</div>
-        <div class="text-passing">for passing the <span class="course-name">Referee Level 1</span><span class="exam"> Exam</span> with a score of ${score}</div>
+<body>
+    <div class="content">
+        <div class="panel-bkg">
+            <img src="imgs/euro_level_1.png" height="800px">
+        </div>
+        <div class="main-panel">
+            <div class="text-panel">
+                <div class="text-certificate">This certificate is award to</div>
+                <div class="text-learner">${learner}</div>
+                <div class="text-passing">for passing the <span class="course-name">Referee Level 1</span><span class="exam"> Exam</span> with a score of ${score}</div>
+            </div>
+            <table class="footer">
+                <tr>
+                    <td class="award-panel">
+                        <div class="award-title">Award by</div>
+                        <div class="award-teacher">${teacher}</div>
+                    </td>
+                    <td class="date-panel">
+                        <div class="date-title">Date awarded</div>
+                        <div class="date-value">${awardDate}</div>
+                    </td>
+                </tr>
+            </table>
+        </div>
     </div>
-    <table class="footer">
-        <tr>
-            <td class="award-panel">
-                <div class="award-title">Award by</div>
-                <div class="award-teacher">${teacher}</div>
-            </td>
-            <td class="date-panel">
-                <div class="date-title">Date awarded</div>
-                <div class="date-value">${awardDate}</div>
-            </td>
-        </tr>
-    </table>
 </body>
+
 </html>
