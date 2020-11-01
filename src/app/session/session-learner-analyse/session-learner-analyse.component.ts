@@ -1,3 +1,4 @@
+import { UserService } from 'src/app/service/UserService';
 import { FailReasonCode } from './../../service/SessionService';
 import { ParticipantQuestionAnswerService } from 'src/app/service/ParticipantQuestionAnswerService';
 import { map, flatMap } from 'rxjs/operators';
@@ -41,7 +42,7 @@ export class SessionLearnerAnalyseComponent implements OnInit {
   course: Course;
   /** The language to use for the question */
   lang: string;
-  learner: PersonRef;
+  learner: User;
   learnerAnswers: Map<string, ParticipantQuestionAnswer>;
   failedQuestions: FailedQuestion[] = [];
 
@@ -53,7 +54,8 @@ export class SessionLearnerAnalyseComponent implements OnInit {
     private participantQuestionAnswerService: ParticipantQuestionAnswerService,
     private route: ActivatedRoute,
     private sessionService: SessionService,
-    private translationService: TranslationService
+    private translationService: TranslationService,
+    private userService: UserService
   ) { }
 
   ngOnInit() {
@@ -76,6 +78,15 @@ export class SessionLearnerAnalyseComponent implements OnInit {
       flatMap((rses) => {
         this.session = rses.data;
         return this.checkSession();
+      }),
+
+      flatMap(() => { // load learner
+        this.loading = 'Loading the learner ...';
+        return this.userService.get(this.learnerId);
+      }),
+      map((ruser) => {
+        this.learner = ruser.data;
+        return this.learner;
       }),
 
       flatMap(() => { // load course

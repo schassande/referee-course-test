@@ -5,7 +5,7 @@
                 <ion-icon name="arrow-back"></ion-icon>
             </ion-button>
         </ion-buttons>
-        <ion-title style="text-align: center;" i18n="@@session-analyse.title">Session analysis</ion-title>
+        <ion-title style="text-align: center;" i18n="@@session-learner-analyse.title">Learner analysis</ion-title>
         <ion-buttons slot="end">
             <ion-menu-button autoHide="false" menu="main"></ion-menu-button>
         </ion-buttons>
@@ -13,6 +13,20 @@
 </ion-header>
 
 <ion-content>
+    <ion-item *ngIf="session">
+        <ion-label>Course: {{session.courseName}}</ion-label>
+    </ion-item>
+    <ion-item *ngIf="session">
+        <ion-label>Session: {{session.keyCode}}
+            <span *ngIf="session.autoPlay">(Individual)</span>
+        </ion-label>
+    </ion-item>
+    <ion-item *ngIf="learner">
+        <ion-label>Learner: {{learner.firstName}} {{learner.lastName}}</ion-label>
+    </ion-item>
+    <ion-item *ngIf="learner">
+        <ion-label>Email: {{learner.email}}</ion-label>
+    </ion-item>
     <ion-item *ngIf="learnerAnswers">
         <ion-label>Nb answer registered: {{learnerAnswers.size}}</ion-label>
     </ion-item>
