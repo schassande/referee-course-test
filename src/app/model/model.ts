@@ -168,6 +168,8 @@ export interface SessionParticipant extends TestParticipantResult {
   person: PersonRef;
   /** The answerq of the questions */
   questionAnswerIds: string[];
+  /** List of the question id having a wrong answer from the participant */
+  failedQuestionIds: string[];
 }
 
 export interface ParticipantQuestionAnswer extends RootNode {

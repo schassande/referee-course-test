@@ -33,6 +33,7 @@ export class SessionEditComponent implements OnInit {
   courses: Course[];
   readonly = false;
   isTeacher = false;
+  isAdmin = false;
   math = Math;
   forceNoRandom = false;
 
@@ -64,6 +65,8 @@ export class SessionEditComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.isAdmin = this.connectedUserService.getCurrentUser().role === 'ADMIN';
+    console.log('role=', this.connectedUserService.getCurrentUser().role);
     this.loadParams().pipe(
       flatMap(() => this.loadCourses()),
       flatMap(() => this.loadSession())
@@ -181,7 +184,8 @@ export class SessionEditComponent implements OnInit {
                 maxScore: 0,
                 percent: -1,
                 answeredQuestions: 0,
-                seriesResult: []
+                seriesResult: [],
+                failedQuestionIds: []
               });
               this.session.participantIds.push(user.id);
             }

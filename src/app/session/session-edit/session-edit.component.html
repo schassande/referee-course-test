@@ -56,22 +56,25 @@
         <ion-button routerLink="/session/play/{{session.id}}" *ngIf="session.status !== 'CLOSED' && session.status !== 'REGISTRATION' && session.id" size="large">
             <ion-icon name="eye-outline"></ion-icon>&nbsp;<span i18n="@@session-edit.action.view">View</span>
         </ion-button>
-        <ion-button (click)="start()" *ngIf="isTeacher && (session.status === 'REGISTRATION' || session.status === 'STOPPED')" size="large" color="success">
+        <ion-button (click)="start()" *ngIf="(isTeacher || isAdmin) && (session.status === 'REGISTRATION' || session.status === 'STOPPED')" size="large" color="success">
             <ion-icon name="play-outline"></ion-icon>&nbsp;<span i18n="@@session-edit.action.start">Start</span>
         </ion-button>
-        <ion-button (click)="stop()" *ngIf="isTeacher && session.id && (session.status === 'STARTED')" size="large" color="danger">
+        <ion-button (click)="stop()" *ngIf="(isTeacher || isAdmin) && session.id && (session.status === 'STARTED')" size="large" color="danger">
             <ion-icon name="stop-outline"></ion-icon>&nbsp;<span i18n="@@session-edit.action.stop">Stop</span>
         </ion-button>
-        <ion-button (click)="correction()" *ngIf="isTeacher && session.id && session.status === 'STOPPED'" size="large" color="warning">
+        <ion-button (click)="correction()" *ngIf="(isTeacher || isAdmin) && session.id && session.status === 'STOPPED'" size="large" color="warning">
             <ion-icon name="checkmark-done-outline"></ion-icon>&nbsp;<span i18n="@@session-edit.action.correction">Correction</span>
         </ion-button>
-        <ion-button (click)="computeScores()" *ngIf="isTeacher && session.id && (session.status === 'CORRECTION')" size="large">
+        <ion-button (click)="computeScores()" *ngIf="(isTeacher || isAdmin) && session.id && (session.status === 'CORRECTION')" size="large">
             <ion-icon name="calculator-outline"></ion-icon>&nbsp;<span i18n="@@session-edit.action.scores">Scores</span>
         </ion-button>
-        <ion-button (click)="exportResults()" *ngIf="isTeacher && session.id && (session.status === 'CORRECTION' || session.status === 'CLOSED')" size="large">
+        <ion-button routerLink="/session/analyse/{{session.id}}" *ngIf="(isTeacher || isAdmin) && session.id && (session.status === 'CORRECTION' || session.status === 'CLOSED')" size="large">
+            <ion-icon name="calculator-outline"></ion-icon>&nbsp;<span i18n="@@session-edit.action.analyse">Analyse</span>
+        </ion-button>
+        <ion-button (click)="exportResults()" *ngIf="(isTeacher || isAdmin) && session.id && (session.status === 'CORRECTION' || session.status === 'CLOSED')" size="large">
             <ion-icon name="download-outline"></ion-icon>&nbsp;<span i18n="@@session-edit.action.export">Export</span>
         </ion-button>
-        <ion-button (click)="close()" *ngIf="isTeacher && session.id && session.status === 'CORRECTION'" size="large" color="danger">
+        <ion-button (click)="close()" *ngIf="(isTeacher || isAdmin) && session.id && session.status === 'CORRECTION'" size="large" color="danger">
             <ion-icon name="close-outline"></ion-icon>&nbsp;<span i18n="@@session-edit.action.close">Close</span>
         </ion-button>
     </section>
@@ -87,7 +90,7 @@
                 <ion-label style="border: none;" class="listItemButton">
                     {{teacher.firstName}} {{teacher.lastName}}
                 </ion-label>
-                <ion-icon *ngIf="!readonly && isTeacher && session.status !== 'CLOSED'" slot="end" name="trash" (click)="deleteTeacher(teacher, index)"></ion-icon>
+                <ion-icon *ngIf="!readonly && (isTeacher || isAdmin) && session.status !== 'CLOSED'" slot="end" name="trash" (click)="deleteTeacher(teacher, index)"></ion-icon>
             </ion-item>
         </ion-item-group>
         <ion-item-group style="border-left: 1px solid lightgrey; border-right: 1px solid lightgrey;">
@@ -106,11 +109,12 @@
                     </div>
                 </ion-label>
                 <ion-icon *ngIf="learner.score >= 0 && learner.pass" slot="end" name="medal-outline" (click)="sendCertificate(learner, index)"></ion-icon>
-                <ion-icon *ngIf="!readonly && isTeacher && session.status !== 'CLOSED'" slot="end" name="trash" (click)="deleteLearner(learner, index)"></ion-icon>
+                <ion-icon *ngIf="!readonly && (isTeacher || isAdmin) && session.status !== 'CLOSED'" slot="end" name="trash" (click)="deleteLearner(learner, index)"></ion-icon>
+                <ion-icon *ngIf="(isTeacher || isAdmin) && !learner.pass && (session.status === 'CORRECTION' || session.status === 'CLOSED')" slot="end" name="clipboard-outline" routerLink="/session/analyse/{{sessionId}}/learner/{{learner.person.personId}}"></ion-icon>
             </ion-item>
         </ion-item-group>
     </ion-list>
-    <section style="text-align: center;" *ngIf="session && isTeacher && !loading && session.id">
+    <section style="text-align: center;" *ngIf="session && (isTeacher || isAdmin) && !loading && session.id">
         <ion-button (click)="delete()" size="large" color="danger">
             <ion-icon name="close-outline"></ion-icon>&nbsp;Delete session
         </ion-button>

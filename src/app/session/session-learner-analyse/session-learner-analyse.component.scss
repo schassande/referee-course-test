@@ -1,0 +1,46 @@
+.question,
+.answer,
+.questionNumber {
+    line-height: 2em;
+    white-space: normal;
+}
+
+.answer {
+    margin-left: 30px;
+}
+
+.question {
+    font-weight: bold;
+}
+
+.rightAnswer {
+    color: green;
+    font-weight: bold;
+}
+
+.notExpired {
+    color: green;
+}
+
+header {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    margin-bottom: 1.25em;
+    text-transform: uppercase;
+}
+
+section {
+    margin-top: 1em;
+    margin-bottom: 2.5em;
+}
+
+section:not(.full-width),
+.full-width>header {
+    padding: 0 10px;
+}
+
+.failReason {
+    color: red;
+    font-size: 1.1em;
+}

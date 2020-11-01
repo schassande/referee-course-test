@@ -36,7 +36,7 @@
                 <div *ngIf="session.autoPlay" style="margin-left: 100px;">
                     <span i18n="@@session-list.individual-learner">Individual learner</span>: {{session.participants[0].person.firstName}} {{session.participants[0].person.lastName}}</div>
             </ion-label>
-            <ion-icon *ngIf="!readonly && session.teachers && session.teachers.length && session.teachers[0].personId === currentUser.id" slot="end" name="trash" (click)="deleteItem(session)"></ion-icon>
+            <ion-icon *ngIf="!readonly && session.teachers && session.teachers.length && (isAdmin || session['isTeacher'])" slot="end" name="trash" (click)="deleteItem(session)"></ion-icon>
         </ion-item>
     </ion-list>
     <div style="height: 150px;"></div>

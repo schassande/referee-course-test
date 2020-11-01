@@ -22,6 +22,7 @@ export class SessionListComponent implements OnInit {
   sessions: Session[];
   currentUser: User;
   readonly = false;
+  isAdmin = false;
 
   constructor(
     public alertCtrl: AlertController,
@@ -34,6 +35,7 @@ export class SessionListComponent implements OnInit {
 
   ngOnInit() {
     this.currentUser = this.connectedUserService.getCurrentUser();
+    this.isAdmin = this.connectedUserService.getCurrentUser().role === 'ADMIN';
     this.readonly = this.currentUser.role === 'LEARNER';
     this.searchSessions();
   }
@@ -42,7 +44,11 @@ export class SessionListComponent implements OnInit {
   }
   searchSessions(forceServer: boolean = false, event: any = null) {
     this.sessionService.search(this.searchInput, forceServer ? 'server' : 'default').subscribe((rsession) => {
-      this.sessions = this.sessionService.sortSessionByStartDate(rsession.data, true);
+      this.sessions = this.sessionService.sortSessionByStartDate(rsession.data, true)
+        .map(session => {
+          session['isTeacher'] = session.teacherIds.indexOf(this.currentUser.id) >= 0;
+          return session;
+        });
     });
   }
 

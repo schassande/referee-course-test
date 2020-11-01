@@ -134,7 +134,8 @@ export class HomeComponent implements OnInit {
       score: -1,
       requiredScore: course.test.requiredScore,
       maxScore: 0,
-      percent: -1
+      percent: -1,
+      failedQuestionIds: []
     };
     session.participants.push(participant);
     this.sessionService.save(session).subscribe((rsess) => {

@@ -91,9 +91,9 @@ export class SessionService extends RemotePersistentDataService<Session> {
     return forkJoin(obs);
   }
 
-  public computeLearnerScoresOfParticipant(session: Session,
-                                           course: Course,
-                                           participant: SessionParticipant): Observable<any> {
+  private computeLearnerScoresOfParticipant(session: Session,
+                                            course: Course,
+                                            participant: SessionParticipant): Observable<any> {
     return this.participantQuestionAnswerService.findMyAnwsers(session.id, participant.person.personId).pipe(
       map((ranswers) => {
         const learnerAnswers: Map<string, ParticipantQuestionAnswer> = new Map<string, ParticipantQuestionAnswer>();
@@ -104,29 +104,18 @@ export class SessionService extends RemotePersistentDataService<Session> {
     );
   }
 
-  public computeParticipantResult(course: Course,
-                                  session: Session,
-                                  learnerAnswers: Map<string, ParticipantQuestionAnswer>,
-                                  testResult: TestParticipantResult = null): TestParticipantResult {
-    if (!testResult) {
-      testResult = {
-        score: 0,
-        requiredScore: course.test.requiredScore,
-        maxScore: 0,
-        percent: 0,
-        pass: true,
-        answeredQuestions: 0,
-        seriesResult: []
-      };
-    } else {
-      testResult.score = 0;
-      testResult.maxScore = 0;
-      testResult.requiredScore = course.test.requiredScore;
-      testResult.percent = 0;
-      testResult.pass = true;
-      testResult.answeredQuestions = 0;
-      testResult.seriesResult = [];
-    }
+  private computeParticipantResult(course: Course,
+                                   session: Session,
+                                   learnerAnswers: Map<string, ParticipantQuestionAnswer>,
+                                   testResult: SessionParticipant = null): TestParticipantResult {
+    testResult.score = 0;
+    testResult.maxScore = 0;
+    testResult.requiredScore = course.test.requiredScore;
+    testResult.percent = 0;
+    testResult.pass = true;
+    testResult.answeredQuestions = 0;
+    testResult.seriesResult = [];
+    testResult.failedQuestionIds = [];
     course.test.series.forEach(serie => {
       const serieResult: ParticipantResult = {
         score: 0,
@@ -138,7 +127,8 @@ export class SessionService extends RemotePersistentDataService<Session> {
       };
       let nbSelectedQuestion = 0;
       serie.questions.forEach(question => {
-        if (this.checkQuestionAnswer(course, session, question, learnerAnswers, serieResult)) {
+        if (this.checkQuestionAnswer(course, session, question, learnerAnswers,
+                                     serieResult, testResult.failedQuestionIds).questionSelected) {
           nbSelectedQuestion ++;
         }
       });
@@ -165,37 +155,59 @@ export class SessionService extends RemotePersistentDataService<Session> {
    *
    * @return true if the question has been selected and if the question has answer(s).
    */
-  private checkQuestionAnswer(course: Course,
-                              session: Session,
-                              question: Question,
-                              learnerAnswers: Map<string, ParticipantQuestionAnswer>,
-                              serieResult: ParticipantResult): boolean {
+  public checkQuestionAnswer(course: Course,
+                             session: Session,
+                             question: Question,
+                             learnerAnswers: Map<string, ParticipantQuestionAnswer>,
+                             serieResult: ParticipantResult,
+                             failedQuestionIds: string[]): AnswerCheck {
+    const ac: AnswerCheck = {
+      questionId: question.questionId,
+      questionSelected: true,
+      success: true,
+      failCode: 200,
+      answerIds: [],
+      lateDelay: 0
+    };
     if (session.questionIds.indexOf(question.questionId) < 0) {
       this.logger.debug(() => 'The question ' + question.questionId + ' has not been selected');
-      return false;
+      ac.failCode = 100;
+      ac.questionSelected = false,
+      ac.success = false;
+      return ac;
     }
     // the question of the serie has been selected.
     serieResult.maxScore += question.answers.map(a => a.right ? a.point : 0).reduce((p, c) => p + c);
     const pa = learnerAnswers.get(question.questionId);
     if (!pa) {
       this.logger.debug(() => 'The participant did not answer to the question ' + question.questionId);
-      return false;
+      failedQuestionIds.push(question.questionId);
+      ac.failCode = 101;
+      ac.success = false;
+      return ac;
     }
     const rightAnswers = question.answers.filter(answer => answer.right);
     if (!rightAnswers || !rightAnswers.length) {
       this.logger.debug(() => 'No right answer to the question ' + question.questionId);
-      return false;
-    }
-    if (pa.responseTime.getTime() > session.expireDate.getTime()) {
-      this.logger.debug(() => 'Participant answer of the question '  + question.questionId + ' is late');
-      return true;
+      ac.failCode = 102;
+      ac.success = false;
+      return ac;
     }
     this.logger.debug(() => 'Checking the participant answer of the question ' + question.questionId
       + ': answerIds=' + pa.answerIds + ', answerId=' + pa.answerId);
     serieResult.answeredQuestions++;
+
     if (pa.answerId && (!pa.answerIds || pa.answerIds.length === 0)) {
       this.logger.debug(() => 'Set pa.answerId (' + pa.answerId + ') into pa.answerIds');
       pa.answerIds = [pa.answerId];
+    }
+    ac.answerIds = pa.answerIds;
+    if (pa.responseTime.getTime() > session.expireDate.getTime()) {
+      this.logger.debug(() => 'Participant answer of the question '  + question.questionId + ' is late');
+      ac.failCode = 103;
+      ac.success = false;
+      ac.lateDelay = pa.responseTime.getTime() - session.expireDate.getTime();
+      return ac;
     }
     let points = 0;
     let error = false;
@@ -211,13 +223,21 @@ export class SessionService extends RemotePersistentDataService<Session> {
     });
     if (error || points === 0) {
       this.logger.debug(() => 'Wrong answer to the question ' + question.questionId);
+      failedQuestionIds.push(question.questionId);
+      ac.failCode = 104;
+      ac.success = false;
     } else if (rightAnswers.length === pa.answerIds.length) {
       serieResult.score += points;
       this.logger.debug(() => 'Right answer(s) to the question ' + question.questionId + ', score=' + serieResult.score);
+      ac.failCode = 200;
+      ac.success = true;
     } else {
       this.logger.debug(() => 'More answer than expected to the question ' + question.questionId);
+      failedQuestionIds.push(question.questionId);
+      ac.failCode = 105;
+      ac.success = false;
     }
-    return true;
+    return ac;
   }
 
   public getByKeyCode(keyCode: string): Observable<ResponseWithData<Session>> {
@@ -350,7 +370,8 @@ export class SessionService extends RemotePersistentDataService<Session> {
       maxScore: 0,
       percent: -1,
       answeredQuestions: 0,
-      seriesResult: []
+      seriesResult: [],
+      failedQuestionIds: []
     });
     session.participantIds.push(learner.id);
   }
@@ -373,3 +394,26 @@ export interface CertificateResponse {
   url?: string;
   error?: number;
 }
+export interface AnswerCheck {
+  questionId: string;
+  success: boolean;
+  questionSelected: boolean;
+  failCode: FailReasonCode;
+  answerIds: string[];
+  lateDelay: number;
+}
+export type FailReasonCode =
+  // The question has not been selected
+  100 |
+  // The participant did not answer to the question
+  101 |
+  // No right answer to the question
+  102 |
+  // Participant answer of the question is late
+  103 |
+  // Wrong answer to the question
+  104 |
+  // More answer than expected to the question
+  105 |
+  // Right answer(s) to the question
+  200;

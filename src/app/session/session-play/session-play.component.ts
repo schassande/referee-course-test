@@ -3,7 +3,7 @@ import { Category } from 'typescript-logging';
 import { ToastrService } from 'ngx-toastr';
 import { TestParticipantResult } from './../../model/model';
 import { ResponseWithData } from 'src/app/service/response';
-import { ModalController, NavController, AlertController } from '@ionic/angular';
+import { NavController, AlertController } from '@ionic/angular';
 import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, forkJoin, NEVER, of } from 'rxjs';
@@ -59,6 +59,7 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
   intervalId;
   /** Indicate is the user is the teacher of the session */
   isTeacher = false;
+  isAdmin = false;
   participantResult: TestParticipantResult = null;
   remainingTime: string;
   refreshingStat = false;
@@ -83,6 +84,7 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
 
   loadData() {
     this.loading = 'Loading the session ...';
+    this.isAdmin = this.connectedUserService.getCurrentUser().role === 'ADMIN';
     // load params
     this.route.paramMap.pipe(
       map((params) => this.sessionId = params.get('id')),
@@ -102,9 +104,7 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
       flatMap(() => this.courseService.get(this.session.courseId)),
       map((rcourse) => {
         this.course = rcourse.data;
-        const intersec = this.connectedUserService.getCurrentUser().speakingLanguages
-          .filter(value => -1 !== this.course.test.supportedLanguages.indexOf(value));
-        this.lang = intersec.length ? intersec[0] : this.course.test.supportedLanguages[0];
+        this.lang = this.courseService.getLang(this.course);
         this.setQuestion();
       }),
 
@@ -115,11 +115,6 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
       map(() => this.loading = 'Loading your previous answers ...'),
       flatMap(() => this.loadAnswers()),
       map(() => this.loading = 'Computing result ...'),
-      map(() => {
-        if (this.session.status === 'CORRECTION') {
-          this.participantResult = this.sessionService.computeParticipantResult(this.course, this.session, this.learnerAnswers);
-        }
-      }),
       map(() => {
         if (this.session.autoPlay) {
           map(() => this.loading = 'Lauching Autoplay ...'),

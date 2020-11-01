@@ -99,6 +99,9 @@
             <ion-button (click)="correction()" *ngIf="session.status === 'STOPPED'" size="large" color="warning">
                 <ion-icon name="checkmark-done-outline"></ion-icon>&nbsp;<span i18n="@@session-play.action.correction">Correction</span>
             </ion-button>
+            <ion-button routerLink="/session/analyse/{{session.id}}" *ngIf="(isTeacher || isAdmin) && session.id && (session.status === 'CORRECTION' || session.status === 'CLOSED')" size="large">
+                <ion-icon name="calculator-outline"></ion-icon>&nbsp;<span i18n="@@session-play.action.analyse">Analyse</span>
+            </ion-button>
             <ion-button (click)="close()" *ngIf="session.status === 'CORRECTION'" size="large" color="danger">
                 <ion-icon name="close-outline"></ion-icon>&nbsp;<span i18n="@@session-play.action.close">Close</span>
             </ion-button>

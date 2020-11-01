@@ -88,4 +88,20 @@ export class CourseService extends RemotePersistentDataService<Course> {
       course.test.series[0].questions.push(question);
     }
   }
+
+  public getQuestion(questionId: string, course: Course): Question {
+    let res: Question = null;
+    course.test.series.forEach(serie => {
+      if (!res) {
+        res = serie.questions.find(question => question.questionId === questionId);
+      }
+    });
+    return res;
+  }
+
+  public getLang(course: Course): string {
+    const intersec = this.connectedUserService.getCurrentUser().speakingLanguages
+      .filter(value => -1 !== course.test.supportedLanguages.indexOf(value));
+    return intersec.length ? intersec[0] : course.test.supportedLanguages[0];
+  }
 }
