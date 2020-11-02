@@ -197,21 +197,20 @@ export class HomeComponent implements OnInit {
         this.alertCtrl.create({ message: error, buttons: [{ text: 'Ok'}]}).then(a => a.present());
         return;
       }
-      let sIdx = session.teacherIds.indexOf(this.currentUser.id);
+      const sIdx = session.teacherIds.indexOf(this.currentUser.id);
       if (sIdx >= 0) { // already the teacher
         this.navController.navigateRoot('/session/edit/' +  session.id);
         return;
       }
-      if (sIdx >= 0) { // already participant
-        this.routeLearnerSession(rsess.data);
-        return;
-      }
       // add the learner
-      this.sessionService.addLearner(session, this.currentUser);
-      // save the session
-      this.sessionService.save(session)
-        // got to the session
-        .subscribe((rsess2) => this.routeLearnerSession(rsess2.data));
+      if (this.sessionService.addLearner(session, this.currentUser)) {
+        // save the modified session
+        this.sessionService.save(session)
+          .subscribe((rsess2) => this.routeLearnerSession(rsess2.data));
+      } else {
+        // The learner is already member of the session
+        this.routeLearnerSession(rsess.data);
+      }
     });
   }
   routeLearnerSession(session) {

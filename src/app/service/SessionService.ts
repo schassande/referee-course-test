@@ -360,20 +360,25 @@ export class SessionService extends RemotePersistentDataService<Session> {
     return code;
   }
 
-  public addLearner(session: Session, learner: User) {
-    session.participants.push({
-      person: this.userService.userToPersonRef(learner),
-      questionAnswerIds: [],
-      pass: false,
-      score: -1,
-      requiredScore: -1,
-      maxScore: 0,
-      percent: -1,
-      answeredQuestions: 0,
-      seriesResult: [],
-      failedQuestionIds: []
-    });
-    session.participantIds.push(learner.id);
+  public addLearner(session: Session, learner: User): boolean {
+    const sIdx = session.participantIds.indexOf(learner.id);
+    if (sIdx < 0) {
+      session.participants.push({
+        person: this.userService.userToPersonRef(learner),
+        questionAnswerIds: [],
+        pass: false,
+        score: -1,
+        requiredScore: -1,
+        maxScore: 0,
+        percent: -1,
+        answeredQuestions: 0,
+        seriesResult: [],
+        failedQuestionIds: []
+      });
+      session.participantIds.push(learner.id);
+      return true;
+    }
+    return false;
   }
 
   public sendCertificate(learnerId: string, session: Session): Observable<CertificateResponse> {
