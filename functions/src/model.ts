@@ -75,6 +75,11 @@ export interface Translatable {
   text?: string;
 }
 
+export type QuestionType =
+  /** The question has only one answer */
+  'UNIQUE' |
+   /** The question has several expected answers */
+  'COMBINATION';
 /** A question of the serie of the test */
 export interface Question extends Translatable {
   /** The identifier of the question */
@@ -87,6 +92,8 @@ export interface Question extends Translatable {
   enabled: boolean;
   /** Flag to indicate the question is required. */
   required: boolean;
+  /** does the question has one or several answer expected. */
+  questionType?: QuestionType;
 }
 
 /** An answer of a question. */
@@ -146,8 +153,10 @@ export interface ParticipantResult {
   /** score */
   score: number;
   requiredScore: number;
+  maxScore: number;
   /** score as percent */
   percent: number;
+  answeredQuestions: number;
 }
 export interface TestParticipantResult extends ParticipantResult {
   seriesResult: ParticipantResult[];
@@ -159,6 +168,8 @@ export interface SessionParticipant extends TestParticipantResult {
   person: PersonRef;
   /** The answerq of the questions */
   questionAnswerIds: string[];
+  /** List of the question id having a wrong answer from the participant */
+  failedQuestionIds: string[];
 }
 
 export interface ParticipantQuestionAnswer extends RootNode {
@@ -168,8 +179,10 @@ export interface ParticipantQuestionAnswer extends RootNode {
   sessionId: string;
   /** The identifier of the question */
   questionId: string;
-  /** The identifier of the choosed answer */
+  /** The identifier of the choosed answers */
   answerId: string;
+  /** The identifier of the choosed answers */
+  answerIds?: string[];
   /** time stamp of the response */
   responseTime: Date;
 }
@@ -206,9 +219,9 @@ export interface User extends RootNode {
   /** The last name of the user */
   lastName: string;
   /** The phone number of the user */
-  phone: string;
+  phone?: string;
   /** The club of the user */
-  club: Club;
+  club?: Club;
   /** The speaking languages of the user */
   speakingLanguages: string[];
   /** The qualification of the user */

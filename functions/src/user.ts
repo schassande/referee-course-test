@@ -7,8 +7,8 @@ const PromisePool = promisePool.default;
 admin.initializeApp();
 const firestore = admin.firestore();
 
-const gmailEmail = functions.config().gmail.email;
-const gmailPassword = functions.config().gmail.password;
+const gmailEmail = "coachreferee@gmail.com"; // functions.config().gmail.email;
+const gmailPassword = "Lm2pCRanpo."; // functions.config().gmail.password;
 const mailTransport = nodemailer.createTransport({
   service: 'gmail',
   auth: {

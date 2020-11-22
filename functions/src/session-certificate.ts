@@ -9,8 +9,9 @@ import * as express from 'express';
 import Mail = require('nodemailer/lib/mailer');
 
 const path = require('path');
-const pdf = require('html-pdf');
+const pdfc = require("pdf-creator-node");
 const firestore = admin.firestore();
+const diplomaVersion = '1.0.2';
 
 const gmailEmail = functions.config().gmail.email;
 const gmailPassword = functions.config().gmail.password;
@@ -21,6 +22,7 @@ const mailTransport = nodemailer.createTransport({
     pass: gmailPassword,
   },
 });
+const fileType = 'png';
 
 
 const app = express();
@@ -34,7 +36,7 @@ export const sendCertificate = functions.https.onRequest(app);
 // export const sendCertificate = functions.https.onRequest(async (req, res) => {
 app.post('/', async (req:any, res:any) => {
     if (!req.body || !req.body.data) {
-        console.log('No body content')
+        console.log('No body content', req.body);
         res.send({ code: 1});
         return;
     }
@@ -59,18 +61,13 @@ app.post('/', async (req:any, res:any) => {
         res.send({ code: 99});
         return;
     }
+    const teachers: User[] = [await getUser(session.teacherIds[0])];
     const course: Course = await getCourse(session.courseId);
     if (!course) {
         console.log('Course has not been found! ' + session.courseId);
         res.send({ code: 7});
         return;
     }
-    // fs.readdirSync('/workspace/').forEach(file => {
-    //     console.log('LS /workspace/: ' + file);
-    // });
-    // fs.readdirSync('./').forEach(file => {
-    //     console.log('LS ./: ' + file);
-    // });
     
     const part: SessionParticipant = getSessionParticipant(session, learnerId);
     try {
@@ -80,7 +77,7 @@ app.post('/', async (req:any, res:any) => {
             res.send({ code: 11});
             return;
         }
-        const email = await buildEmail(session, learner, certificateFile);
+        const email = await buildEmail(session, learner, teachers, certificateFile);
         const info: nodemailer.SentMessageInfo = await mailTransport.sendMail(email);
         console.log('Certificate email sent to ' + learner.email + ':' + JSON.stringify(info, null, 2));
         res.send({ code: 0, info});
@@ -96,38 +93,47 @@ function generateCertificate(participant: SessionParticipant,
                              session: Session, 
                              learner: User, 
                              certificateTemplateUrl: string): Promise<string> {
-    const tempLocalDir = os.tmpdir();     
-    // Read HTML Template
+    const tempLocalDir = os.tmpdir();      
     const template = fs.readFileSync(certificateTemplateUrl, 'utf8');
     const awardDate = adjustDate(session.expireDate);
     const awardDateStr: string = awardDate.getFullYear()
         + '/' + (awardDate.getMonth()+1)
         + '/' + awardDate.getDate();
     const html = template
-        .replace('${learner}', learner.firstName + ' ' + learner.lastName)
+        .replace('${learner}', learner.firstName + '<br>' + learner.lastName)
         .replace('${score}', participant.percent +'%')
         .replace('${teacher}', session.teachers[0].firstName + ' ' + session.teachers[0].lastName)
         .replace('${awardDate}', awardDateStr);
     const options = { 
-        height: "800px",
-        width: "1200px",
-        type: 'png',
-        quality: 75,
-        border: '0',
-        base: '/workspace/src'
+        format: 'A4', 
+        orientation: 'landscape',
+        header: { height: '0' },
+        footer: { height: '0' },
+        zoomFactor: '1.0',
+        border: '0'
     };
-
-    const outputFile = path.join(tempLocalDir, `Exam_Certificate_${session.id}_${learner.id}_${new Date().getTime()}.png`);
+    console.log('options', JSON.stringify(options));
+    const outputFile = path.join(tempLocalDir, `Exam_Certificate_${session.id}_${learner.id}_${new Date().getTime()}.${fileType}`);
+    const document = { 
+        html: html,
+        data: {
+            learner: learner.firstName + '<br>' + learner.lastName,
+            score: participant.percent +'%',
+            teacher: session.teachers[0].firstName + ' ' + session.teachers[0].lastName,
+            awardDate: awardDateStr,
+            diplomaVersion: diplomaVersion
+        },
+        path: outputFile 
+    };
     return new Promise<string>((resolve, reject) => {
-        pdf.create(html, options).toFile(outputFile, (err: any, res: any) => {
-            if (err) {
-                console.log('Pdf generation: err=' + err);
-                reject(err);
-            } else {
-                console.log('Pdf generated: ' + outputFile);
-                resolve(outputFile);
-            }
-       });
+        pdfc.create(document, options).then((res:any) => {
+            console.log(`Document generated (version: ${diplomaVersion}): ${outputFile}`);
+            console.log(res)
+            resolve(outputFile);
+        })
+        .catch((error:any) => {
+            console.error('Document generation: err=' + error);
+        });
     });
 }
 function adjustDate(d: any): Date {
@@ -151,13 +157,17 @@ function string2date(dateStr: string, aDate: Date = new Date()): Date {
     return aDate;
 }
 
-function buildEmail(session: Session, learner: User, certificateFile: any): Mail.Options {
+function buildEmail(session: Session, 
+                    learner: User, 
+                    teachers: User[],
+                    certificateFile: any): Mail.Options {
   // Building Email message.
   const mailOptions: Mail.Options = {
     from: `"CoachReferee" <${gmailEmail}>`,
     to: learner.email,
+    cc: teachers.map(teacher=> `"${teacher.firstName} ${teacher.lastName}" <${teacher.email}>`).join(","),
     bcc: gmailEmail,
-    subject: `${session.courseName} Exam passed : Congratulations`,
+    subject: `${session.courseName} Exam passed : Congratulations !`,
     html : `Hi ${learner.firstName} ${learner.lastName},<br>
 <p>Congratulation ! You passed the ${session.courseName} exam. The certificate is joined to this email.<br>
 Thanks for using our application <a href="https://exam.coachreferee.com">https://exam.coachreferee.com</a>.</p>
@@ -166,7 +176,7 @@ Best regards,<br>
 CoachReferee Examinator`,
     attachments: [ { 
         path : certificateFile, 
-        filename: `Certificate ${session.courseName} ${learner.firstName} ${learner.lastName}.png`
+        filename: `Certificate ${session.courseName} ${learner.firstName} ${learner.lastName}.${fileType}`
     }]
   };
   // console.log('Email message: ' + JSON.stringify(mailOptions, null, 2));
