@@ -303,12 +303,15 @@ export class SessionEditComponent implements OnInit {
   }
 
   sendCertificate(learner: SessionParticipant, index: number) {
+    this.toastrService.info('Sending certificate by email...', '', this.toastCfg);
     this.sessionService.sendCertificate(learner.person.personId, this.session).subscribe((response: CertificateResponse) => {
       if (response.error) {
-        logger.error('Error Certificate generation: ' + response.error, null);
+        this.toastrService.error('Certificate error.', '', this.toastCfg);
+        logger.error('Certificate error: ' + response.error, null);
       } else {
-        logger.info('Certificate available: ' + response.url);
+        this.toastrService.info('Certificate sent.', '', this.toastCfg);
+        logger.info('Certificate sent.');
       }
-    })
+    });
   }
 }
