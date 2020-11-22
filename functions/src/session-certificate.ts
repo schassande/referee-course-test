@@ -37,14 +37,14 @@ export const sendCertificate = functions.https.onRequest(app);
 app.post('/', async (req:any, res:any) => {
     if (!req.body || !req.body.data) {
         console.log('No body content', req.body);
-        res.send({ code: 1});
+        res.send({ error: { code: 1, error: 'No body content'}, data: null});
         return;
     }
     const sessionId = req.body.data.sessionId;
     const learnerId = req.body.data.learnerId;
     console.log('sessionId=' + sessionId + ', learnerId=' + learnerId);
     if (!sessionId || !learnerId) {
-        res.send({ code: 1});
+        res.send({ error: { code: 2, error: 'missing parameters'}, data: null});
         return;
     }
     const  learner: User = await getUser(learnerId);
@@ -53,19 +53,19 @@ app.post('/', async (req:any, res:any) => {
         const code = check(learner, session);
         console.log('code=' + code);
         if (code) {
-            res.send({ code});
+            res.send({ error: { code, error: 'Wrong parameters'}, data: null});
             return;
         }
     } catch(err) {
         console.log(err);
-        res.send({ code: 99});
+        res.send({ error: { code: 99, error: 'Technical server error'}, data: null});
         return;
     }
     const teachers: User[] = [await getUser(session.teacherIds[0])];
     const course: Course = await getCourse(session.courseId);
     if (!course) {
         console.log('Course has not been found! ' + session.courseId);
-        res.send({ code: 7});
+        res.send({ error: { code: 7, error: 'Wrong parameters'}, data: null});
         return;
     }
     
@@ -74,18 +74,18 @@ app.post('/', async (req:any, res:any) => {
         const certificateFile = await generateCertificate(part, session, learner, course.test.certificateTemplateUrl);
         console.log('certificateFile: ' + certificateFile);
         if (!certificateFile) {
-            res.send({ code: 11});
+            res.send({ error: { code: 11, error: 'Problem of generation'}, data: null});
             return;
         }
         const email = await buildEmail(session, learner, teachers, certificateFile);
         const info: nodemailer.SentMessageInfo = await mailTransport.sendMail(email);
         console.log('Certificate email sent to ' + learner.email + ':' + JSON.stringify(info, null, 2));
-        res.send({ code: 0, info});
+        res.send({ error: null, data: info});
         // delete file
         fs.unlinkSync(certificateFile);
     } catch(error) {
       console.error('There was an error while sending the email:', error);
-      res.send({ code: 10, error});
+      res.send({ error: { code: 10, error: 'Problem when sending the email'}, data: null});
     }
 });
 
