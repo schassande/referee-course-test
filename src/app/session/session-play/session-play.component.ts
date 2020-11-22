@@ -111,29 +111,18 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
       // load translationService
       map(() => this.loading = 'Loading the translations ...'),
       flatMap(() => this.loadTranslation()),
+
       // load participant answers
       map(() => this.loading = 'Loading your previous answers ...'),
       flatMap(() => this.loadAnswers()),
-      map(() => this.loading = 'Computing result ...'),
-      map(() => {
-        if (this.session.autoPlay) {
-          map(() => this.loading = 'Lauching Autoplay ...'),
-          this.autoPlay();
-        }
-      }),
       map(() => this.loading = null)
     ).subscribe();
-  }
-
-  private autoPlay() {
-    if (this.session.status === 'STARTED') {
-    } else if (this.session.status === 'STOPPED') {
-    }
   }
 
   public ngOnDestroy() {
     if (this.intervalId) {
       clearInterval(this.intervalId);
+      this.intervalId = null;
     }
   }
 
@@ -149,9 +138,14 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
   autoClose() {
     logger.debug(() => 'Auto close');
     this.session.status = 'CLOSED';
+
+    clearInterval(this.intervalId);
+    this.intervalId = null;
+
     this.save().pipe(
       flatMap(() => this.sessionService.computeLearnerScores(this.session, this.course)),
       flatMap(() => this.save()),
+      flatMap(() => this.sessionService.sendCertificateAll(this.session)),
       map(() => this.navController.navigateRoot('/session/edit/' + this.session.id))
     ).subscribe();
   }
@@ -384,7 +378,8 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
   correction() {
     this.session.status = 'CORRECTION';
     this.sessionService.computeLearnerScores(this.session, this.course).pipe(
-      flatMap(() => this.save())
+      flatMap(() => this.save()),
+      flatMap(() => this.sessionService.sendCertificateAll(this.session))
     ).subscribe(() => this.toastrService.success('Marking step of the exam.', '', this.toastCfg));
   }
 

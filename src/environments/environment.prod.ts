@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
   firebaseConfig : {
-    apiKey: 'XXXXXXXXXXXXXXXXXXXXX',
+    apiKey: 'AIzaSyD8ibJnxxxg0fD1wfddSVXfbiXrhd3V7DY',
     authDomain: 'referee-course-test.firebaseapp.com',
     databaseURL: 'https://referee-course-test.firebaseio.com',
     projectId: 'referee-course-test',
@@ -10,5 +10,5 @@ export const environment = {
     functionRegion: 'us-central1',
     functionOrigin: 'https://referee-course-test.web.app'
   },
-  version: '1.2.2-2020-11-22T18:00:27.477Z'
+  version: '1.2.2-2020-11-22T19:11:58.112Z'
 };

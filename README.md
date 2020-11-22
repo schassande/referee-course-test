@@ -57,4 +57,9 @@ Here is the list of next developpements:
 
 * Global switch of the language over the web site
 * Test the application with several series
+
+## Version 1.3.0
+
+New features:
+
 * Sent a certificat when a learner passes an exam

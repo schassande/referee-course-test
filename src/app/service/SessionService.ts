@@ -14,6 +14,7 @@ import { ConnectedUserService } from './ConnectedUserService';
 import { Injectable } from '@angular/core';
 import { RemotePersistentDataService } from './RemotePersistentDataService';
 import { Session } from '../model/model';
+import { Response } from './response';
 import * as moment from 'moment';
 
 @Injectable({
@@ -381,24 +382,34 @@ export class SessionService extends RemotePersistentDataService<Session> {
     return false;
   }
 
-  public sendCertificate(learnerId: string, session: Session): Observable<CertificateResponse> {
+  public sendCertificate(learnerId: string, session: Session): Observable<Response> {
     if (!session || (session.status !== 'CORRECTION' && session.status !== 'CLOSED')) {
-      return of({error: 1});
+      return of({error: { error: 'Wrong status', errorCode: 1}});
     }
     const learners = session.participants.filter(participant => participant.person.personId === learnerId);
     if (learners.length === 0 || learners[0].score <= 0 || !learners[0].pass) {
-      return of({error: 2});
+      return of({error: { error: 'Learner did found or failed', errorCode: 2}});
     }
     this.logger.debug(() => 'sendCertificate(sessionId=' + session.id + ', learnerId=' + learnerId + ')');
     const callable = this.functions.httpsCallable('sendCertificate');
     return callable({ sessionId: session.id, learnerId });
   }
+
+  public sendCertificateAll(session: Session): Observable<any> {
+    if (!session || (session.status !== 'CORRECTION' && session.status !== 'CLOSED')) {
+      return of({error: { error: 'Wrong status', errorCode: 1}});
+    }
+    if (session.participants.length === 0) {
+      return of('');
+    }
+    const obs: Observable<Response>[] = session.participants.map((learner: SessionParticipant) => {
+      const learnerId = learner.person.personId;
+      return this.sendCertificate(learnerId, session);
+    });
+    return forkJoin(obs);
+  }
 }
 
-export interface CertificateResponse {
-  url?: string;
-  error?: number;
-}
 export interface AnswerCheck {
   questionId: string;
   success: boolean;

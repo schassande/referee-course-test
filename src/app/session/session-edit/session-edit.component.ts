@@ -10,8 +10,8 @@ import { Course, Session, SessionParticipant, SharedWith, User } from 'src/app/m
 import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
 import { CourseService } from 'src/app/service/CourseService';
 import { DateService } from 'src/app/service/DateService';
-import { ResponseWithData } from 'src/app/service/response';
-import { CertificateResponse, SessionService } from 'src/app/service/SessionService';
+import { Response, ResponseWithData } from 'src/app/service/response';
+import { SessionService } from 'src/app/service/SessionService';
 import { UserService } from 'src/app/service/UserService';
 import { Category } from 'typescript-logging';
 import { UserSelectorComponent } from './../../main/widget/user-selector-component';
@@ -250,6 +250,7 @@ export class SessionEditComponent implements OnInit {
     this.session.status = 'CORRECTION';
     this.sessionService.computeLearnerScores(this.session, this.course).pipe(
       flatMap(() => this.save(true)),
+      flatMap(() => this.sessionService.sendCertificateAll(this.session)),
       map(() => this.toastrService.success('Marking step of the exam.', '', this.toastCfg))
     ).subscribe();
   }
@@ -304,7 +305,7 @@ export class SessionEditComponent implements OnInit {
 
   sendCertificate(learner: SessionParticipant, index: number) {
     this.toastrService.info('Sending certificate by email...', '', this.toastCfg);
-    this.sessionService.sendCertificate(learner.person.personId, this.session).subscribe((response: CertificateResponse) => {
+    this.sessionService.sendCertificate(learner.person.personId, this.session).subscribe((response: Response) => {
       if (response.error) {
         this.toastrService.error('Certificate error.', '', this.toastCfg);
         logger.error('Certificate error: ' + response.error, null);
