@@ -13,7 +13,7 @@
 </ion-header>
 
 <ion-content (swipe)="onSwipe($event)">
-    <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="!readonly">
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
         <ion-fab-button (click)="addTeacher()">
             <ion-icon name="add"></ion-icon>
         </ion-fab-button>
@@ -31,12 +31,14 @@
         <ion-item *ngFor="let teacher of teachers">
             <!-- #BEF990 style='--color: #D8FFFF;' -->
             <ion-label style="border: none;" class="listItemButton">
-                <span>{{teacher.firstName}} {{teacher.lastName}}</span>
-                <ul>
-                    <li *ngFor="let qual of teacher.teacherQualifications">{{qual.region}} / Level {{qual.level}}:{{qual.status}}</li>
-                </ul>
+                <div>{{teacher.firstName}} {{teacher.lastName}}</div>
+                <div style="font-size: 0.8em;">{{teacher.email}}
+                    <ul>
+                        <li *ngFor="let qual of teacher.teacherQualifications">{{qual.region}} / Level {{qual.level}}:{{qual.status}}</li>
+                    </ul>
+                </div>
             </ion-label>
-            <ion-icon *ngIf="!readonly && teacher.role === 'TEACHER'" slot="end" name="trash" (click)="deleteTeacher(teacher)"></ion-icon>
+            <ion-icon *ngIf="isAdmin" slot="end" name="trash" (click)="deleteTeacher(teacher)"></ion-icon>
         </ion-item>
     </ion-list>
     <div style="height: 150px;"></div>

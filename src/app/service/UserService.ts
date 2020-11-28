@@ -24,6 +24,7 @@ export class UserService  extends RemotePersistentDataService<User> {
         private connectedUserService: ConnectedUserService,
         appSettingsService: AppSettingsService,
         private alertCtrl: AlertController,
+        private functions: AngularFireFunctions,
         private loadingController: LoadingController,
         private navController: NavController,
         private auth: AngularFireAuth,
@@ -461,5 +462,17 @@ export class UserService  extends RemotePersistentDataService<User> {
         return { personId: user.id,
           firstName: user.firstName,
           lastName: user.lastName};
+    }
+
+    public notifyNewTeacher(userId: string): Observable<Response> {
+        this.logger.debug(() => 'notifyNewTeacher(userId=' + userId + ')');
+        const callable = this.functions.httpsCallable('notifyNewTeacher');
+        return callable({ userId });
+    }
+
+    public askToBecomeTeacher(learnerId: string, teacherId: string): Observable<Response> {
+        this.logger.debug(() => 'askToBecomeTeacher(learnerId=' + learnerId + ', teacherId=' + teacherId + ')');
+        const callable = this.functions.httpsCallable('askToBecomeTeacher');
+        return callable({ learnerId, teacherId });
     }
 }

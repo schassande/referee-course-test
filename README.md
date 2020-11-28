@@ -58,6 +58,14 @@ Here is the list of next developpements:
 * Global switch of the language over the web site
 * Test the application with several series
 
+
+
+## Version 1.4.0
+
+* Teachers can grant learners to the teacher level.
+* A learner can ask to a teacher to be granted as teacher.
+* The teacher list is sorted by first name and last name.
+
 ## Version 1.3.0
 
 New features:

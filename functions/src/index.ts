@@ -3,6 +3,8 @@ import {
     accountCleanup as _accountCleanup 
 } from './user';
 import {  sendCertificate as _sendCertificate } from './session-certificate';
+import {  notifyNewTeacher as _notifyNewTeacher } from './new-teacher-notification';
+import {  askBecomeTeacher as _askBecomeTeacher } from './ask-become-teacher';
 
 ////////////////////////////////////////////////////////////
 ////////// Export the function about the user //////////////
@@ -10,3 +12,5 @@ import {  sendCertificate as _sendCertificate } from './session-certificate';
 export const sendEmailConfirmation = _sendEmailConfirmation;
 export const accountCleanup = _accountCleanup;
 export const sendCertificate = _sendCertificate;
+export const notifyNewTeacher = _notifyNewTeacher;
+export const askBecomeTeacher = _askBecomeTeacher;
