@@ -23,7 +23,7 @@ const app = express();
 app.use(cors({ origin: true }));
 
 // Expose Express API as a single Cloud Function:
-export const askBecomeTeacher = functions.https.onRequest(app);
+export const askToBecomeTeacher = functions.https.onRequest(app);
 
 // build multiple CRUD interfaces:
 // export const sendCertificate = functions.https.onRequest(async (req, res) => {
@@ -76,9 +76,11 @@ function buildEmail(learner: User, teacher: User): Mail.Options {
     subject: `Referee Exam App: Grant a new teacher?`,
     html : `Hi ${teacher.firstName} ${teacher.lastName},<br>
 <p>${learner.firstName} ${learner.lastName} asks you to grant him/her as teacher in the referee exam web application.<br>
-Only If <b>you trust this person</b> and you are sur he/she <b>has the presenter qualification</b>, 
-please go on <a href="https://exam.coachreferee.com/en/teacher">the web page of the teacher list</a>, 
-and add him/her to the list by using the 'plus' button (bottom right).<br>
+<br>
+Only If <b>you trust this person</b> and you are sure this person <b>has the presenter qualifications</b>,<br>
+please go on <a href="https://exam.coachreferee.com/en/teacher">the web page of the teacher list</a>,<br>
+and add this person to the list by using the 'plus' button (bottom right).<br>
+<br>
 If you don't trust this person as referee presenter, please ignore this email.
 </p>
 Best regards,<br>
