@@ -745,14 +745,7 @@
           <context context-type="linenumber">8</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="session-play.required-score" datatype="html">
-        <source>Required score: </source>
-        <target>Score requis: </target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/session/session-play/session-play.component.html</context>
-          <context context-type="linenumber">58</context>
-        </context-group>
-      </trans-unit>
+      
       <trans-unit id="session-play.question" datatype="html">
         <source>Question</source>
         <target>Question</target>
@@ -859,6 +852,21 @@
           <context context-type="linenumber">8</context>
         </context-group>
       </trans-unit>
-    </body>
+    <trans-unit id="session-analyse.title" datatype="html">
+        <source>Session analysis</source>
+        <target>Analyse de session</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/session/session-analyse/session-analyse.component.html</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+      </trans-unit><trans-unit id="session-learner-analyse.title" datatype="html">
+        <source>Learner analysis</source>
+        <target>Analyse individu</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/session/session-learner-analyse/session-learner-analyse.component.html</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+      </trans-unit>
+      </body>
   </file>
 </xliff>
