@@ -8,6 +8,8 @@ import * as cors from 'cors';
 import * as express from 'express';
 import Mail = require('nodemailer/lib/mailer');
 
+
+const moment = require('moment');
 const path = require('path');
 const pdfc = require("pdf-creator-node");
 const firestore = admin.firestore();
@@ -96,12 +98,10 @@ function generateCertificate(participant: SessionParticipant,
     const tempLocalDir = os.tmpdir();      
     const template = fs.readFileSync(certificateTemplateUrl, 'utf8');
     const awardDate = adjustDate(session.expireDate);
-    const awardDateStr: string = awardDate.getFullYear()
-        + '/' + (awardDate.getMonth()+1)
-        + '/' + awardDate.getDate();
+    
+    const awardDateStr: string = moment(awardDate).format('Do MMM YYYY');
     const html = template
         .replace('${learner}', learner.firstName + '<br>' + learner.lastName)
-        .replace('${score}', participant.percent +'%')
         .replace('${teacher}', session.teachers[0].firstName + ' ' + session.teachers[0].lastName)
         .replace('${awardDate}', awardDateStr);
     const options = { 
