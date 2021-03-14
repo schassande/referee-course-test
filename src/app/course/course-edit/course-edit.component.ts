@@ -9,7 +9,7 @@ import { ActivatedRoute } from '@angular/router';
 import { DateService } from 'src/app/service/DateService';
 import { CourseService } from 'src/app/service/CourseService';
 import { NavController, ToastController, LoadingController } from '@ionic/angular';
-import { Course, Question } from 'src/app/model/model';
+import { Course, Question, QuestionSerie} from 'src/app/model/model';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 
 import * as csv from 'csvtojson';
@@ -201,7 +201,7 @@ export class CourseEditComponent implements OnInit {
           a.remove();
         } else {
           this.toastController.create({
-            message: 'Couse cannot be download.',
+            message: 'Couse cannot be downloaded.',
             position: 'bottom',
             duration: 4000,
             translucent: true
@@ -275,6 +275,23 @@ export class CourseEditComponent implements OnInit {
     }
   }
 
+  deleteQuestion(serie: QuestionSerie, question: Question, qIdx: number) {
+    serie.questions.splice(qIdx, 1);
+  }
+
+  addQuestion(serie: QuestionSerie) {
+    this.courseService.addQuestion(this.course, serie);
+  }
+  onNbAnswerChange(question: Question, event) {
+    if (this.readonly) {
+      return;
+    }
+    const newNb = Number.parseInt(event.target.value, 10);
+    this.courseService.setNbAnswer(question, newNb);
+  }
+  getNbAnswerChange(question: Question): number {
+    return question.answers.length;
+  }
   onSwipe(event) {
     if (event.direction === 4) {
       this.navController.navigateRoot(`/course`);

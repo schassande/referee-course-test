@@ -112,14 +112,17 @@
         <ion-item-group style="border-left: 1px solid lightgrey; border-right: 1px solid lightgrey;" *ngFor="let serie of course.test.series; let index = index">
             <ion-item-divider color="light" style="text-align: center; font-size: 1.2em; padding: 10px;">
                 <ion-label><span i18n="@@course-edit.serie_questions">Serie of questions</span> {{index + 1}} {{serie.serieName}}</ion-label>
+                <ion-icon *ngIf="editMode" slot="end" name="add" (click)="addQuestion(serie)"></ion-icon>
             </ion-item-divider>
-            <ion-item *ngFor="let question of serie.questions">
+            <ion-item *ngFor="let question of serie.questions; let qIdx = index">
                 <div>
                     <p style="font-weight: bold;" (click)="onToggleMulti(question)">
                         {{question.questionId}}:
                         <span innerHtml="{{question.text}}"></span>&nbsp;
                         <span *ngIf="question.questionType === 'UNIQUE'" i18n="@@course-edit.question-single">(Single)</span>
                         <span *ngIf="question.questionType === 'COMBINATION'" i18n="@@course-edit.question-multi">(Multi)</span>
+                        <ion-input *ngIf="editMode" type="number" (change)="onNbAnswerChange(question, $event)" [value]="getNbAnswerChange(question)" [readonly]="readonly" min="2" max="10" style="width: 30px; display: inline-block; margin-left: 5px;"></ion-input>
+                        <ion-icon *ngIf="editMode" slot="end" name="trash" (click)="deleteQuestion(serie, question, qIdx)"></ion-icon>
                     </p>
                     <p *ngFor="let answer of question.answers" style="margin-left: 10px;" (click)="toggleRightAnswer(question, answer)">
                         <span [ngClass]="{ 'right-answer' : answer.right}">{{answer.answerId}}</span> - <span innerHtml="{{answer.text}}"></span>
