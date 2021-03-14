@@ -24,7 +24,7 @@
             <ion-item>
                 <ion-label i18n="@@session-edit.course">Course:</ion-label>
                 <ion-input *ngIf="readonly" type="text" [(ngModel)]="course.name" readonly="true" style="text-align: right;"></ion-input>
-                <ion-select *ngIf="!readonly" [(ngModel)]="session.courseId" (change)="onCourseIdChange()">
+                <ion-select *ngIf="!readonly" [value]="session.courseId" (ionChange)="onCourseIdChange($event)" interface="action-sheet">
                     <ion-select-option *ngFor="let course of courses" value="{{course.id}}">{{course.name}}</ion-select-option>
                 </ion-select>
             </ion-item>

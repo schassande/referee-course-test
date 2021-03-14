@@ -67,6 +67,7 @@ export class CourseEditComponent implements OnInit {
           lang = this.course.test.supportedLanguages[0];
         }
         this.course.test.series.forEach(serie => {
+          console.log('Serie ' + serie.serieName, serie.questions.length);
           serie.questions.forEach(question => {
             obs.push(this.translationService.translate(question, lang));
             question.answers.forEach(answer => {
@@ -231,7 +232,11 @@ export class CourseEditComponent implements OnInit {
       }
     }
   }
-
+  onNbQuestionChange() {
+    if (this.course.test.series.length === 1) {
+      this.course.test.series[0].nbQuestion = this.course.test.nbQuestion;
+    }
+  }
   toggleRightAnswer(question: Question, answer: Answer): boolean {
     if (this.readonly || !this.editMode) {
       return;

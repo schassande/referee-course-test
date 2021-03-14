@@ -233,10 +233,12 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
   private loadTranslation(): Observable<any> {
     const obs: Observable<any>[] = [];
     this.questions.forEach(question => {
-      obs.push(this.translationService.translate(question, this.lang));
-      question.answers.forEach(answer => {
-        obs.push(this.translationService.translate(answer, this.lang));
-      });
+      if (question) {
+        obs.push(this.translationService.translate(question, this.lang));
+        question.answers.forEach(answer => {
+          obs.push(this.translationService.translate(answer, this.lang));
+        });
+      }
     });
     return forkJoin(obs);
   }

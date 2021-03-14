@@ -143,7 +143,7 @@ export class SessionEditComponent implements OnInit {
         logger.debug(() => 'Session saved: ' + this.session);
         if (canNavigation && !sid && this.session.id) {
           // the session has been created, then move to edit page
-          this.navController.navigateRoot(`/session/edit/{this.session.id}`);
+          this.navController.navigateRoot(`/session/edit/${this.session.id}`);
         }
         return rses;
       }));
@@ -212,16 +212,17 @@ export class SessionEditComponent implements OnInit {
     this.add('Teacher');
   }
 
-  onCourseIdChange() {
-    if (this.session.courseId) {
-      this.course = this.courses.find(c => c.id === this.session.courseId);
+  onCourseIdChange(event) {
+    const newCourseId = event.target.value;
+    if (newCourseId) {
+      this.course = this.courses.find(c => c.id === newCourseId);
     } else {
       this.course = null;
     }
     if (this.sessionService.changeCourse(this.session, this.course, this.forceNoRandom)) {
+      logger.debug(() => 'onCourseIdChange(): ' + this.session.courseName);
       this.save().subscribe();
     }
-    logger.debug(() => 'onCourseIdChange(): ' + this.session.courseName);
   }
 
   deleteTeacher(teacher: User, index: number) {

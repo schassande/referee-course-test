@@ -274,6 +274,7 @@ export class SessionService extends RemotePersistentDataService<Session> {
   }
 
   public changeCourse(session: Session, course: Course, forceNoRandom = false): boolean {
+    console.log('changeCourse', course, session, forceNoRandom);
     if (course) {
       if (session.courseId !== course.id) {
         session.courseId = course.id;
@@ -299,7 +300,8 @@ export class SessionService extends RemotePersistentDataService<Session> {
         serie.selectionMode = 'RANDOM';
       }
       if (serie.selectionMode === 'RANDOM' && !forceNoRandom) {
-        this.selectRamdomQuestionsSerie(session, serie);
+        const limit = serie.nbQuestion === 0 ? course.test.nbQuestion - session.questionIds.length : serie.nbQuestion;
+        this.selectRamdomQuestionsSerie(session, serie, limit);
 
       } else if (serie.selectionMode === 'ALL' || forceNoRandom) {
         serie.questions.forEach((question, index) => {
@@ -312,19 +314,19 @@ export class SessionService extends RemotePersistentDataService<Session> {
     });
     this.logger.debug(() => 'Session has ' + session.questionIds.length  + ' questions.');
   }
-  private selectRamdomQuestionsSerie(session: Session, serie: QuestionSerie) {
+  private selectRamdomQuestionsSerie(session: Session, serie: QuestionSerie, limit) {
     // extract required questions
     const retainQuestionIds: string[] = serie.questions
       .filter(question => question.required)
       .map(question => question.questionId);
     this.logger.debug(() => retainQuestionIds.length + ' questions required from serie ');
-    if (serie.nbQuestion > retainQuestionIds.length) {
+    if (limit > retainQuestionIds.length) {
       // there is not enough questions => look for the not required questions
       const othersQuestions: string[] = serie.questions
         .filter(question => !question.required)
         .map(question => question.questionId);
       // add the missing questions to reach the number
-      while (serie.nbQuestion > retainQuestionIds.length) {
+      while (limit > retainQuestionIds.length) {
         const idx = (Math.random() * 100000) % othersQuestions.length;
         const retainQuestionId: string = othersQuestions.splice(idx, 1)[0];
         this.logger.debug(() => 'Add question ' + retainQuestionId);

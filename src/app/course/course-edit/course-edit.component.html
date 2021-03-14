@@ -72,7 +72,7 @@
             </ion-item>
             <ion-item>
                 <ion-label position="fixed" i18n="@@course.edit.score">Score:</ion-label>
-                <ion-input type="number" [(ngModel)]="course.test.requiredScore" [readonly]="readonly"></ion-input>
+                <ion-input type="number" [(ngModel)]="course.test.requiredScore" [readonly]="readonly" (ionChange)="onNbQuestionChange()"></ion-input>
             </ion-item>
             <ion-item>
                 <ion-label position="fixed" i18n="@@course.edit.nbQuestion">Nb Question:</ion-label>

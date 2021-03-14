@@ -46,7 +46,7 @@
         <ion-card-content>
             <p i18n="@@home.group-session-exam.description">To start an exam for a group of participants, please select the test name.</p>
             <ion-list style="margin: 20px 0 20px 20px;">
-                <ion-select [(ngModel)]="groupCourseId" class="instantSelect">
+                <ion-select [(ngModel)]="groupCourseId" class="instantSelect" interface="action-sheet">
                     <ion-select-option *ngFor="let course of groupCourses" value="{{course.id}}"><span style="padding: 5px;">{{course.name}}</span></ion-select-option>
                 </ion-select>
             </ion-list>
@@ -83,13 +83,13 @@
             <ion-list style="margin: 20px 0 20px 20px;">
                 <ion-item>
                     <ion-label position="floating">Course</ion-label>
-                    <ion-select [(ngModel)]="individualCourseId" class="instantSelect">
+                    <ion-select [(ngModel)]="individualCourseId" class="instantSelect" interface="action-sheet">
                         <ion-select-option *ngFor="let course of individualCourses" value="{{course.id}}"><span style="padding: 5px;">{{course.name}}</span></ion-select-option>
                     </ion-select>
                 </ion-item>
                 <ion-item>
                     <ion-label position="floating" i18n="@@home.individual-online-exam.teacher">Teacher</ion-label>
-                    <ion-select [(ngModel)]="teacherId" class="instantSelect">
+                    <ion-select [(ngModel)]="teacherId" class="instantSelect" interface="action-sheet">
                         <ion-select-option *ngFor="let teacher of teachers" value="{{teacher.id}}"><span style="padding: 5px;">{{teacher.firstName}} {{teacher.lastName}}</span></ion-select-option>
                     </ion-select>
                 </ion-item>
