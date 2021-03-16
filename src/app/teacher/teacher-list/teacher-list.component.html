@@ -13,7 +13,7 @@
 </ion-header>
 
 <ion-content (swipe)="onSwipe($event)">
-    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab *ngIf="!readonly" vertical="bottom" horizontal="end" slot="fixed">
         <ion-fab-button (click)="addTeacher()">
             <ion-icon name="add"></ion-icon>
         </ion-fab-button>
