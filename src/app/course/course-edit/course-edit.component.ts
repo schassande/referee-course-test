@@ -211,7 +211,13 @@ export class CourseEditComponent implements OnInit {
       })
     ).subscribe();
   }
-
+  onToggleSelectionMode(serie: QuestionSerie) {
+    if (serie.selectionMode === 'RANDOM') {
+      serie.selectionMode = 'ALL';
+    } else {
+      serie.selectionMode = 'RANDOM';
+    }
+  }
   onToggleMulti(question: Question) {
     if (this.readonly || !this.editMode) {
       return;
