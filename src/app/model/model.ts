@@ -18,6 +18,8 @@ export interface Course extends RootNode {
   test: Test;
   /** Flag indicating if the test can be run alone online. */
   allowedAlone: boolean;
+  /** */
+  translationPrefix?: string;
 }
 
 export type DurationUnit = 'm' | 'h' | 'd';

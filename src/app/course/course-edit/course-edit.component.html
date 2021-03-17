@@ -112,7 +112,7 @@
         <ion-item-group style="border-left: 1px solid lightgrey; border-right: 1px solid lightgrey;" *ngFor="let serie of course.test.series; let index = index">
             <ion-item-divider color="light" style="text-align: center; font-size: 1.2em; padding: 10px;">
                 <ion-label><span i18n="@@course-edit.serie_questions">Serie of questions</span> {{index + 1}} {{serie.serieName}}</ion-label>
-                <ion-icon *ngIf="editMode" slot="end" name="add" (click)="addQuestion(serie)"></ion-icon>
+                <ion-icon *ngIf="editMode" slot="end" name="add" (click)="addQuestion(serie)">Q</ion-icon>
             </ion-item-divider>
             <ion-item>
                 <ion-label i18n="@@course.edit.random-selection">Random selection:</ion-label>
@@ -120,17 +120,32 @@
                 <ion-toggle *ngIf="!readonly && editMode" [checked]="serie.selectionMode === 'RANDOM'" (ionChange)="onToggleSelectionMode(serie)"></ion-toggle>
             </ion-item>
             <ion-item *ngFor="let question of serie.questions; let qIdx = index">
-                <div>
-                    <p style="font-weight: bold;" (click)="onToggleMulti(question)">
+                <div style="width: 100%;">
+                    <p style="font-weight: bold; width: 100%;">
                         {{question.questionId}}:
-                        <span innerHtml="{{question.text}}"></span>&nbsp;
-                        <span *ngIf="question.questionType === 'UNIQUE'" i18n="@@course-edit.question-single">(Single)</span>
-                        <span *ngIf="question.questionType === 'COMBINATION'" i18n="@@course-edit.question-multi">(Multi)</span>
-                        <ion-input *ngIf="editMode" type="number" (change)="onNbAnswerChange(question, $event)" [value]="getNbAnswerChange(question)" [readonly]="readonly" min="2" max="10" style="width: 30px; display: inline-block; margin-left: 5px;"></ion-input>
-                        <ion-icon *ngIf="editMode" slot="end" name="trash" (click)="deleteQuestion(serie, question, qIdx)"></ion-icon>
+                        <span innerHtml="{{question.text}}" (click)="editQuestion(question)"></span>&nbsp;
+                        <ion-icon *ngIf="editMode" style="float: right; margin-top: 10px;" name="trash" (click)="deleteQuestion(serie, question, qIdx)"></ion-icon>
                     </p>
-                    <p *ngFor="let answer of question.answers" style="margin-left: 10px;" (click)="toggleRightAnswer(question, answer)">
-                        <span [ngClass]="{ 'right-answer' : answer.right}">{{answer.answerId}}</span> - <span innerHtml="{{answer.text}}"></span>
+                    <ul *ngIf="editMode" style="width: 100%; padding-left: 50px;">
+                        <li style="width: 100%;" (click)="onToggleMulti(question)">
+                            Answer mode:
+                            <span *ngIf="question.questionType === 'UNIQUE'" i18n="@@course-edit.question-single"><ion-icon name="radio-button-on-outline"></ion-icon> Single</span>
+                            <span *ngIf="question.questionType === 'COMBINATION'" i18n="@@course-edit.question-multi"><ion-icon name="checkbox-outline"></ion-icon> Multi</span>
+                        </li>
+                        <li style="width: 100%;" *ngIf="editMode">
+                            <span>Number of answer: </span>
+                            <ion-input type="number" (change)="onNbAnswerChange(question, $event)" [value]="getNbAnswerChange(question)" [readonly]="readonly" min="2" max="10" style="width: 30px; display: inline-block; margin-left: 5px;"></ion-input>
+                        </li>
+                    </ul>
+                    <p *ngFor="let answer of question.answers" style="margin-left: 10px;">
+                        <span [ngClass]="{ 'right-answer' : answer.right}" (click)="toggleRightAnswer(question, answer)">
+                            <span *ngIf="question.questionType === 'UNIQUE' && answer.right"><ion-icon name="radio-button-on-outline"></ion-icon></span>
+                        <span *ngIf="question.questionType === 'UNIQUE' && !answer.right"><ion-icon name="radio-button-off-outline"></ion-icon></span>
+                        <span *ngIf="question.questionType === 'COMBINATION' && answer.right"><ion-icon name="checkbox-outline"></ion-icon></span>
+                        <span *ngIf="question.questionType === 'COMBINATION' && !answer.right"><ion-icon name="square-outline"></ion-icon></span>
+                        <span>&nbsp;{{answer.answerId}}&nbsp;-&nbsp;</span>
+                        </span>
+                        <span innerHtml="{{answer.text}}" (click)="editAnswer(question, answer)"></span>
                     </p>
                 </div>
             </ion-item>

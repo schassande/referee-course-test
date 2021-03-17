@@ -8,12 +8,11 @@ import { Observable, of, forkJoin } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { DateService } from 'src/app/service/DateService';
 import { CourseService } from 'src/app/service/CourseService';
-import { NavController, ToastController, LoadingController } from '@ionic/angular';
-import { Course, Question, QuestionSerie} from 'src/app/model/model';
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { NavController, ToastController, LoadingController, AlertController } from '@ionic/angular';
+import { Answer, Course, Question, QuestionSerie} from 'src/app/model/model';
+import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 
 import * as csv from 'csvtojson';
-import { Answer } from 'functions/src/model';
 const logger = new Category('course-edit', logCourse);
 
 @Component({
@@ -29,8 +28,11 @@ export class CourseEditComponent implements OnInit {
   @ViewChild('inputCourse', null) inputCourse: ElementRef;
   readonly = false;
   editMode = false;
+  lang: string;
 
   constructor(
+    private alertCtrl: AlertController,
+    private changeDetectorRef: ChangeDetectorRef,
     private courseService: CourseService,
     private connectedUserService: ConnectedUserService,
     private dateService: DateService,
@@ -62,16 +64,16 @@ export class CourseEditComponent implements OnInit {
       map((rcourse) => this.course = rcourse.data),
       flatMap(() => {
         const obs: Observable<any>[] = [of('')];
-        let lang = this.connectedUserService.getLang();
-        if (this.course.test.supportedLanguages.indexOf(lang) < 0) {
-          lang = this.course.test.supportedLanguages[0];
+        this.lang = this.connectedUserService.getLang();
+        if (this.course.test.supportedLanguages.indexOf(this.lang) < 0) {
+          this.lang = this.course.test.supportedLanguages[0];
         }
         this.course.test.series.forEach(serie => {
           console.log('Serie ' + serie.serieName, serie.questions.length);
           serie.questions.forEach(question => {
-            obs.push(this.translationService.translate(question, lang));
+            obs.push(this.translationService.translate(question, this.lang));
             question.answers.forEach(answer => {
-              obs.push(this.translationService.translate(answer, lang));
+              obs.push(this.translationService.translate(answer, this.lang));
             });
           });
         });
@@ -91,6 +93,7 @@ export class CourseEditComponent implements OnInit {
       dataStatus: 'NEW',
       version: new Date().getTime(),
       name: 'My course name',
+      translationPrefix: this.courseService.generateTranslationPrefix(),
       level: 1,
       theme: 'blue',
       enabled: true,
@@ -114,6 +117,7 @@ export class CourseEditComponent implements OnInit {
         }]
       }
     };
+    this.lang = this.course.test.supportedLanguages[0];
     return of({ error: null, data: this.course});
   }
   goToTranslation() {
@@ -211,6 +215,44 @@ export class CourseEditComponent implements OnInit {
       })
     ).subscribe();
   }
+
+  editQuestion(question: Question) {
+    this.alertCtrl.create({
+      message: 'Edit the title of the question ' + question.questionId + '?',
+      inputs: [{ name: 'text', value: question.text, type: 'text'}],
+      buttons: [
+        { text: 'Cancel', role: 'cancel'},
+        {
+          text: 'Save',
+          handler: (data) => {
+            if (data.text) {
+              this.translationService.setTranslation(question, this.lang, data.text, this.course.dataRegion)
+                .subscribe(() => { this.changeDetectorRef.detectChanges(); });
+            }
+          }
+        }
+      ]
+    }).then( (alert) => alert.present() );
+  }
+  editAnswer(question: Question, answer: Answer) {
+    this.alertCtrl.create({
+      message: 'Edit the answer ' + answer.answerId + ' of the question ' + question.questionId + '?',
+      inputs: [{ name: 'text', value: answer.text, type: 'text'}],
+      buttons: [
+        { text: 'Cancel', role: 'cancel'},
+        {
+          text: 'Save',
+          handler: (data) => {
+            if (data.text) {
+              this.translationService.setTranslation(answer, this.lang, data.text, this.course.dataRegion)
+                .subscribe(() => { this.changeDetectorRef.detectChanges(); });
+            }
+          }
+        }
+      ]
+    }).then( (alert) => alert.present() );
+  }
+
   onToggleSelectionMode(serie: QuestionSerie) {
     if (serie.selectionMode === 'RANDOM') {
       serie.selectionMode = 'ALL';
@@ -287,7 +329,18 @@ export class CourseEditComponent implements OnInit {
   }
 
   deleteQuestion(serie: QuestionSerie, question: Question, qIdx: number) {
-    serie.questions.splice(qIdx, 1);
+    this.alertCtrl.create({
+      message: 'Do you reaaly want to delete the question ' + question.questionId + '?',
+      buttons: [
+        { text: 'Cancel', role: 'cancel'},
+        {
+          text: 'Delete',
+          handler: () => {
+            serie.questions.splice(qIdx, 1);
+          }
+        }
+      ]
+    }).then( (alert) => alert.present() );
   }
 
   addQuestion(serie: QuestionSerie) {

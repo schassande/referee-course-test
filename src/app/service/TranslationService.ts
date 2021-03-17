@@ -1,4 +1,5 @@
-import { map } from 'rxjs/operators';
+import { ResponseWithData } from './response';
+import { map, flatMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { AppSettingsService } from './AppSettingsService';
 import { AngularFirestore } from '@angular/fire/firestore';
@@ -6,7 +7,7 @@ import { AlertController, ToastController } from '@ionic/angular';
 import { ConnectedUserService } from './ConnectedUserService';
 import { Injectable } from '@angular/core';
 import { RemotePersistentDataService } from './RemotePersistentDataService';
-import { Translation, Translatable } from './../model/model';
+import { Translation, Translatable, DataRegion } from './../model/model';
 
 @Injectable({
   providedIn: 'root'
@@ -51,6 +52,31 @@ export class TranslationService extends RemotePersistentDataService<Translation>
         item.text = rtrad.data ? rtrad.data.text : item.key;
         this.logger.debug(() => 'translate(' + item.key + '=' + item.text + ')');
         return item.text;
+      })
+    );
+  }
+  public setTranslation(item: Translatable, lang: string, text: string, dataRegion: DataRegion): Observable<ResponseWithData<Translation>> {
+    const id = this.getTranslationId(item.key, lang);
+    return this.getTranslation(item.key, lang).pipe(
+      flatMap((trad: Translation) => {
+        if (trad) {
+          trad.text = text;
+        } else {
+          trad = {
+            id,
+            creationDate: new Date(),
+            lastUpdate: new Date(),
+            dataRegion,
+            dataStatus: 'NEW',
+            text,
+            version: new Date().getTime(),
+          };
+        }
+        return this.save(trad);
+      }),
+      map((res) => {
+        item.text = text;
+        return res;
       })
     );
   }

@@ -70,7 +70,10 @@ export class CourseService extends RemotePersistentDataService<Course> {
   }
 
   private getKeyPrefix(course: Course): string {
-    return course.name.trim().toLowerCase().replace(/\s/g, '');
+    if (!course.translationPrefix || course.translationPrefix.trim().length === 0) {
+      course.translationPrefix = course.name.trim().toLowerCase().replace(/\s/g, '');
+    }
+    return course.translationPrefix;
   }
 
   public generateQuestions(course: Course) {
@@ -156,4 +159,14 @@ export class CourseService extends RemotePersistentDataService<Course> {
       .filter(value => -1 !== course.test.supportedLanguages.indexOf(value));
     return intersec.length ? intersec[0] : course.test.supportedLanguages[0];
   }
+  public generateTranslationPrefix(): string {
+    let code = '';
+    for (let i = 0; i < 5; i++) {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789';
+      const idx = (Math.random() * chars.length + Math.random() * chars.length) % chars.length;
+      code = code + chars.charAt(idx);
+    }
+    return code;
+  }
+
 }

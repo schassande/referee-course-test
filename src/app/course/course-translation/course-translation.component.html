@@ -29,7 +29,7 @@
     <ion-list *ngIf="!loading">
         <ion-item>
             <ion-label position="fixed" i18n="@@course.edit.name">Name:</ion-label>
-            <ion-input type="text" [(ngModel)]="course.name" [readonly]="readonly"></ion-input>
+            <ion-input type="text" [(ngModel)]="course.name" readonly="true"></ion-input>
         </ion-item>
         <ion-item *ngFor="let lang of languages; let index = index;" rel="">
             <ion-checkbox slot="start" checked="{{ course.test.supportedLanguages.indexOf(lang[0]) >= 0}}" (ionChange)="toggleLanguage(lang[0], $event)"></ion-checkbox>
