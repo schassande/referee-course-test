@@ -90,7 +90,7 @@ export class CourseEditComponent implements OnInit {
       lastUpdate: new Date(),
       dataStatus: 'NEW',
       version: new Date().getTime(),
-      name: 'Referee Level 1',
+      name: 'My course name',
       level: 1,
       theme: 'blue',
       enabled: true,
