@@ -13,7 +13,12 @@
 </ion-header>
 
 <ion-content>
-    <ion-list *ngIf="failedQuestions && failedQuestions.length> 0">
+    <div style="text-align: center; margin-top: 20px; font-size: 1.2em;">
+        <div *ngIf="loading">
+            <ion-spinner></ion-spinner> {{loading}}</div>
+        <div *ngIf="!loading && failedQuestions && failedQuestions.length == 0">No failed question found.</div>
+    </div>
+    <ion-list *ngIf="!loading && failedQuestions && failedQuestions.length> 0">
         <ion-item-group *ngFor="let fq of failedQuestions" style="border-left: 1px solid lightgrey; border-right: 1px solid lightgrey;">
             <ion-item-divider color="light" style="text-align: center; font-size: 1.2em; padding: 10px;">
                 <ion-label>Question {{fq.question.questionId}}</ion-label>
@@ -21,7 +26,7 @@
             <div style="margin: 10px;">
                 <div>{{fq.learners.length}} learners with a wrong answer</div>
                 <ul>
-                    <li *ngFor="let l of fq.learners">{{l.firstName}} {{l.lastName}}</li>
+                    <li *ngFor="let l of fq.learners">{{l.firstName}} {{l.lastName}}: <span>{{showAnswerDetail(fq, l)}}</span></li>
                 </ul>
             </div>
             <ion-item>

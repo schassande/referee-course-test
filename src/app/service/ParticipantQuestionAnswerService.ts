@@ -46,4 +46,12 @@ export class ParticipantQuestionAnswerService extends RemotePersistentDataServic
       .where('learnerId', '==', learnerId),
       'default');
   }
+  public getAnwser(sessionId: string, learnerId: string, questionId: string): Observable<ResponseWithData<ParticipantQuestionAnswer[]>> {
+    return this.query(this.getCollectionRef()
+      .where('dataRegion', '==', this.connectedUserService.getCurrentUser().dataRegion)
+      .where('sessionId', '==', sessionId)
+      .where('questionId', '==', questionId)
+      .where('learnerId', '==', learnerId),
+      'default');
+  }
 }

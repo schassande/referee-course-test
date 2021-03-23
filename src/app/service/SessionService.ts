@@ -98,7 +98,14 @@ export class SessionService extends RemotePersistentDataService<Session> {
     return this.participantQuestionAnswerService.findMyAnwsers(session.id, participant.person.personId).pipe(
       map((ranswers) => {
         const learnerAnswers: Map<string, ParticipantQuestionAnswer> = new Map<string, ParticipantQuestionAnswer>();
-        ranswers.data.forEach((answer) => learnerAnswers.set(answer.questionId, answer));
+        ranswers.data.forEach((answer) => {
+          const prevAnswer = learnerAnswers.get(answer.questionId);
+          if (!prevAnswer // no other answer
+            || (answer.responseTime.getTime() > prevAnswer.responseTime.getTime() // the answer is newer than the previous
+                && answer.responseTime.getTime() <= session.expireDate.getTime())) { // the answer is before the expire time
+            learnerAnswers.set(answer.questionId, answer);
+          }
+        });
         this.computeParticipantResult(course, session, learnerAnswers, participant);
         return participant;
       })

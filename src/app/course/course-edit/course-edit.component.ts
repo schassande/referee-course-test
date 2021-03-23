@@ -219,13 +219,14 @@ export class CourseEditComponent implements OnInit {
   editQuestion(question: Question) {
     this.alertCtrl.create({
       message: 'Edit the title of the question ' + question.questionId + '?',
-      inputs: [{ name: 'text', value: question.text, type: 'text'}],
+      inputs: [{ name: 'text', value: question.text, type: 'textarea'}],
       buttons: [
         { text: 'Cancel', role: 'cancel'},
         {
           text: 'Save',
           handler: (data) => {
             if (data.text) {
+              console.log(data.text + '=>' + this.toHtml(data.text));
               this.translationService.setTranslation(question, this.lang, data.text, this.course.dataRegion)
                 .subscribe(() => { this.changeDetectorRef.detectChanges(); });
             }
@@ -234,16 +235,21 @@ export class CourseEditComponent implements OnInit {
       ]
     }).then( (alert) => alert.present() );
   }
+  toHtml(text: string): string {
+    return text.replace('\n', '<br>').replace('\r', '');
+  }
+
   editAnswer(question: Question, answer: Answer) {
     this.alertCtrl.create({
       message: 'Edit the answer ' + answer.answerId + ' of the question ' + question.questionId + '?',
-      inputs: [{ name: 'text', value: answer.text, type: 'text'}],
+      inputs: [{ name: 'text', value: answer.text, type: 'textarea'}],
       buttons: [
         { text: 'Cancel', role: 'cancel'},
         {
           text: 'Save',
           handler: (data) => {
             if (data.text) {
+              console.log(data.text + '=>' + this.toHtml(data.text));
               this.translationService.setTranslation(answer, this.lang, data.text, this.course.dataRegion)
                 .subscribe(() => { this.changeDetectorRef.detectChanges(); });
             }

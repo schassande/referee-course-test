@@ -1,11 +1,12 @@
+import { ParticipantQuestionAnswerService } from 'src/app/service/ParticipantQuestionAnswerService';
 import { TranslationService } from 'src/app/service/TranslationService';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AlertController, ModalController, NavController } from '@ionic/angular';
 import { forkJoin, Observable, of, NEVER } from 'rxjs';
-import { flatMap, map } from 'rxjs/operators';
+import { flatMap, map, catchError } from 'rxjs/operators';
 import { logSession } from 'src/app/logging-config';
-import { Course, Question, Session, User, PersonRef } from 'src/app/model/model';
+import { Course, Question, Session, User, PersonRef, ParticipantQuestionAnswer } from 'src/app/model/model';
 import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
 import { CourseService } from 'src/app/service/CourseService';
 import { DateService } from 'src/app/service/DateService';
@@ -42,12 +43,18 @@ export class SessionAnalyseComponent implements OnInit {
   /** The language to use for the question */
   lang: string;
   failedQuestions: FailedQuestion[];
+  /** local cache the answers of the participants 
+   * key is string concat of questionId + participant id
+   * value is a string list of the answer id: A,D
+   */
+   answers: Map<string, ParticipantQuestionAnswer[]> = new Map();
 
   constructor(
     public alertCtrl: AlertController,
     private connectedUserService: ConnectedUserService,
     private courseService: CourseService,
     private navController: NavController,
+    private participantQuestionAnswerService: ParticipantQuestionAnswerService,
     private route: ActivatedRoute,
     private sessionService: SessionService,
     private translationService: TranslationService,
@@ -88,9 +95,17 @@ export class SessionAnalyseComponent implements OnInit {
       // load translationService
       flatMap(() => {
         this.loading = 'Loading the translations ...';
+        console.log(this.loading);
         return this.loadTranslation();
       }),
-    ).subscribe(() => this.loading = null);
+      catchError( (err) => {
+        console.error(err);
+        return of(err);
+      })
+    ).subscribe(() => {
+      console.log('Loading finished');
+      this.loading = null;
+    });
   }
 
   private checkSession(): Observable<any> {
@@ -118,10 +133,11 @@ export class SessionAnalyseComponent implements OnInit {
   }
 
   private analyseFailedQuestions(): Observable<any> {
+    const obs: Observable<any>[] = [];
     this.failedQuestions = [];
     const qId2FailedQuestion: Map<string, FailedQuestion> = new Map<string, FailedQuestion>();
     this.session.participants.forEach((participant) => {
-      participant.failedQuestionIds.forEach((questionId) =>{
+      participant.failedQuestionIds.forEach((questionId) => {
         let fq: FailedQuestion = qId2FailedQuestion.get(questionId);
         if (!fq) {
           fq = {
@@ -134,16 +150,51 @@ export class SessionAnalyseComponent implements OnInit {
         if (!fq.learners.find(learner => learner.personId === participant.person.personId)) {
           fq.learners.push(participant.person);
         }
+        const key = this.getAnswerKey(fq, participant.person);
+        obs.push(this.participantQuestionAnswerService.getAnwser(this.sessionId, participant.person.personId, fq.question.questionId).pipe(
+          map((ranswers) => {
+            let detail: ParticipantQuestionAnswer[] = [];
+            if (ranswers.data && ranswers.data.length > 0) {
+              // sort answers by respone time
+              detail = ranswers.data.sort((a1, a2) => a2.responseTime.getTime() - a1.responseTime.getTime());
+            }
+            this.answers.set(key, detail);
+          })
+        ));
       });
     });
-    this.failedQuestions = this.failedQuestions
-      .filter(fq => fq.learners.length > 1)
-      .sort((fq1, fq2) => fq2.learners.length - fq1.learners.length);
-    return of(this.failedQuestions);
+    this.failedQuestions = this.failedQuestions.sort((fq1, fq2) => {
+      const res = fq2.learners.length - fq1.learners.length;
+      if (res === 0) {
+        return this.courseService.toQuestionId(fq1.question) - this.courseService.toQuestionId(fq2.question);
+      }
+      return res;
+    });
+    console.log('this.failedQuestions', this.failedQuestions);
+    obs.push(of(this.failedQuestions));
+    return forkJoin(obs);
+  }
+
+  private getAnswerKey(fq: FailedQuestion, l: PersonRef): string {
+    return fq.question.questionId + '/' + l.personId;
+  }
+
+  showAnswerDetail(fq: FailedQuestion, l: PersonRef): string {
+    return this.getAnswer(this.answers.get(this.getAnswerKey(fq, l)));
+  }
+
+  private getAnswer(detail: ParticipantQuestionAnswer[]) {
+    if (detail && detail.length > 0) {
+      return detail.map(
+        (answer) => answer.answerIds ? answer.answerIds.sort().join('+') : answer.answerId
+      ).join(', ');
+    } else {
+      return '-';
+    }
   }
 
   private loadTranslation(): Observable<any> {
-    const obs: Observable<any>[] = [];
+    const obs: Observable<any>[] = [of('')];
     this.failedQuestions.forEach(failedQuestion => {
       obs.push(this.translationService.translate(failedQuestion.question, this.lang));
       failedQuestion.question.answers.forEach(answer => {

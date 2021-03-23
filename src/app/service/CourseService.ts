@@ -110,7 +110,7 @@ export class CourseService extends RemotePersistentDataService<Course> {
       }
     }
   }
-  private toQuestionId(question: Question): number {
+  public toQuestionId(question: Question): number {
     return Number.parseInt(question.questionId.substring(this.questionIdPrefix.length), 10);
   }
   public addQuestion(course: Course, serie: QuestionSerie) {
