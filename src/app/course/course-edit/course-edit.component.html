@@ -101,12 +101,16 @@
                 </div>
                 <div *ngIf="editMode" style="text-align: left;">
                     <p i18n="@@course-edit.edition-mode">Edition mode</p>
+                    How to edit:
                     <ul>
-                        <li i18n="@@course-edit.desc-switch-multi">Click on a question to switch between a question having one or several answers.</li>
-                        <li i18n="@@course-edit.desc-switch-right">Click on an answer to switch between right/wrong answer</li>
+                        <li i18n="@@course-edit.desc-edit-question">Click on the question title to edit it.</li>
+                        <li i18n="@@course-edit.desc-switch-multi">Click on <b>Single</b> or <b>Multi</b> to switch between a question having one or several answers.</li>
+                        <li i18n="@@course-edit.desc-edit-answer">Click on an answer text to edit it.</li>
+                        <li i18n="@@course-edit.desc-edit-answer">Click on
+                            <ion-icon name="radio-button-on-outline"></ion-icon> or
+                            <ion-icon name="checkbox-outline"></ion-icon> to switch between the right/wrong answer.</li>
                     </ul>
                 </div>
-
             </div>
         </ion-item>
         <ion-item-group style="border-left: 1px solid lightgrey; border-right: 1px solid lightgrey;" *ngFor="let serie of course.test.series; let index = index">
@@ -115,7 +119,7 @@
                 <ion-icon *ngIf="editMode" slot="end" name="add" (click)="addQuestion(serie)">Q</ion-icon>
             </ion-item-divider>
             <ion-item>
-                <ion-label i18n="@@course.edit.random-selection">Random selection:</ion-label>
+                <ion-label i18n="@@course.edit.random-selection">Select question randomly:</ion-label>
                 <ion-input *ngIf="readonly || !editMode" type="text" [readonly]="true">{{serie.selectionMode === 'RANDOM' ?'Yes':'No'}}</ion-input>
                 <ion-toggle *ngIf="!readonly && editMode" [checked]="serie.selectionMode === 'RANDOM'" (ionChange)="onToggleSelectionMode(serie)"></ion-toggle>
             </ion-item>
