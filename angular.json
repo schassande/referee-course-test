@@ -22,7 +22,6 @@
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
                         "outputPath": "www",
-                        "localize": true,
                         "aot": true,
                         "index": "src/index.html",
                         "main": "src/main.ts",
@@ -40,13 +39,7 @@
                             },
                             "src/manifest.webmanifest"
                         ],
-                        "styles": [{
-                                "input": "src/theme/variables.scss"
-                            },
-                            {
-                                "input": "src/global.scss"
-                            }
-                        ],
+                        "styles": ["src/theme/variables.scss", "src/global.scss"],
                         "scripts": []
                     },
                     "configurations": {
