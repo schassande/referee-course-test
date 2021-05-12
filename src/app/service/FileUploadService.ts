@@ -25,10 +25,10 @@ export class EmailService {
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           logger.debug(() => 'Upload is ' + progress + '% done');
           switch (snapshot.state) {
-            case firebase.storage.TaskState.PAUSED: // or 'paused'
+            case 'PAUSED': // or 'paused'
               logger.debug(() => 'Upload is paused');
               break;
-            case firebase.storage.TaskState.RUNNING: // or 'running'
+            case 'RUNNING': // or 'running'
               logger.debug(() => 'Upload is running');
               break;
           }

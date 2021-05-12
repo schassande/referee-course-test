@@ -31,7 +31,7 @@ export class CourseTranslationComponent implements OnInit {
   missingTranslations: string[][] = [];
   percentTranslations: number[] = [];
   nbMissingTranslations = 0;
-  @ViewChild('inputTranslate', null) inputTranslate: ElementRef;
+  @ViewChild('inputTranslate') inputTranslate: ElementRef;
   readonly = false;
   languages = LANGUAGES;
 

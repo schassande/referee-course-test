@@ -1,22 +1,21 @@
-import { Category } from 'typescript-logging';
 import { AppSettingsService } from './AppSettingsService';
 import { PersistentDataUpdater, PersistentDataFilter } from './PersistentDataFonctions';
 import { Crud } from './crud';
 import { PersistentData } from '../model/common';
 import { Observable, of, from } from 'rxjs';
 import { Response, ResponseWithData } from './response';
-import { flatMap, map, catchError } from 'rxjs/operators';
+import { mergeMap, map, catchError } from 'rxjs/operators';
+import { AngularFirestore,
+    AngularFirestoreCollection,
+    DocumentReference,
+    DocumentSnapshot,
+    QuerySnapshot,
+    QueryDocumentSnapshot,
+    Query,
+    AngularFirestoreDocument} from '@angular/fire/firestore';
 import { ToastController } from '@ionic/angular';
 import { DateService } from './DateService';
-import { firestore } from 'firebase';
-import { AngularFirestore,
-        AngularFirestoreCollection,
-        AngularFirestoreDocument,
-        DocumentReference,
-        DocumentSnapshot,
-        Query,
-        QueryDocumentSnapshot,
-        QuerySnapshot } from '@angular/fire/firestore';
+import { Category } from 'typescript-logging';
 import { logService } from '../logging-config';
 
 export abstract class RemotePersistentDataService<D extends PersistentData> implements Crud<D> {
@@ -27,7 +26,7 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
 
     constructor(
         protected appSettingsService: AppSettingsService,
-        readonly db: AngularFirestore,
+        protected db: AngularFirestore,
         private toastController: ToastController
     ) {
         this.fireStoreCollection = db.collection<D>(this.getLocalStoragePrefix());
@@ -57,11 +56,9 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
     }
 
     protected adjustDate(d: any, dateService: DateService): Date {
-        if (d === null) {
-            return null;
-        } else if (d && !(d instanceof Date) ) {
+        if (d && !(d instanceof Date) ) {
             if (typeof d === 'string') {
-                return dateService.string2date(d as string);
+                return dateService.string2date(d as string, null);
             } else {
                 return d.toDate();
             }
@@ -138,7 +135,7 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
 
     private docToObs(prom: Promise<DocumentReference>): Observable<ResponseWithData<D>> {
         return from(prom).pipe(
-            flatMap( (value: DocumentReference) => {
+            mergeMap( (value: DocumentReference) => {
                 return from(value.get());
             }),
             catchError((err) => {
@@ -149,7 +146,7 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
         );
     }
 
-    protected docSnapNTToResponse(docSnap: firestore.DocumentSnapshot): ResponseWithData<D> {
+    protected docSnapNTToResponse(docSnap: DocumentSnapshot<D>): ResponseWithData<D> {
         const data: D = docSnap && docSnap.exists ? docSnap.data() as D : null;
         this.logger.debug(() => 'load item ' + docSnap.id + ' exists=' + docSnap.exists + ' + data=' + data);
         if (data) {
@@ -197,7 +194,7 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
         this.logger.debug(() => `DatabaseService[${this.getLocalStoragePrefix()}].all(${options})`);
         let adjustedOptions = options;
         return this.appSettingsService.get().pipe(
-            flatMap((las) => {
+            mergeMap((las) => {
                 if (adjustedOptions === 'default') {
                     adjustedOptions = las.forceOffline ? 'cache' : 'server';
                 }
@@ -253,7 +250,7 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
     public query(query: Query, options: 'default' | 'server' | 'cache'): Observable<ResponseWithData<D[]>> {
         let adjustedOptions = options;
         return this.appSettingsService.get().pipe(
-            flatMap((las) => {
+            mergeMap((las) => {
                 if (adjustedOptions === 'default') {
                     adjustedOptions = las.forceOffline ? 'cache' : 'server';
                 }
@@ -271,7 +268,7 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
     public queryOne(query: Query, options: 'default' | 'server' | 'cache'): Observable<ResponseWithData<D>> {
         let adjustedOptions = options;
         return this.appSettingsService.get().pipe(
-            flatMap((las) => {
+            mergeMap((las) => {
                 if (adjustedOptions === 'default') {
                     adjustedOptions = las.forceOffline ? 'cache' : 'server';
                 }
@@ -288,9 +285,8 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
     public delete(id: string): Observable<Response> {
         this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + '].delete(' + id + ')');
         try {
-            return from(this.fireStoreCollection.doc(id).delete()).pipe(map(() => {
-                return { error: null};
-                }));
+            this.fireStoreCollection.doc(id).delete();
+            return of({ error: null});
         } catch (err) {
             this.logger.error('', err);
             return of({ error: err});
@@ -300,7 +296,7 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
     public update(id: string, updater: PersistentDataUpdater<D>): Observable<ResponseWithData<D>> {
         this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + '].update(' + id + ')');
         return this.get(id).pipe(
-            flatMap((response: ResponseWithData<D>) => {
+            mergeMap((response: ResponseWithData<D>) => {
                 if (response.error) {
                     return of(response);
                 } else {
@@ -333,7 +329,7 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
         } else {
             let toast = null;
             return this.allO('cache').pipe(
-                flatMap( (resL) => {
+                mergeMap( (resL) => {
                     if (resL.data.length === 0) {
                         this.logger.debug(() => 'preload[' + this.getLocalStoragePrefix() + ']: Loading from server');
                         this.toastController.dismiss().then(() => {
@@ -344,7 +340,7 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
                                 });
                             });
                         // load from server
-                        return this.allO('server').pipe(flatMap( (resR) =>  {
+                        return this.allO('server').pipe(mergeMap( (resR) =>  {
                             this.preloaded = true;
                             this.toastController.dismiss();
                             return of({ error: null});

@@ -172,7 +172,7 @@ export class UserEditPage implements OnInit {
         {
           text: 'Delete',
           handler: () => { 
-            this.userService.deleteUser(this.user).subscribe();
+            this.userService.delete(this.user.id).subscribe();
           }
         }
       ]

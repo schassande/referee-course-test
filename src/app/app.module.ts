@@ -42,6 +42,7 @@ import { SessionService } from 'src/app/service/SessionService';
 import { TranslationService } from 'src/app/service/TranslationService';
 import { UserService } from 'src/app/service/UserService';
 import { ToastrService } from 'ngx-toastr';
+import { ToolService } from './service/ToolService';
 
 export class CustomHammerConfig extends HammerGestureConfig {}
 
@@ -83,6 +84,7 @@ export class CustomHammerConfig extends HammerGestureConfig {}
     ParticipantQuestionAnswerService,
     SessionService,
     ToastrService,
+    ToolService,
     TranslationService,
     UserService,
   ],

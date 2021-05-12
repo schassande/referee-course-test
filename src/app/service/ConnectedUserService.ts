@@ -4,6 +4,7 @@ import { AppSettingsService } from './AppSettingsService';
 import { Injectable, EventEmitter, Type } from '@angular/core';
 import { User } from './../model/model';
 import * as firebase from 'firebase/app';
+import { UserCredential } from '@firebase/auth-types';
 
 const logger = new Category('connected', logUser);
 
@@ -12,7 +13,7 @@ export class ConnectedUserService {
 
   /** The current user */
   private currentUser: User = null;
-  private credential: firebase.auth.UserCredential = null;
+  private credential: UserCredential = null;
 
   /** The event about user connection */
   public $userConnectionEvent: EventEmitter<User> = new EventEmitter<User>();
@@ -40,7 +41,7 @@ export class ConnectedUserService {
       : 'en';
   }
 
-  public userConnected(user: User, credential: firebase.auth.UserCredential) {
+  public userConnected(user: User, credential: UserCredential) {
     this.currentUser = user;
     if (credential !== null || this.credential === null || this.credential.user.email !== user.email) {
       // set the new credential or clean if user is

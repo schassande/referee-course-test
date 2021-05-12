@@ -39,7 +39,7 @@ export class CameraIconComponent  {
     loading = false;
 
     image: any = null;
-    @ViewChild('inputPhoto', null) inputPhoto: ElementRef;
+    @ViewChild('inputPhoto') inputPhoto: ElementRef;
 
     constructor(
         private afStorage: AngularFireStorage,

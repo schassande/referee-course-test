@@ -25,7 +25,7 @@ export class CourseEditComponent implements OnInit {
   loading = false;
   courseId: string;
   course: Course;
-  @ViewChild('inputCourse', null) inputCourse: ElementRef;
+  @ViewChild('inputCourse') inputCourse: ElementRef;
   readonly = false;
   editMode = false;
   lang: string;
