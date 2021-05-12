@@ -14,6 +14,8 @@ import * as firebase from 'firebase/app';
 import { flatMap, map, catchError } from 'rxjs/operators';
 import { AngularFirestore, Query } from '@angular/fire/firestore';
 import { AngularFireAuth } from '@angular/fire/auth';
+import { ToolService } from './ToolService';
+import { PersistentDataFilter } from './PersistentDataFonctions';
 
 @Injectable()
 export class UserService  extends RemotePersistentDataService<User> {
@@ -28,7 +30,8 @@ export class UserService  extends RemotePersistentDataService<User> {
         private loadingController: LoadingController,
         private navController: NavController,
         private auth: AngularFireAuth,
-        private angularFireFunctions: AngularFireFunctions
+        private angularFireFunctions: AngularFireFunctions,
+        private toolService: ToolService
     ) {
         super(appSettingsService, db, toastController);
     }
@@ -463,6 +466,19 @@ export class UserService  extends RemotePersistentDataService<User> {
           firstName: user.firstName,
           lastName: user.lastName};
     }
+    public searchUsers(criteria: UserSearchCriteria):
+            Observable<ResponseWithData<User[]>> {
+        let q: Query = this.getCollectionRef();
+        if (this.toolService.isValidString(criteria.region)) {
+            console.log('filter by region ' + criteria.region);
+            q = q.where('region', '==', criteria.region);
+        }
+        if (this.toolService.isValidString(criteria.country)) {
+            console.log('filter by country ' + criteria.country);
+            q = q.where('country', '==', criteria.country);
+        }
+        return super.filter(this.query(q, 'default'), this.getFilterByText(criteria.text));
+    }
 
     public notifyNewTeacher(userId: string): Observable<Response> {
         this.logger.debug(() => 'notifyNewTeacher(userId=' + userId + ')');
@@ -475,4 +491,17 @@ export class UserService  extends RemotePersistentDataService<User> {
         const callable = this.functions.httpsCallable('askToBecomeTeacher');
         return callable({ learnerId, teacherId });
     }
+    public getFilterByText(text: string): PersistentDataFilter<User> {
+        const validText = text && text !== null  && text.trim().length > 0 ? text.trim() : null;
+        return validText === null ? null : (user: User) => {
+            return this.stringContains(validText, user.email)
+                || this.stringContains(validText, user.firstName)
+                || this.stringContains(validText, user.lastName);
+        };
+    }
+}
+export interface UserSearchCriteria {
+    text?: string;
+    region?: DataRegion;
+    country?: string;
 }
