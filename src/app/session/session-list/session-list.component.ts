@@ -12,8 +12,7 @@ const logger = new Category('list', logSession);
 
 @Component({
   selector: 'app-session-list',
-  templateUrl: './session-list.component.html',
-  styleUrls: ['./session-list.component.scss'],
+  templateUrl: './session-list.component.html'
 })
 export class SessionListComponent implements OnInit {
   error: any;
@@ -46,6 +45,7 @@ export class SessionListComponent implements OnInit {
     this.sessionService.search(this.searchInput, forceServer ? 'server' : 'default').subscribe((rsession) => {
       this.sessions = this.sessionService.sortSessionByStartDate(rsession.data, true)
         .map(session => {
+          // tslint:disable-next-line:no-string-literal
           session['isTeacher'] = session.teacherIds.indexOf(this.currentUser.id) >= 0;
           return session;
         });

@@ -14,8 +14,7 @@ const logger = new Category('play', logTeacher);
 
 @Component({
   selector: 'app-teacher-list',
-  templateUrl: './teacher-list.component.html',
-  styleUrls: ['./teacher-list.component.scss'],
+  templateUrl: './teacher-list.component.html'
 })
 export class TeacherListComponent implements OnInit {
 
