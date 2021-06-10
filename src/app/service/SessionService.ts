@@ -1,5 +1,5 @@
 import { UserService } from 'src/app/service/UserService';
-import { map } from 'rxjs/operators';
+import { map, mergeMap } from 'rxjs/operators';
 import { ParticipantQuestionAnswerService } from 'src/app/service/ParticipantQuestionAnswerService';
 import { DurationUnit, Course, ParticipantQuestionAnswer, Question, User, QuestionSerie } from 'src/app/model/model';
 import { ParticipantResult, SessionParticipant, TestParticipantResult, DataRegion } from './../model/model';
@@ -90,6 +90,11 @@ export class SessionService extends RemotePersistentDataService<Session> {
       obs.push(this.computeLearnerScoresOfParticipant(session, course, participant));
     });
     return forkJoin(obs);
+  }
+
+  public computeLearnerScore(session: Session, course: Course, learnerId: string): Observable<SessionParticipant> {
+    const sessionParticipant: SessionParticipant = session.participants.find((p) => p.person.personId === learnerId);
+    return sessionParticipant ? this.computeLearnerScoresOfParticipant(session, course, sessionParticipant) : of(sessionParticipant);
   }
 
   private computeLearnerScoresOfParticipant(session: Session,

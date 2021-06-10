@@ -1,15 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AlertController, ModalController, NavController } from '@ionic/angular';
+import { ParticipantQuestionAnswer } from 'functions/src/model';
 import * as moment from 'moment';
 import { ToastrService } from 'ngx-toastr';
-import { Observable, of } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { flatMap, map } from 'rxjs/operators';
 import { logSession } from 'src/app/logging-config';
 import { Course, Session, SessionParticipant, SharedWith, User } from 'src/app/model/model';
 import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
 import { CourseService } from 'src/app/service/CourseService';
 import { DateService } from 'src/app/service/DateService';
+import { ParticipantQuestionAnswerService } from 'src/app/service/ParticipantQuestionAnswerService';
 import { Response, ResponseWithData } from 'src/app/service/response';
 import { SessionService } from 'src/app/service/SessionService';
 import { UserService } from 'src/app/service/UserService';
@@ -44,6 +46,7 @@ export class SessionEditComponent implements OnInit {
     private dateService: DateService,
     private modalController: ModalController,
     private navController: NavController,
+    private participantQuestionAnswerService: ParticipantQuestionAnswerService,
     private route: ActivatedRoute,
     private sessionService: SessionService,
     private toastrService: ToastrService,
@@ -314,6 +317,36 @@ export class SessionEditComponent implements OnInit {
         this.toastrService.info('Certificate sent.', '', this.toastCfg);
         logger.info('Certificate sent.');
       }
+    });
+  }
+
+  rawExport() {
+    const raw = {
+      course: this.course,
+      session: this.session,
+      participantAnswers: []
+    };
+    const obs: Observable<any>[] = this.session.participantIds.map(pid =>
+      this.participantQuestionAnswerService.findMyAnwsers(this.sessionId, pid).pipe(
+        map(ranswers => {
+          raw.participantAnswers.push({ participantId: pid, answers: ranswers.data});
+        })
+      )
+    );
+    if (obs.length === 0) {
+      obs.push(of(''))
+    }
+    forkJoin(obs).subscribe(() => {
+      console.log(raw.participantAnswers.length);
+      const content = JSON.stringify(raw, null, 2);
+      const oMyBlob = new Blob([content], {type : 'text/json'});
+      const url = URL.createObjectURL(oMyBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `RefereeExamResult_${this.course.name.replace(' ', '_')}_${this.dateService.date2string(this.session.startDate)}.json`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+      a.remove();
     });
   }
 }
