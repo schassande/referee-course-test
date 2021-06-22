@@ -5,7 +5,7 @@ import { ParticipantQuestionAnswer } from 'functions/src/model';
 import * as moment from 'moment';
 import { ToastrService } from 'ngx-toastr';
 import { forkJoin, Observable, of } from 'rxjs';
-import { flatMap, map } from 'rxjs/operators';
+import { flatMap, map, mergeMap } from 'rxjs/operators';
 import { logSession } from 'src/app/logging-config';
 import { Course, Session, SessionParticipant, SharedWith, User } from 'src/app/model/model';
 import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
@@ -71,8 +71,8 @@ export class SessionEditComponent implements OnInit {
     this.isAdmin = this.connectedUserService.getCurrentUser().role === 'ADMIN';
     console.log('role=', this.connectedUserService.getCurrentUser().role);
     this.loadParams().pipe(
-      flatMap(() => this.loadCourses()),
-      flatMap(() => this.loadSession())
+      mergeMap(() => this.loadCourses()),
+      mergeMap(() => this.loadSession())
     ).subscribe();
   }
 
@@ -107,7 +107,7 @@ export class SessionEditComponent implements OnInit {
         this.readonly = !this.isTeacher;
       }),
       // load course
-      flatMap(() => this.courseService.get(this.session.courseId)),
+      mergeMap(() => this.courseService.get(this.session.courseId)),
       map(() => this.course = this.courses.find((course) => course.id === this.session.courseId)),
       map(() => this.loading = false)
     );
@@ -253,14 +253,14 @@ export class SessionEditComponent implements OnInit {
   correction() {
     this.session.status = 'CORRECTION';
     this.sessionService.computeLearnerScores(this.session, this.course).pipe(
-      flatMap(() => this.save(true)),
-      flatMap(() => this.sessionService.sendCertificateAll(this.session)),
+      mergeMap(() => this.save(true)),
+      mergeMap(() => this.sessionService.sendCertificateAll(this.session)),
       map(() => this.toastrService.success('Marking step of the exam.', '', this.toastCfg))
     ).subscribe();
   }
   computeScores() {
     this.sessionService.computeLearnerScores(this.session, this.course).pipe(
-      flatMap(() => this.save(true)),
+      mergeMap(() => this.save(true)),
       map(() => this.toastrService.success('Scores have been computed.', '', this.toastCfg))
     ).subscribe();
   }
@@ -299,7 +299,7 @@ export class SessionEditComponent implements OnInit {
 
   }
   reload() {
-    // TODO
+    this.loadSessionFromId().subscribe();
   }
   onSwipe(event) {
     if (event.direction === 4) {

@@ -122,4 +122,10 @@
             <ion-icon name="download-outline"></ion-icon>&nbsp;Raw Export
         </ion-button>
     </section>
+    <div style="height: 70px;"></div>
+    <ion-fab *ngIf="session && session.id" vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button (click)="reload()" style='--background:green;'>
+            <ion-icon name="reload-outline"></ion-icon>
+        </ion-fab-button>
+    </ion-fab>
 </ion-content>
