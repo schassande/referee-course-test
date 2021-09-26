@@ -56,7 +56,7 @@ export class UserEditPage implements OnInit {
             } else {
               this.user = res.data;
               // .debug(() => 'load user: ' + JSON.stringify(this.user, null, 2));
-              this.ensureDataSharing();
+              this.ensureData();
             }
           });
         } else {
@@ -66,13 +66,16 @@ export class UserEditPage implements OnInit {
     ).subscribe();
   }
 
-  private ensureDataSharing() {
+  private ensureData() {
     if (!this.user.dataSharingAgreement) {
       logger.debug(() => 'Add dataSharingAgreement field to the existing user.');
       this.user.dataSharingAgreement = {
         personnalInfoSharing: 'YES',
         photoSharing: 'YES',
       };
+    }
+    if (!this.user.country) {
+      this.user.country = '';
     }
   }
 
@@ -89,6 +92,7 @@ export class UserEditPage implements OnInit {
       firstName: '',
       lastName: '',
       email: '',
+      country:'',
       photo: {
         path: null,
         url: null
@@ -171,7 +175,7 @@ export class UserEditPage implements OnInit {
         { text: 'Cancel', role: 'cancel'},
         {
           text: 'Delete',
-          handler: () => { 
+          handler: () => {
             this.userService.delete(this.user.id).subscribe();
           }
         }

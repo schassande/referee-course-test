@@ -34,7 +34,6 @@ import { CourseModule } from './course/course.module';
 import { AppSettingsService } from 'src/app/service/AppSettingsService';
 import { CourseService } from './service/CourseService';
 import { ConnectedUserService } from './service/ConnectedUserService';
-import { ClubService } from './service/ClubService';
 import { DateService } from './service/DateService';
 import { NtaService } from './service/NtaService';
 import { ParticipantQuestionAnswerService } from 'src/app/service/ParticipantQuestionAnswerService';
@@ -76,7 +75,6 @@ export class CustomHammerConfig extends HammerGestureConfig {}
     // { provide: REGION, useValue: 'us-central1' },
     // { provide: ORIGIN, useValue: 'http://localhost:5005' },
     AppSettingsService,
-    ClubService,
     ConnectedUserService,
     CourseService,
     DateService,

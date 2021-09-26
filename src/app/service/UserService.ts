@@ -365,6 +365,7 @@ export class UserService  extends RemotePersistentDataService<User> {
             accountStatus: 'VALIDATION_REQUIRED',
             role: 'LEARNER',
             authProvider,
+            country: '',
             version: 0,
             creationDate : new Date(),
             lastUpdate : new Date(),
@@ -387,7 +388,6 @@ export class UserService  extends RemotePersistentDataService<User> {
               photoSharing: 'YES'
             },
             phone: '',
-            club: null,
             teacherQualifications: []
         } as User;
     }
@@ -417,7 +417,7 @@ export class UserService  extends RemotePersistentDataService<User> {
         return users;
     }
 
-    public findTeachers(text: string, region: DataRegion): Observable<ResponseWithData<User[]>> {
+    public findTeachers(text: string, region: DataRegion, speakingLanguage: string = null): Observable<ResponseWithData<User[]>> {
         return forkJoin([
             this.query(this.getCollectionRef()
                 .where('dataRegion', '==', region)
@@ -433,7 +433,13 @@ export class UserService  extends RemotePersistentDataService<User> {
                     ruser.data = ruser.data.filter((u) => {
                         return this.stringContains(str, u.firstName)
                         || this.stringContains(str, u.lastName)
+                        || this.stringContains(str, u.country)
                         || this.stringContains(str, u.email);
+                    });
+                }
+                if (ruser.data && this.toolService.isValidString(speakingLanguage)) {
+                    ruser.data = ruser.data.filter((u) => {
+                        return u.speakingLanguages.indexOf(speakingLanguage) >= 0;
                     });
                 }
                 return ruser;

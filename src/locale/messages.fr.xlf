@@ -280,6 +280,13 @@
           <context context-type="linenumber">50</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="user-edit.country" datatype="html">
+        <source>Country</source>
+        <target>Pays</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/main/user-edit/user-edit.html</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="user-edit.speaking-languages" datatype="html">
         <source>Speaking languages</source>
         <target>Langues</target>
@@ -480,6 +487,20 @@
           <context context-type="linenumber">65</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="course-edit.desc-edit-question" datatype="html">
+        <source>Click on the question title to edit it.</source>
+        <target>Click on the question title to edit it.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="course-edit.desc-edit-answer" datatype="html">
+        <source>Click on the question title to edit it.</source>
+        <target>Click on the question title to edit it.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="course.list.title" datatype="html">
         <source>Courses</source>
         <target>Formations</target>
@@ -531,8 +552,22 @@
         </context-group>
       </trans-unit>
       <trans-unit id="course-edit.desc-switch-multi" datatype="html">
-        <source>Click on a question to switch between a question having one or several answers.</source>
-        <target>Cliquer sur une question pour la basculer en mode reponse unique/multiple.</target>
+        <source>Click on <b>Single</b> or <b>Multi</b> to switch between a question having one or several answers.</source>
+        <target>Cliquer sur <b>Single</b> or <b>Multi</b> pour definir le mode de bonne reponses.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="course-edit.desc-switch-multi" datatype="html">
+        <source>Select question randomly:</source>
+        <target>Selectionner les questions au hasard:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="course.edit.random-selection" datatype="html">
+        <source>Select question randomly:</source>
+        <target>Selectionner les questions au hasard:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
         </context-group>
@@ -852,7 +887,21 @@
           <context context-type="linenumber">8</context>
         </context-group>
       </trans-unit>
-    <trans-unit id="session-analyse.title" datatype="html">
+      <trans-unit id="teacher-list.country" datatype="html">
+        <source>Sort by country</source>
+        <target>Trier par pays</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/teacher/teacher-list/teacher-list.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="teacher-list.speaking-language" datatype="html">
+        <source>Language</source>
+        <target>Langue</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/teacher/teacher-list/teacher-list.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="session-analyse.title" datatype="html">
         <source>Session analysis</source>
         <target>Analyse de session</target>
         <context-group purpose="location">

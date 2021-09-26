@@ -200,44 +200,41 @@ export interface Photo {
 
 /** A user of the application */
 export interface User extends RootNode {
-  /** The password of the user */
-  password?: string;
   /** The firebase account identifier */
   accountId: string;
-  /** The token */
-  token?: string;
-  /** the data sharing agrement */
-  dataSharingAgreement: PersonDataSharingAgreement;
-  /** The role of the user */
-  role: AppRole;
-  /** The authentication provider */
-  authProvider?: AuthProvider;
   /** The status of the account */
   accountStatus: AccountStatus;
+  /** The authentication provider */
+  authProvider?: AuthProvider;
+  /** The country of the user */
+  country: string;
+  /** the data sharing agrement */
+  dataSharingAgreement: PersonDataSharingAgreement;
   /** The email address of the user */
   email: string;
   /** The first name of the user */
   firstName: string;
   /** The last name of the user */
   lastName: string;
+  /** The password of the user */
+  password?: string;
   /** The phone number of the user */
   phone: string;
-  /** The club of the user */
-  club: Club;
+  /** Photo of the user */
+  photo: Photo;
+  /** The role of the user */
+  role: AppRole;
   /** The speaking languages of the user */
   speakingLanguages: string[];
   /** The qualification of the user */
   teacherQualifications: TeacherQualification[];
-  /** Photo of the user */
-  photo: Photo;
+  /** The token */
+  token?: string;
 }
 
 export interface Nta extends RootNode {
+  name: string;
   teacherManagers: User[];
-}
-
-export interface Club extends RootNode {
-  nta: Nta;
 }
 
 export type TeacherQualificationStatus = 'NotQualified' | 'Learner' | 'Qualified';

@@ -59,6 +59,12 @@
                 </ion-select>
             </ion-item>
             <ion-item>
+                <ion-label i18n="@@user-edit.country">Country</ion-label>
+                <ion-select [(ngModel)]="user.country" interface="action-sheet" required="true">
+                    <ion-select-option *ngFor="let country of constantes.countries" value="{{country[0]}}">{{country[1]}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+            <ion-item>
                 <ion-label i18n="@@user-edit.role">Role</ion-label>
                 <span style="text-align: right;">{{user.role}}</span>
             </ion-item>

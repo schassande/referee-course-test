@@ -28,18 +28,43 @@
         </ion-refresher>
     </div>
     <ion-list style="margin: 0px 0 60px 0;">
-        <ion-item *ngFor="let teacher of teachers">
-            <!-- #BEF990 style='--color: #D8FFFF;' -->
-            <ion-label style="border: none;" class="listItemButton">
-                <div>{{teacher.firstName}} {{teacher.lastName}}</div>
-                <div style="font-size: 0.8em;">{{teacher.email}}
-                    <ul>
-                        <li *ngFor="let qual of teacher.teacherQualifications">{{qual.region}} / Level {{qual.level}}:{{qual.status}}</li>
-                    </ul>
-                </div>
-            </ion-label>
-            <ion-icon *ngIf="isAdmin" slot="end" name="trash" (click)="deleteTeacher(teacher)"></ion-icon>
+        <ion-item>
+            <ion-label i18n="@@teacher-list.country">Sort by country</ion-label>
+            <ion-toggle *ngIf="!readonly" [(ngModel)]="showByCountry"></ion-toggle>
         </ion-item>
+        <ion-item>
+            <ion-label i18n="@@teacher-list.speaking-language">Languages</ion-label>
+            <ion-select [(ngModel)]="speakingLanguage" (ionChange)="searchTeachers()" interface="action-sheet">
+                <ion-select-option value="">All</ion-select-option>
+                <ion-select-option *ngFor="let lang of constantes.languages" value="{{lang[0]}}">{{lang[1]}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <div *ngIf="!showByCountry">
+            <ion-item *ngFor="let teacher of teachers">
+                <!-- #BEF990 style='--color: #D8FFFF;' -->
+                <ion-label style="border: none;" class="listItemButton">
+                    <div>{{teacher.firstName}} {{teacher.lastName}}&nbsp;<span style="font-size: 0.8em;" *ngIf="teacher.country">({{teacher.country}})</span></div>
+
+                    <div style="font-size: 0.8em;">{{teacher.email}}</div>
+                </ion-label>
+                <ion-icon *ngIf="isAdmin" slot="end" name="create" routerLink="/user/edit/{{teacher.id}}"></ion-icon>
+                <ion-icon *ngIf="isAdmin" slot="end" name="trash" (click)="deleteTeacher(teacher)"></ion-icon>
+            </ion-item>
+        </div>
+        <div *ngIf="showByCountry">
+            <ion-item-group style="border-left: 1px solid lightgrey; border-right: 1px solid lightgrey;" *ngFor="let entry of country2Teachers | keyvalue">
+                <ion-item-divider color="light" style="text-align: center; font-size: 1.2em; padding: 10px;">
+                    <ion-label>{{toolService.isValidString(entry.key) ? entry.key : 'Others'}}</ion-label>
+                </ion-item-divider>
+                <ion-item *ngFor="let teacher of entry.value">
+                    <ion-label style="border: none;" class="listItemButton">
+                        <div>{{teacher.firstName}} {{teacher.lastName}}</div>
+                        <div style="font-size: 0.8em;">{{teacher.email}}</div>
+                    </ion-label>
+                    <ion-icon *ngIf="isAdmin" slot="end" name="create" routerLink="/user/edit/{{teacher.id}}"></ion-icon>
+                    <ion-icon *ngIf="isAdmin" slot="end" name="trash" (click)="deleteTeacher(teacher)"></ion-icon>
+                </ion-item>
+            </ion-item-group>
+        </div>
     </ion-list>
-    <div style="height: 150px;"></div>
 </ion-content>
