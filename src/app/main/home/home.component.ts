@@ -10,6 +10,7 @@ import { CourseService } from 'src/app/service/CourseService';
 import { DateService } from 'src/app/service/DateService';
 import { SessionService } from 'src/app/service/SessionService';
 import { Observable } from 'rxjs';
+import { ToolService } from 'src/app/service/ToolService';
 
 const logger = new Category('home', logApp);
 
@@ -43,6 +44,7 @@ export class HomeComponent implements OnInit {
       public dateService: DateService,
       private navController: NavController,
       private sessionService: SessionService,
+      private toolService: ToolService,
       private userService: UserService,
       @Inject(LOCALE_ID) public localeId: string) {
   }
@@ -85,22 +87,31 @@ export class HomeComponent implements OnInit {
         })
     );
   }
+
   loadTeachers(): Observable<any> {
     return this.userService.findTeachers(null, this.currentUser.dataRegion).pipe(
       map((rusers) => {
         this.teachers = rusers.data;
         if (this.teachers && this.teachers.length > 0) {
-          // Pick up randomly a teacher
-            const teacherIdx: number = Math.round(Math.random() * 10000) % this.teachers.length;
-            this.teacherId = this.teachers[teacherIdx].id;
-            this.isTeacher = this.teachers.filter(t => t.id === this.currentUser.id).length > 0;
-          } else {
-            this.teacherId = null;
-            this.isTeacher = false;
+          if (this.toolService.isValidString(this.currentUser.country)) {
+            // try to filter the teachers from the same country
+            const sameCountry = this.teachers.filter(t => t.country === this.currentUser.country);
+            if (sameCountry.length > 0) {
+              this.teachers = sameCountry;
             }
+          }
+          // Pick up randomly a teacher
+          const teacherIdx: number = Math.round(Math.random() * 10000) % this.teachers.length;
+          this.teacherId = this.teachers[teacherIdx].id;
+          this.isTeacher = this.teachers.filter(t => t.id === this.currentUser.id).length > 0;
+        } else {
+          this.teacherId = null;
+          this.isTeacher = false;
+        }
       })
     );
   }
+
   createGroupSession() {
     const course: Course = this.groupCourses.find(c => c.id === this.groupCourseId);
     const teacher: User = this.teachers.find(u => u.id === this.currentUser.id); // teacher is the current user
