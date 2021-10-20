@@ -3,7 +3,7 @@ import { Category } from 'typescript-logging';
 import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
 import { TranslationService } from 'src/app/service/TranslationService';
 import { ResponseWithData } from 'src/app/service/response';
-import { map, flatMap } from 'rxjs/operators';
+import { map, mergeMap } from 'rxjs/operators';
 import { Observable, of, forkJoin } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { DateService } from 'src/app/service/DateService';
@@ -47,7 +47,7 @@ export class CourseEditComponent implements OnInit {
   public ngOnInit() {
     this.readonly = this.connectedUserService.getCurrentUser().role === 'LEARNER';
     this.loadParams().pipe(
-      flatMap(() => this.courseId ? this.loadCourse() : this.createNewCourse())
+      mergeMap(() => this.courseId ? this.loadCourse() : this.createNewCourse())
     ).subscribe();
   }
 
@@ -62,7 +62,7 @@ export class CourseEditComponent implements OnInit {
     this.loading = true;
     return this.courseService.get(this.courseId).pipe(
       map((rcourse) => this.course = rcourse.data),
-      flatMap(() => {
+      mergeMap(() => {
         const obs: Observable<any>[] = [of('')];
         this.lang = this.connectedUserService.getLang();
         if (this.course.test.supportedLanguages.indexOf(this.lang) < 0) {
@@ -157,24 +157,39 @@ export class CourseEditComponent implements OnInit {
     }
   }
 
-  importCourse(event) {
+  async importCourse(event) {
     if (!this.readonly) {
-      this.loadingController.create({ message: 'Analysing file ...', translucent: true}).then((l) => l.present());
+      const loading = await this.loadingController.create({ message: 'Analysing file ...', translucent: true});
+      loading.present();
       const reader: FileReader = new FileReader();
       reader.onloadend = () => {
-        const importedCourse: Course = JSON.parse(reader.result.toString());
-        this.loadingController.dismiss();
-        logger.debug(() => 'Course imported: ' + JSON.stringify(importedCourse, null, 2));
-        if (importedCourse.id === this.courseId) {
-          this.course =  importedCourse;
-          this.save().subscribe(() => {
-            this.toastController.create({
-              message: 'Couse updated.',
-              position: 'bottom',
-              duration: 4000,
-              translucent: true
-            }).then((alert) => alert.present());
-          });
+        let importedCourse: Course = null;
+        try {
+          importedCourse = JSON.parse(reader.result.toString());
+        } catch(err) {
+          loading.dismiss();
+          console.error(err);
+          this.toastController.create({
+            message: 'Error when parsing the document: ' + err,
+            color: 'warning',
+            duration: 4000,
+            position: 'middle'
+          }).then((alert) => alert.present());
+        }
+        if (importedCourse) {
+          loading.dismiss();
+          logger.debug(() => 'Course imported: ' + JSON.stringify(importedCourse, null, 2));
+          if (importedCourse.id === this.courseId) {
+            this.course =  importedCourse;
+            this.save().subscribe(() => {
+              this.toastController.create({
+                message: 'Couse updated.',
+                position: 'bottom',
+                duration: 4000,
+                translucent: true
+              }).then((alert) => alert.present());
+            });
+          }
         }
       };
       reader.readAsText(event.target.files[0]);
@@ -184,7 +199,7 @@ export class CourseEditComponent implements OnInit {
   exportCourse() {
     this.save().pipe(
       // get a new instance of the course in order to clean the I18N texts
-      flatMap(() => this.courseService.get(this.courseId)),
+      mergeMap(() => this.courseService.get(this.courseId)),
       map((rcourse) => {
         if (rcourse.data) {
           // clean i18n texts
