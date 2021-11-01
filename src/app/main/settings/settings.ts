@@ -3,7 +3,7 @@ import { Category } from 'typescript-logging';
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { AlertController, ToastController, NavController } from '@ionic/angular';
-import { Observable, of, concat } from 'rxjs';
+import { Observable, of, concat, forkJoin } from 'rxjs';
 import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
 import { UserService } from 'src/app/service/UserService';
 import { AppSettingsService } from 'src/app/service/AppSettingsService';
@@ -11,6 +11,7 @@ import { LocalAppSettings } from 'src/app/model/settings';
 import { User } from 'src/app/model/model';
 
 import { environment } from 'src/environments/environment';
+import { SessionService } from 'src/app/service/SessionService';
 
 const logger = new Category('settings', logApp);
 
@@ -41,6 +42,7 @@ export class SettingsPage implements OnInit {
     private connectedUserService: ConnectedUserService,
     private navController: NavController,
     private toastController: ToastController,
+    private sessionService: SessionService,
     private userService: UserService
   ) {
   }
@@ -90,7 +92,21 @@ export class SettingsPage implements OnInit {
       this.launchMode += '<br>display-mode is launch from web browser';
     }
   }
-
+  public adjustSession() {
+    this.sessionService.all().subscribe((rsessions) => {
+      const obs: Observable<any>[] = [of('')];
+      rsessions.data.forEach(session => {
+        if (! session.hasOwnProperty('autoPlay')) {
+          session.autoPlay = false;
+          console.log(session.id + ' is going to be updated.');
+          obs.push(this.sessionService.save(session));
+        }
+      });
+      forkJoin(obs).subscribe(() => {
+        console.log((obs.length-1) + ' session updated.');
+      })
+    });
+  }
   public saveSettings(navigate = true) {
     this.appSettingsService.save(this.settings).pipe(
       map((settings: LocalAppSettings) => {
@@ -104,7 +120,7 @@ export class SettingsPage implements OnInit {
 
   public reloadPage() {
     // tslint:disable-next-line: deprecation
-    window.location.reload(true);
+    window.location.reload();
   }
 
   private toast(msg: string) {

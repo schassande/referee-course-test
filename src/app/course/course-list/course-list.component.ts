@@ -41,7 +41,7 @@ export class CourseListComponent implements OnInit {
   searchCourses(forceServer: boolean = false, event: any = null) {
     logger.debug(() => 'searchCourses ' + this.searchInput);
     this.courseService.search(this.searchInput, forceServer ? 'server' : 'default').subscribe((rcourse) => {
-      this.courses = rcourse.data;
+      this.courses = rcourse.data.sort((c1,c2) => c1.name.localeCompare(c2.name));
     });
   }
 

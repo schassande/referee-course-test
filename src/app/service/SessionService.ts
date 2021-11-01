@@ -16,6 +16,7 @@ import { RemotePersistentDataService } from './RemotePersistentDataService';
 import { Session } from '../model/model';
 import { Response } from './response';
 import * as moment from 'moment';
+import { SessionStatus } from 'functions/src/model';
 
 @Injectable({
   providedIn: 'root'
@@ -59,13 +60,31 @@ export class SessionService extends RemotePersistentDataService<Session> {
     return this.query(this.getBaseQuery(), options);
   }
 
-  public search(text: string, options: 'default' | 'server' | 'cache' = 'default'): Observable<ResponseWithData<Session[]>> {
+  public search(text: string,
+                includeIndividual: boolean,
+                year: number,
+                status: SessionStatus,
+                options: 'default' | 'server' | 'cache' = 'default'): Observable<ResponseWithData<Session[]>> {
+    let q = this.getBaseQuery();
+    if (year) {
+      const begin = moment(year + '-01-01 00:00:00').toDate();
+      const end = moment((year+1) + '-01-01 00:00:00').toDate();
+      // console.log('filter by: year \n\t' + begin + '\n\t' + end);
+      q = q.where('startDate', '>=', begin);
+      q = q.where('startDate', '<', end);
+    }
+    console.log('filter by: autoPlay', includeIndividual);
+    q = q.where('autoPlay', '==', includeIndividual);
+    if (status) {
+      // console.log('filter by: status', status);
+      q = q.where('status', '==', status);
+    }
     const str = text !== null && text && text.trim().length > 0 ? text.trim() : null;
-    return str ?
-        super.filter(this.all(options), (session: Session) => {
-            return this.stringContains(str, session.keyCode);
-        })
-        : this.all(options);
+    if (str) {
+      // console.log('filter by: text', str);
+    }
+    return super.filter(this.query(q, options),
+      (session: Session) => !str || this.stringContains(str, session.keyCode));
   }
 
   public sortSessionByStartDate(sessions: Session[], reverse: boolean = false): Session[] {
@@ -265,6 +284,7 @@ export class SessionService extends RemotePersistentDataService<Session> {
     const session: Session = {
       id: '',
       dataRegion,
+      autoPlay: false,
       status: 'REGISTRATION',
       creationDate: new Date(),
       lastUpdate: new Date(),

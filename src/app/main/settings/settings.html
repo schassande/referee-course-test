@@ -27,6 +27,9 @@
         <ion-item (click)="addToHome()" *ngIf="showInstallBtn">
             <ion-label class="menu-entry" i18n="@@setting.install-on-device">Install on device</ion-label>
         </ion-item>
+        <ion-item (click)="adjustSession()" *ngIf="!env.production">
+            <ion-label class="menu-entry">Adjust session AutoPlay</ion-label>
+        </ion-item>
     </ion-list>
 
     <p *ngFor="let m of msg" class="message">{{m}}</p>

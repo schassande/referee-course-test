@@ -28,13 +28,39 @@
         </ion-refresher>
     </div>
     <ion-list style="margin: 0px 0 60px 0;">
+        <ion-item>
+            <ion-label>Individual</ion-label>
+            <ion-toggle [(ngModel)]="showIndividual" (ngModelChange)="searchSessions()"></ion-toggle>
+        </ion-item>
+        <ion-item>
+            <ion-label>Year</ion-label>
+            <ion-select [(ngModel)]="year" (ngModelChange)="searchSessions()" interface="action-sheet">
+                <ion-select-option *ngFor="let y of years" value="{{y}}">{{y}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item>
+            <ion-label>Status</ion-label>
+            <ion-select [(ngModel)]="status" (ngModelChange)="searchSessions()" interface="action-sheet">
+                <ion-select-option value="">Any</ion-select-option>
+                <ion-select-option value="REGISTRATION">Registration</ion-select-option>
+                <ion-select-option value="STARTED">Started</ion-select-option>
+                <ion-select-option value="STOPPED">Stopped</ion-select-option>
+                <ion-select-option value="CORRECTION">Correction</ion-select-option>
+                <ion-select-option value="CLOSED">Closed</ion-select-option>
+            </ion-select>
+        </ion-item>
         <ion-item *ngFor="let session of sessions">
             <!-- #BEF990 style='--color: #D8FFFF;' -->
             <ion-label style="border: none;" class="listItemButton" (click)="sessionSelected(session)">
-                {{dateService.date2string(session.startDate)}} / {{session.courseName}} / {{session.keyCode}} / {{session.status}}
-                <div *ngFor="let teacher of session.teachers" style="margin-left: 100px;">by {{teacher.firstName}} {{teacher.lastName}}</div>
-                <div *ngIf="session.autoPlay" style="margin-left: 100px;">
-                    <span i18n="@@session-list.individual-learner">Individual learner</span>: {{session.participants[0].person.firstName}} {{session.participants[0].person.lastName}}</div>
+                <div>{{dateService.date2string(session.startDate)}} / {{session.keyCode}} / {{session.status}}</div>
+                <div style="margin-left: 20px; font-weight: bold;">{{session.courseName}}</div>
+                <div *ngIf="session.autoPlay" style="margin-left: 20px;">
+                    <span i18n="@@session-list.individual-learner">Individual learner</span>: {{session.participants[0].person.firstName}} {{session.participants[0].person.lastName}}
+                </div>
+                <div *ngIf="!session.autoPlay" style="margin-left: 20px;">
+                    <div>{{session.participants.length}} participants.</div>
+                    <div *ngFor="let teacher of session.teachers">by {{teacher.firstName}} {{teacher.lastName}}</div>
+                </div>
             </ion-label>
             <ion-icon *ngIf="!readonly && session.teachers && session.teachers.length && (isAdmin || session['isTeacher'])" slot="end" name="trash" (click)="deleteItem(session)"></ion-icon>
         </ion-item>

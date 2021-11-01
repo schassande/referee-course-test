@@ -10,13 +10,19 @@
 <ion-content>
     <ion-card *ngIf="teacherSessions && teacherSessions.length" style='--background: lightgrey;'>
         <ion-card-header>
-            <ion-card-title i18n="@@home.teacher-list-sessions">List of your sessions as teacher</ion-card-title>
+            <ion-card-title i18n="@@home.teacher-list-sessions">Your sessions as teacher</ion-card-title>
         </ion-card-header>
         <ion-card-content>
             <ion-item *ngFor="let session of teacherSessions" routerLink="/session/edit/{{session.id}}">
-                <ion-label>{{dateService.date2string(session.startDate)}} / {{session.courseName}}
-                    <br><span style="margin-left:60px;">{{session.keyCode}} / {{session.status}}</span>
-                    <div *ngIf="session.autoPlay"><span i18n="@@session.individual-learner">Individual learner</span>: {{session.participants[0].person.firstName}} {{session.participants[0].person.lastName}}</div>
+                <ion-label>
+                    <div>{{dateService.date2string(session.startDate)}} / {{session.keyCode}} / {{session.status}}</div>
+                    <div style="margin-left:20px;">
+                        <div style="font-weight: bold;">{{session.courseName}}</div>
+                        <div *ngIf="session.autoPlay"><span i18n="@@session.individual-learner">Individual learner</span>: {{session.participants[0].person.firstName}} {{session.participants[0].person.lastName}}</div>
+                        <div *ngIf="!session.autoPlay">
+                            <div>{{session.participants.length}} participants.</div>
+                        </div>
+                    </div>
                 </ion-label>
             </ion-item>
             <div style="text-align: right; margin-top: 10px;">
@@ -33,7 +39,9 @@
         <ion-card-content>
             <ion-list class="sessionList">
                 <ion-item *ngFor="let session of learnerSessions" (click)="routeLearnerSession(session)">
-                    <ion-label>{{dateService.date2string(session.startDate)}} / {{session.courseName}}: {{session.status === 'CLOSED' || session.status === 'CORRECTION' ? getSessionResult(session) : session.status}}
+                    <ion-label>
+                        <div>{{dateService.date2string(session.startDate)}}: {{session.status === 'CLOSED' || session.status === 'CORRECTION' ? getSessionResult(session) : session.status}}</div>
+                        <div style="margin-left:20px; font-weight: bold;">{{session.courseName}}</div>
                     </ion-label>
                 </ion-item>
             </ion-list>

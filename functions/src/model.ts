@@ -133,7 +133,7 @@ export interface Session extends RootNode {
   /** The list of the participant identifier of the session (must be sync with 'participants') */
   participantIds: string[];
   /** flag indicating whether the session is run automatically */
-  autoPlay?: boolean;
+  autoPlay: boolean;
   /**
    * The list of the identifier of the questions to run during the test.
    * The questions are extracted from the course.

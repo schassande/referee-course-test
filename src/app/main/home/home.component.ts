@@ -75,11 +75,14 @@ export class HomeComponent implements OnInit {
       map((rcourses) => {
         if (rcourses.data) {
           this.individualCourses = rcourses.data
-            .filter((course) => course.enabled && course.allowedAlone && course.dataRegion === this.currentUser.dataRegion);
+            .filter((course) => course.enabled && course.allowedAlone && course.dataRegion === this.currentUser.dataRegion)
+            .sort((c1,c2) => c2.name.localeCompare(c1.name));
           if (this.individualCourses.length > 0) {
             this.individualCourseId = this.individualCourses[0].id;
           }
-          this.groupCourses = rcourses.data.filter((course) => course.enabled && course.dataRegion === this.currentUser.dataRegion);
+          this.groupCourses = rcourses.data
+            .filter((course) => course.enabled && course.dataRegion === this.currentUser.dataRegion)
+            .sort((c1,c2) => c2.name.localeCompare(c1.name));
           if (this.groupCourses.length > 0) {
             this.groupCourseId = this.groupCourses[0].id;
           }
@@ -182,7 +185,8 @@ export class HomeComponent implements OnInit {
   private loadTeacherSessions() {
     if (this.currentUser.role === 'TEACHER' || this.currentUser.role === 'ADMIN') {
       this.sessionService.findTeacherSessions().subscribe((rsess) => {
-        this.teacherSessions = this.limitArray(this.sessionService.sortSessionByStartDate(rsess.data, true));
+        this.teacherSessions = this.limitArray(this.sessionService.sortSessionByStartDate(rsess.data, true)
+          .filter(session => !session.autoPlay));
       });
     }
   }
