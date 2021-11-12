@@ -283,19 +283,42 @@ export class SessionEditComponent implements OnInit {
       ]
     }).then( (alert) => alert.present() );
   }
+  loadParticipants(): Observable<Map<string,User>> {
+    const id2user: Map<string,User> = new Map();
+    const obs = this.session.participants.map(p =>
+      this.userService.get(p.person.personId).pipe(map(ru => {
+        if (ru.data) {
+          id2user.set(ru.data.id, ru.data);
+        }
+        return ru.data;
+      }))
+    );
+    return forkJoin(obs).pipe(map(() => id2user));
+  }
   exportResults() {
     const sep = ',';
-    const content = this.session.participants.map(p => {
-      return p.person.firstName + sep + p.person.lastName + sep + (p.pass ? 'PASS' : 'FAIL') + sep + p.percent + '%' + sep + p.score;
-    }).join('\n');
-    const oMyBlob = new Blob([content], {type : 'text/csv'});
-    const url = URL.createObjectURL(oMyBlob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `RefereeExamResult_${this.course.name.replace(' ', '_')}_${this.dateService.date2string(this.session.startDate)}.csv`;
-    a.click();
-    window.URL.revokeObjectURL(url);
-    a.remove();
+    this.loadParticipants().pipe(
+      map((id2user: Map<string,User>) => {
+        const content = this.session.participants.map(p => {
+          const u: User = id2user.get(p.person.personId);
+          return p.person.firstName
+            + sep + p.person.lastName
+            + sep + (u ? u.email : '')
+            + sep + (u ? u.country : '')
+            + sep + (p.pass ? 'PASS' : 'FAIL')
+            + sep + p.percent + '%'
+            + sep + p.score;
+        }).join('\n');
+        const oMyBlob = new Blob([content], {type : 'text/csv'});
+        const url = URL.createObjectURL(oMyBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `RefereeExamResult_${this.course.name.replace(' ', '_')}_${this.dateService.date2string(this.session.startDate)}.csv`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+      })
+    ).subscribe();
 
   }
   reload() {
