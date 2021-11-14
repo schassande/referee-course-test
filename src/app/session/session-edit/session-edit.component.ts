@@ -15,6 +15,7 @@ import { ParticipantQuestionAnswerService } from 'src/app/service/ParticipantQue
 import { Response, ResponseWithData } from 'src/app/service/response';
 import { SessionService } from 'src/app/service/SessionService';
 import { UserService } from 'src/app/service/UserService';
+import { createSuper } from 'typescript';
 import { Category } from 'typescript-logging';
 import { UserSelectorComponent } from './../../main/widget/user-selector-component';
 
@@ -109,6 +110,7 @@ export class SessionEditComponent implements OnInit {
       // load course
       mergeMap(() => this.courseService.get(this.session.courseId)),
       map(() => this.course = this.courses.find((course) => course.id === this.session.courseId)),
+      mergeMap(() => this.loadParticipants()),
       map(() => this.loading = false)
     );
   }
@@ -175,24 +177,7 @@ export class SessionEditComponent implements OnInit {
       const sharedWith: SharedWith = data.data as SharedWith;
       if (sharedWith) {
         if (role === 'Learner') {
-          sharedWith.users.forEach((user) => {
-            const participant = this.session.participants.find(p => p.person.personId === user.id);
-            if (!participant) {
-              this.session.participants.push({
-                person: this.userService.userToPersonRef(user),
-                questionAnswerIds: [],
-                pass: false,
-                score: -1,
-                requiredScore: -1,
-                maxScore: 0,
-                percent: -1,
-                answeredQuestions: 0,
-                seriesResult: [],
-                failedQuestionIds: []
-              });
-              this.session.participantIds.push(user.id);
-            }
-          });
+          sharedWith.users.forEach((user) => this.addParticipant(user));
         } else if (role === 'Teacher') {
           sharedWith.users.forEach((user) => {
             const teacher = this.session.teachers.find(p => p.personId === user.id);
@@ -207,14 +192,115 @@ export class SessionEditComponent implements OnInit {
     });
     modal.present();
   }
-
+  addParticipant(user: User) {
+    console.log(`addParticipant(${user.id})`);
+    const participant = this.session.participants.find(p => p.person.personId === user.id);
+    if (!participant) {
+      this.session.participants.push({
+        person: this.userService.userToPersonRef(user),
+        questionAnswerIds: [],
+        pass: false,
+        score: -1,
+        requiredScore: -1,
+        maxScore: 0,
+        percent: -1,
+        answeredQuestions: 0,
+        seriesResult: [],
+        failedQuestionIds: []
+      });
+      this.session.participantIds.push(user.id);
+    }
+  }
   addLearner(){
     this.add('Learner');
   }
   addTeacher(){
     this.add('Teacher');
   }
-
+  inviteLearner() {
+    this.alertCtrl.create({
+      message: 'Write here the list of the participant\'s emails.',
+      inputs: [{ name: 'text', type: 'textarea'}],
+      buttons: [
+        { text: 'Cancel', role: 'cancel'},
+        {
+          text: 'Invite',
+          handler: (data) => {
+            if (data.text) {
+              // console.log(data.text);
+              const emails: string[] = (data.text as string)
+                .split(';').join(' ')
+                .split(',').join(' ')
+                .split(' ');
+              if (emails.length === 0) {
+                return;
+              }
+              const obs = emails.map((email) => {
+                console.log('email:' + email);
+                return this.userService.getByEmail(email).pipe(
+                  mergeMap(ruser => {
+                    if (ruser.data && ruser.data.id) {
+                      console.log('User exist:' + ruser.data.id);
+                      return of(ruser);
+                    } else {
+                      return this.createUserFromEmail(email);
+                    }
+                  }),
+                  map((ruser) => {
+                    if (ruser && ruser.data && ruser.data.id) {
+                      this.addParticipant(ruser.data);
+                    }
+                    return ruser;
+                  })
+                )
+              });
+              if (obs.length) {
+                forkJoin(obs).subscribe(() => this.save().subscribe());
+              }
+            }
+          }
+        }
+      ]
+    }).then( (alert) => alert.present() );
+  }
+  createUserFromEmail(email: string): Observable<ResponseWithData<User>> {
+    console.log(`createUser(${email})`);
+    let password = '';
+    for (let i = 0; i < 8; i++) {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789';
+      const idx = (Math.random() * chars.length + Math.random() * chars.length) % chars.length;
+      password = password + chars.charAt(idx);
+    }
+    return this.userService.save(
+      {
+        id: null,
+        accountId: null,
+        accountStatus: 'ACTIVE',
+        role: 'LEARNER',
+        version: 0,
+        creationDate : new Date(),
+        lastUpdate : new Date(),
+        dataStatus: 'NEW',
+        firstName: '',
+        lastName: email,
+        email,
+        country:'',
+        phone: '',
+        photo: {
+          path: null,
+          url: null
+        },
+        speakingLanguages: [ 'EN' ],
+        password,
+        generatedPassword: password,
+        token: null,
+        dataRegion: this.connectedUserService.getCurrentUser().dataRegion,
+        dataSharingAgreement: {
+          personnalInfoSharing: 'YES',
+          photoSharing: 'YES',
+        }
+      } as User, null, true);
+  }
   onCourseIdChange(event) {
     const newCourseId = event.target.value;
     if (newCourseId) {
@@ -284,16 +370,24 @@ export class SessionEditComponent implements OnInit {
     }).then( (alert) => alert.present() );
   }
   loadParticipants(): Observable<Map<string,User>> {
-    const id2user: Map<string,User> = new Map();
+    const id2u: Map<string,User> = new Map();
     const obs = this.session.participants.map(p =>
       this.userService.get(p.person.personId).pipe(map(ru => {
         if (ru.data) {
-          id2user.set(ru.data.id, ru.data);
+          id2u.set(ru.data.id, ru.data);
         }
         return ru.data;
       }))
     );
-    return forkJoin(obs).pipe(map(() => id2user));
+    if(obs.length) {
+      return forkJoin(obs).pipe(map(() => {
+        console.log('loadParticipants(): ' + id2u.size + ' load.');
+        return id2u;
+      }));
+    } else {
+      console.log('loadParticipants(): no participant');
+      return of(id2u);
+    }
   }
   exportResults() {
     const sep = ',';

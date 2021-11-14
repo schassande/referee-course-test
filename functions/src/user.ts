@@ -2,6 +2,7 @@ import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import * as nodemailer from 'nodemailer';
 import * as promisePool from 'es6-promise-pool';
+import { User } from './model';
 const PromisePool = promisePool.default;
 
 admin.initializeApp();
@@ -36,6 +37,7 @@ export const sendEmailConfirmation = functions.firestore.document('User/{uid}').
   const email = user.email;
   const firstName = user.firstName;
   const lastName = user.lastName;
+  const generatedPassword = user.generatedPassword;
 
 
   // Building Email message.
@@ -46,6 +48,7 @@ export const sendEmailConfirmation = functions.firestore.document('User/{uid}').
     subject: 'Welcome CoachReferee Exam!',
     html : `Hi ${firstName} ${lastName},<br>
 <p>Thanks you for subscribing to our referee exam application.<br>
+${generatedPassword ? '<br>Your generated password is ' + generatedPassword : ''}
 Please visit our application: <a href="https://exam.coachreferee.com">https://exam.coachreferee.com</a>.</p>
 <br>
 Best regards,<br>
@@ -66,7 +69,7 @@ CoachReferee Examinator`
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** Number of day of account inactivity before deletion */
-const NB_DAY_THRESHOLD = 3; // 365;
+const NB_DAY_THRESHOLD = 365;
 /** Maximum concurrent account deletions. */
 const MAX_CONCURRENT = 3;
 
@@ -74,19 +77,26 @@ const MAX_CONCURRENT = 3;
  * function deleting unused accounts.
  */
 export const accountCleanup = functions.pubsub.schedule('every day 00:00').onRun(async context => {
+  console.log('accountCleanup begin')
   // Fetch all user details.
   const inactiveUsers: UserToDelete[] = await getInactiveUsers();
-  // Use a pool so that we delete maximum `MAX_CONCURRENT` users in parallel.
-  const pool = new PromisePool(() => deleteInactiveUser(inactiveUsers), MAX_CONCURRENT);
-  await pool.start();
+  console.log('accountCleanup: ' + inactiveUsers.length + ' to delete.');
+  if (inactiveUsers.length) {
+    // Use a pool so that we delete maximum `MAX_CONCURRENT` users in parallel.
+    const pool = new PromisePool(() => deleteInactiveUser(inactiveUsers), MAX_CONCURRENT);
+    await pool.start();
+  }
   console.log('User cleanup finished');
   // TODO send an email to admin with the list of deleted users.
-});
 
+});
 export interface UserToDelete {
   firebaseId: string;
   appId: string;
   toDelete: boolean;
+  firstName: string;
+  lastName: string;
+  email: string;
 }
 
 /**
@@ -99,19 +109,25 @@ function deleteInactiveUser(inactiveUsers: UserToDelete[]): Promise<any>|void {
   const userToDelete: UserToDelete = inactiveUsers.pop() as UserToDelete;
   
   // Delete the user.
-  return new Promise((resolve) => {
-    console.log('DUMMY: Deleting user account' + userToDelete.firebaseId + '/' + userToDelete.appId + ' because of inactivity');
+  return new Promise((resolve: any) => {
+    console.log('Deleting user account ' + userToDelete.firebaseId + '/' + userToDelete.appId + ' because of inactivity of ' + NB_DAY_THRESHOLD + ' days.');
     resolve();
+/*    
+    admin.auth().deleteUser(userToDelete.firebaseId).then(() => {
+      // delete app user account
+      firestore.collection('User').doc(userToDelete.appId).delete().then(() => {
+        console.log('Deleted user account', userToDelete.appId, 'because of inactivity');
+        resolve();
+      }).catch((error) => {
+        console.error('Deletion of inactive user app account ' + userToDelete.appId + ' failed:', error);
+        resolve();
+      });
+    }).catch((error) => {
+      console.error('Deletion of inactive user firebase account ' + userToDelete.firebaseId + ' failed:', error);
+      resolve();
+    });
+*/
   });
-  /*
-  return admin.auth().deleteUser(userToDelete.firebaseId).then(() => {
-    //TODO delete app user account
-    // firestore.collection('User').doc(userToDelete.appId).delete()
-    console.log('Deleted user account', userToDelete.uid, 'because of inactivity');
-  }).catch((error) => {
-    console.error('Deletion of inactive user account', userToDelete.uid, 'failed:', error);
-  });
-  */
 }
 
 /**
@@ -121,24 +137,60 @@ async function getInactiveUsers(): Promise<UserToDelete[]> {
   const result = await admin.auth().listUsers(1000);
   // Find users to delete 
   return (await Promise.all(result.users.map(async (user) => {
-    const u2d: UserToDelete = { firebaseId: user.uid, appId: '',  toDelete: false }
+    const u2d: UserToDelete = { 
+      firebaseId: user.uid,
+      appId: '',
+      firstName: '',
+      lastName: '',
+      email:'',
+      toDelete: false 
+    };
   
-    // not signed in in the last 30 days.
-    if (Date.parse(user.metadata.lastSignInTime) >= (Date.now() - NB_DAY_THRESHOLD * 24 * 60 * 60 * 1000)) {
+    // not signed in in the last xxx days.
+    if (Date.parse(user.metadata.lastSignInTime) > (Date.now() - NB_DAY_THRESHOLD * 24 * 60 * 60 * 1000)) {
       return Promise.resolve(u2d);
     }
     
     // check it is not teacher or administrator of the application
     const appUsers = await firestore.collection('User').where('accountId', '==', user.uid).get();
     if (appUsers.size === 1) {
-      const appUser: any = appUsers.docs[0].data;
+      const appUser: User = appUsers.docs[0].data as any;
       if (appUser.role !== 'LEARNER') {
         return Promise.resolve(u2d);
       }
       u2d.appId = appUser.id;
+      u2d.firstName = appUser.firstName
+      u2d.lastName = appUser.lastName
+      u2d.email = appUser.email
     } // else the user does not exist => delete it
 
     u2d.toDelete = true;
     return Promise.resolve(u2d); // means delete
   }))).filter(u => u.toDelete);
+}
+
+function sendDeleteEmail(user: UserToDelete) {
+  const email = user.email;
+  const firstName = user.firstName;
+  const lastName = user.lastName;
+
+  // Building Email message.
+  const mailOptions: any = {
+    from: `"CoachReferee" <${gmailEmail}>`,
+    to: email,
+    bcc: gmailEmail,
+    subject: 'CoachReferee Exam: account delete',
+    html : `Hi ${firstName} ${lastName},<br>
+<p>Your account on <a href="https://exam.coachreferee.com">https://exam.coachreferee.com</a> has been removed after a too long inactivity.<br>
+<br>
+Best regards,<br>
+CoachReferee web admin`
+  };
+  console.log('Sending message: ' + JSON.stringify(mailOptions, null, 2));
+  try {
+    mailTransport.sendMail(mailOptions);
+    console.log('New subscription confirmation email sent to:' + email);
+  } catch(error) {
+    console.error('There was an error while sending the email:', error);
+  }
 }

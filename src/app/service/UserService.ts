@@ -51,7 +51,7 @@ export class UserService  extends RemotePersistentDataService<User> {
         }
     }
 
-    public save(user: User, cred: UserCredential = null): Observable<ResponseWithData<User>> {
+    public save(user: User, cred: UserCredential = null, noAutoLogin = false): Observable<ResponseWithData<User>> {
         if (!user) {
             return of({data: null, error: { error : 'null user', errorCode: -1}});
         }
@@ -75,11 +75,14 @@ export class UserService  extends RemotePersistentDataService<User> {
                     if (ruser.data) {
                         this.logger.debug(() => 'User has been created on user database with the id: ' + ruser.data.id);
                         // Send an email to admin with the account to validate
-                        this.sendNewAccountToAdmin(ruser.data.id);
-                        this.sendNewAccountToUser(ruser.data.id);
-                        return this.appSettingsService.setLastUserObs(user.email, password).pipe(
-                            map(() => ruser)
-                        );
+                        // this.sendNewAccountToAdmin(ruser.data.id);
+                        // this.sendNewAccountToUser(ruser.data.id);
+                        if (noAutoLogin) {
+                            return of(ruser);
+                        } else {
+                            return this.appSettingsService.setLastUserObs(user.email, password)
+                                .pipe(map(() => ruser));
+                        }
                     } else {
                         this.logger.debug(() => 'Error on the user creation: ' + ruser.error);
                         throw new Error('' + ruser.error);
@@ -87,8 +90,10 @@ export class UserService  extends RemotePersistentDataService<User> {
                 }),
                 mergeMap((ruser) => {
                     // Autologin if the user is active
-                    if (ruser.data.accountStatus === 'ACTIVE') {
+                    if (ruser.data.accountStatus === 'ACTIVE' && !noAutoLogin) {
                         return this.autoLogin();
+                    } else {
+                        return of(ruser);
                     }
                 }),
                 catchError((err) => {

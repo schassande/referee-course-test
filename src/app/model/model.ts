@@ -218,6 +218,8 @@ export interface User extends RootNode {
   lastName: string;
   /** The password of the user */
   password?: string;
+  /** The generated password of the user */
+  generatedPassword?: string;
   /** The phone number of the user */
   phone: string;
   /** Photo of the user */

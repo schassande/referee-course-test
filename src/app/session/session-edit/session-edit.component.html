@@ -96,6 +96,9 @@
         <ion-item-group style="border-left: 1px solid lightgrey; border-right: 1px solid lightgrey;">
             <ion-item-divider color="light" style="text-align: center; font-size: 1.2em; padding: 10px;">
                 <ion-label><span i18n="@@session-edit.learners">Learners</span> ({{session.participants.length}})</ion-label>
+                <ion-button slot="end" (click)="inviteLearner()" style='--background:green;' *ngIf="isTeacher && session.status !== 'CORRECTION' && session.status !== 'CLOSED'">
+                    Invite
+                </ion-button>
                 <ion-button slot="end" (click)="addLearner()" style='--background:green;' *ngIf="isTeacher && session.status !== 'CORRECTION' && session.status !== 'CLOSED'">
                     <ion-icon name="add"></ion-icon>
                 </ion-button>

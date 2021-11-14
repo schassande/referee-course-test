@@ -200,7 +200,8 @@ export class HomeComponent implements OnInit {
     });
   }
   registerToSession() {
-    this.sessionService.getByKeyCode(this.sessionCode).subscribe((rsess) => {
+    const code = this.sessionCode ? this.sessionCode.trim().toUpperCase() : '';
+    this.sessionService.getByKeyCode(code).subscribe((rsess) => {
       const session: Session = rsess.data;
       let error: string = null;
       if (!session) {

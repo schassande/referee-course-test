@@ -200,6 +200,8 @@ export interface Photo {
 export interface User extends RootNode {
   /** The password of the user */
   password?: string;
+  /** The generated password of the user */
+  generatedPassword?: string;
   /** The firebase account identifier */
   accountId: string;
   /** The token */

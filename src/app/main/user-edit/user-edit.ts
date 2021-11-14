@@ -93,6 +93,7 @@ export class UserEditPage implements OnInit {
       lastName: '',
       email: '',
       country:'',
+      phone: '',
       photo: {
         path: null,
         url: null
