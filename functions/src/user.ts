@@ -110,6 +110,10 @@ function deleteInactiveUser(inactiveUsers: UserToDelete[]): Promise<any>|void {
   
   // Delete the user.
   return new Promise((resolve: any) => {
+    if (!userToDelete.toDelete) {
+      resolve();
+      return;
+    }
     console.log('Deleting user account ' + userToDelete.firebaseId + '/' + userToDelete.appId + ' because of inactivity of ' + NB_DAY_THRESHOLD + ' days.');
     resolve();
 /*    
@@ -117,6 +121,7 @@ function deleteInactiveUser(inactiveUsers: UserToDelete[]): Promise<any>|void {
       // delete app user account
       firestore.collection('User').doc(userToDelete.appId).delete().then(() => {
         console.log('Deleted user account', userToDelete.appId, 'because of inactivity');
+        sendDeleteEmail(userToDelete)
         resolve();
       }).catch((error) => {
         console.error('Deletion of inactive user app account ' + userToDelete.appId + ' failed:', error);
