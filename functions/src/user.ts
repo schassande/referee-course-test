@@ -69,7 +69,7 @@ CoachReferee Examinator`
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** Number of day of account inactivity before deletion */
-const NB_DAY_THRESHOLD = 365;
+const NB_DAY_THRESHOLD = 180;
 /** Maximum concurrent account deletions. */
 const MAX_CONCURRENT = 3;
 
@@ -77,18 +77,16 @@ const MAX_CONCURRENT = 3;
  * function deleting unused accounts.
  */
 export const accountCleanup = functions.pubsub.schedule('every day 00:00').onRun(async context => {
-  console.log('accountCleanup begin')
+  console.log('Scheduled Function accountCleanup begin: ' + context);
   // Fetch all user details.
-  const inactiveUsers: UserToDelete[] = await getInactiveUsers();
+  const inactiveUsers: UserToDelete[] = (await getInactiveUsers()).filter(u2d => u2d.toDelete);
   console.log('accountCleanup: ' + inactiveUsers.length + ' to delete.');
   if (inactiveUsers.length) {
     // Use a pool so that we delete maximum `MAX_CONCURRENT` users in parallel.
     const pool = new PromisePool(() => deleteInactiveUser(inactiveUsers), MAX_CONCURRENT);
     await pool.start();
   }
-  console.log('User cleanup finished');
-  // TODO send an email to admin with the list of deleted users.
-
+  console.log('Scheduled Function accountCleanup end');
 });
 export interface UserToDelete {
   firebaseId: string;
@@ -115,23 +113,24 @@ function deleteInactiveUser(inactiveUsers: UserToDelete[]): Promise<any>|void {
       return;
     }
     console.log('Deleting user account ' + userToDelete.firebaseId + '/' + userToDelete.appId + ' because of inactivity of ' + NB_DAY_THRESHOLD + ' days.');
-    resolve();
-/*    
     admin.auth().deleteUser(userToDelete.firebaseId).then(() => {
       // delete app user account
-      firestore.collection('User').doc(userToDelete.appId).delete().then(() => {
-        console.log('Deleted user account', userToDelete.appId, 'because of inactivity');
-        sendDeleteEmail(userToDelete)
+      if (userToDelete.appId) {
+        firestore.collection('User').doc(userToDelete.appId).delete().then(() => {
+          console.log('Deleted user account', userToDelete.appId, 'because of inactivity');
+          sendDeleteEmail(userToDelete)
+          resolve();
+        }).catch((error) => {
+          console.error('Deletion of inactive user app account ' + userToDelete.appId + ' failed:', error);
+          resolve();
+        });
+      } else {
         resolve();
-      }).catch((error) => {
-        console.error('Deletion of inactive user app account ' + userToDelete.appId + ' failed:', error);
-        resolve();
-      });
+      }
     }).catch((error) => {
       console.error('Deletion of inactive user firebase account ' + userToDelete.firebaseId + ' failed:', error);
       resolve();
     });
-*/
   });
 }
 
@@ -152,7 +151,10 @@ async function getInactiveUsers(): Promise<UserToDelete[]> {
     };
   
     // not signed in in the last xxx days.
-    if (Date.parse(user.metadata.lastSignInTime) > (Date.now() - NB_DAY_THRESHOLD * 24 * 60 * 60 * 1000)) {
+    const timeLimit: number = Date.now() - NB_DAY_THRESHOLD * 24 * 60 * 60 * 1000;
+    const lastSignInTime: number = Date.parse(user.metadata.lastSignInTime);
+    if (lastSignInTime > timeLimit) {
+      console.log('Ignore ' + user.uid  + '/' + user.email + 'because of the time limit lastSignInTime=' + lastSignInTime + ', timeLimit=' + timeLimit);
       return Promise.resolve(u2d);
     }
     
@@ -161,20 +163,24 @@ async function getInactiveUsers(): Promise<UserToDelete[]> {
     if (appUsers.size === 1) {
       const appUser: User = appUsers.docs[0].data as any;
       if (appUser.role !== 'LEARNER') {
+        console.log('Ignore' + user.uid + '/' + user.email + ' because is a ' + appUser.role);
         return Promise.resolve(u2d);
       }
       u2d.appId = appUser.id;
       u2d.firstName = appUser.firstName
       u2d.lastName = appUser.lastName
       u2d.email = appUser.email
-    } // else the user does not exist => delete it
-
-    u2d.toDelete = true;
+      u2d.toDelete = true;
+      console.log(user.uid  + '/' + user.email + ' has to be deleted: ' + JSON.stringify(u2d));
+    } else if (appUsers.size === 0) {
+      // the app user does not exist => delete it
+      u2d.toDelete = true;
+      console.log('Firebase user without app user' + user.uid + ' has to be deleted: ' + JSON.stringify(u2d));
+    }
     return Promise.resolve(u2d); // means delete
   }))).filter(u => u.toDelete);
 }
-
-function sendDeleteEmail(user: UserToDelete) {
+async function sendDeleteEmail(user: UserToDelete) {
   const email = user.email;
   const firstName = user.firstName;
   const lastName = user.lastName;
@@ -193,7 +199,7 @@ CoachReferee web admin`
   };
   console.log('Sending message: ' + JSON.stringify(mailOptions, null, 2));
   try {
-    mailTransport.sendMail(mailOptions);
+    return await mailTransport.sendMail(mailOptions);
     console.log('New subscription confirmation email sent to:' + email);
   } catch(error) {
     console.error('There was an error while sending the email:', error);

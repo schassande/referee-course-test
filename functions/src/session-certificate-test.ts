@@ -41,6 +41,7 @@ const _session: Session = {
     "courseId": "xDJFqCkds3efXd3wpAEs",
     "lastUpdate": new Date(),
     "dataStatus": "CLEAN",
+    "autoPlay" : false,
     "status": "CORRECTION",
     "creationDate": new Date(),
     "teacherIds": [
