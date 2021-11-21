@@ -710,6 +710,13 @@
           <context context-type="sourcefile">src/app/session/session-edit/session-edit.component.html</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="session-edit.action.copylink" datatype="html">
+        <source>Copy Link</source>
+        <target>Copy Link</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/session/session-edit/session-edit.component.html</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="session-edit.action.start" datatype="html">
         <source>Start</source>
         <target>Start</target>

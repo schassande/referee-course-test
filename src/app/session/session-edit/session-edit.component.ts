@@ -18,7 +18,7 @@ import { UserService } from 'src/app/service/UserService';
 import { createSuper } from 'typescript';
 import { Category } from 'typescript-logging';
 import { UserSelectorComponent } from './../../main/widget/user-selector-component';
-
+import { Clipboard } from '@angular/cdk/clipboard';
 
 const logger = new Category('edit', logSession);
 
@@ -42,6 +42,7 @@ export class SessionEditComponent implements OnInit {
 
   constructor(
     public alertCtrl: AlertController,
+    private clipboard: Clipboard,
     private connectedUserService: ConnectedUserService,
     private courseService: CourseService,
     private dateService: DateService,
@@ -76,7 +77,9 @@ export class SessionEditComponent implements OnInit {
       mergeMap(() => this.loadSession())
     ).subscribe();
   }
-
+  copySession() {
+    this.clipboard.copy(`${window.location.origin}/session/play/${this.session.id}`);
+  }
   loadParams(): Observable<any> {
     return this.route.paramMap.pipe(map((params) => this.sessionId = params.get('id')));
   }

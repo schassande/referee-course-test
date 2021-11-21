@@ -56,6 +56,9 @@
         <ion-button routerLink="/session/play/{{session.id}}" *ngIf="session.status !== 'CLOSED' && session.status !== 'REGISTRATION' && session.id" size="large">
             <ion-icon name="eye-outline"></ion-icon>&nbsp;<span i18n="@@session-edit.action.view">View</span>
         </ion-button>
+        <ion-button *ngIf="(session.status === 'REGISTRATION' || session.status === 'STARTED') && !session.autoPlay" size="large" (click)="copySession()">
+            <ion-icon name="copy-outline"></ion-icon>&nbsp;<span i18n="@@session-edit.action.copylink">Copy link</span>
+        </ion-button>
         <ion-button (click)="start()" *ngIf="(isTeacher || isAdmin) && (session.status === 'REGISTRATION' || session.status === 'STOPPED')" size="large" color="success">
             <ion-icon name="play-outline"></ion-icon>&nbsp;<span i18n="@@session-edit.action.start">Start</span>
         </ion-button>
