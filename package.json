@@ -21,6 +21,7 @@
         "commit-version": "git commit -a -m 'version'",
         "deploy": "firebase deploy --only hosting",
         "deploy-functions": "firebase deploy --only functions",
+        "build-functions": "cd functions && pnpm run lint && pnpm run build",
         "build-deploy": "npm run build && npm run deploy",
         "release-patch": "npm version patch && npm run build-deploy && npm run commit-version",
         "release-minor": "npm version minor && npm run build-deploy && npm run commit-version",
