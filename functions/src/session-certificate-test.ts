@@ -1,7 +1,8 @@
 import { User, Session, SessionParticipant, Course } from './model';
 import * as fs from 'fs';
 
-const path = require('path');
+import path = require('path');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const pdfc = require("pdf-creator-node");
 
 const _learner: User = {
@@ -426,6 +427,7 @@ const _course: Course = {
     "lastUpdate": new Date(),
     "creationDate": new Date()
 };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function adjustDate(d: any): Date {
     if (d === null) {
         return new Date();
@@ -526,13 +528,14 @@ function generateCertificate2(participant: SessionParticipant,
     };
     console.log('data', JSON.stringify(document.data));
     return new Promise<string>((resolve, reject) => {
-        pdfc.create(document, options).then((res:any) => {
+        pdfc.create(document, options).then((res:unknown) => {
             console.log('Document generated: ' + outputFile);
             console.log(res)
             resolve(outputFile);
         })
-        .catch((error:any) => {
+        .catch((error:unknown) => {
             console.error('Document generation: err=' + error);
+            reject(error);
         });
     });
 }

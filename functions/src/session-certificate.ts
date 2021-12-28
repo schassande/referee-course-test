@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { User, Session, SessionParticipant, Course } from './model';
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
@@ -9,8 +10,9 @@ import * as express from 'express';
 import Mail = require('nodemailer/lib/mailer');
 
 
-const moment = require('moment');
-const path = require('path');
+import moment = require('moment');
+import path = require('path');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const pdfc = require("pdf-creator-node");
 const firestore = admin.firestore();
 const diplomaVersion = '1.0.2';
@@ -133,6 +135,7 @@ function generateCertificate(participant: SessionParticipant,
         })
         .catch((error:any) => {
             console.error('Document generation: err=' + error);
+            reject(error);
         });
     });
 }

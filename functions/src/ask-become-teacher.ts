@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { User } from './model';
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';

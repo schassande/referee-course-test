@@ -31,9 +31,9 @@ const mailTransport = nodemailer.createTransport({
  * Configure the email transport using the default SMTP transport and a GMail account.
  * Configure the `gmail.email` and `gmail.password` Google Cloud environment variables.
  */
-export const sendEmailConfirmation = functions.firestore.document('User/{uid}').onCreate(async (snap, context) => {
+export const sendEmailConfirmation = functions.firestore.document('User/{uid}').onCreate(async (snap) => {
   // get user detail
-  const user: any = snap.data();
+  const user: User = snap.data() as User;
   const email = user.email;
   const firstName = user.firstName;
   const lastName = user.lastName;
@@ -41,7 +41,7 @@ export const sendEmailConfirmation = functions.firestore.document('User/{uid}').
 
 
   // Building Email message.
-  const mailOptions: any = {
+  const mailOptions = {
     from: `"CoachReferee" <${gmailEmail}>`,
     to: email,
     bcc: gmailEmail,
@@ -100,13 +100,14 @@ export interface UserToDelete {
 /**
  * Deletes one inactive user from the list.
  */
-function deleteInactiveUser(inactiveUsers: UserToDelete[]): Promise<any>|void {
+function deleteInactiveUser(inactiveUsers: UserToDelete[]): Promise<unknown>|void {
   if (inactiveUsers.length === 0) {
     return;
   }
   const userToDelete: UserToDelete = inactiveUsers.pop() as UserToDelete;
   
   // Delete the user.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return new Promise((resolve: any) => {
     if (!userToDelete.toDelete) {
       resolve();
@@ -161,6 +162,7 @@ async function getInactiveUsers(): Promise<UserToDelete[]> {
     // check it is not teacher or administrator of the application
     const appUsers = await firestore.collection('User').where('accountId', '==', user.uid).get();
     if (appUsers.size === 1) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const appUser: User = appUsers.docs[0].data as any;
       if (appUser.role !== 'LEARNER') {
         console.log('Ignore' + user.uid + '/' + user.email + ' because is a ' + appUser.role);
@@ -186,7 +188,7 @@ async function sendDeleteEmail(user: UserToDelete) {
   const lastName = user.lastName;
 
   // Building Email message.
-  const mailOptions: any = {
+  const mailOptions = {
     from: `"CoachReferee" <${gmailEmail}>`,
     to: email,
     bcc: gmailEmail,
@@ -203,5 +205,6 @@ CoachReferee web admin`
     console.log('New subscription confirmation email sent to:' + email);
   } catch(error) {
     console.error('There was an error while sending the email:', error);
+    return null;
   }
 }
