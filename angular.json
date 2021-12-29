@@ -71,15 +71,12 @@
                             "ngswConfigPath": "ngsw-config.json"
                         },
                         "en": {
-                            "baseHref": "/en",
                             "localize": ["en"]
                         },
                         "fr": {
-                            "baseHref": "/fr",
                             "localize": ["fr"]
                         },
                         "test": {
-                            "baseHref": "/test",
                             "localize": ["en"]
                         },
                         "ci": {
