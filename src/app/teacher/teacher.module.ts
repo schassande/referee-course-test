@@ -6,13 +6,12 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
 @NgModule({
-  declarations: [TeacherListComponent],
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    TeacherRoutingModule
-  ],
-  entryComponents: [TeacherListComponent],
+    declarations: [TeacherListComponent],
+    imports: [
+        CommonModule,
+        FormsModule,
+        IonicModule,
+        TeacherRoutingModule
+    ]
 })
 export class TeacherModule { }

@@ -5,7 +5,7 @@ import { DateService } from './DateService';
 import { map } from 'rxjs/operators';
 import { Observable, forkJoin } from 'rxjs';
 import { AppSettingsService } from './AppSettingsService';
-import { AngularFirestore, Query } from '@angular/fire/firestore';
+import { Firestore, query, Query, QueryConstraint, where } from '@angular/fire/firestore';
 import { AlertController, ToastController } from '@ionic/angular';
 import { ResponseWithData } from './response';
 import { ConnectedUserService } from './ConnectedUserService';
@@ -24,7 +24,7 @@ export class CourseService extends RemotePersistentDataService<Course> {
   private readonly questionIdPrefix: string = 'Q';
 
   constructor(
-      readonly db: AngularFirestore,
+      readonly db: Firestore,
       toastController: ToastController,
       appSettingsService: AppSettingsService,
       private connectedUserService: ConnectedUserService,
@@ -48,8 +48,8 @@ export class CourseService extends RemotePersistentDataService<Course> {
   }
 
   /** Query basis for course limiting access to the course of the region */
-  private getBaseQuery(): Query {
-    return this.getCollectionRef().where('dataRegion', '==', this.connectedUserService.getCurrentUser().dataRegion);
+  public getBaseQuery(): Query<Course> {
+    return query(super.getBaseQuery(), where('dataRegion', '==', this.connectedUserService.getCurrentUser().dataRegion));
   }
 
   public all(options: 'default' | 'server' | 'cache' = 'default'): Observable<ResponseWithData<Course[]>> {
@@ -57,7 +57,7 @@ export class CourseService extends RemotePersistentDataService<Course> {
   }
 
   public findAllowedAlone(options: 'default' | 'server' | 'cache' = 'default'): Observable<ResponseWithData<Course[]>> {
-    return this.query(this.getBaseQuery().where('allowedAlone', '==', true), options);
+    return this.query(query(this.getBaseQuery(), where('allowedAlone', '==', true)), options);
   }
 
   public search(text: string, options: 'default' | 'server' | 'cache' = 'default'): Observable<ResponseWithData<Course[]>> {

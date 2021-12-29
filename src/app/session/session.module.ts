@@ -13,18 +13,13 @@ import { SessionAnalyseComponent } from './session-analyse/session-analyse.compo
 import { SessionLearnerAnalyseComponent } from './session-learner-analyse/session-learner-analyse.component';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, IonicModule, SessionRoutingModule],
-  entryComponents: [
-    SessionEditComponent,
-    SessionListComponent,
-    SessionPlayComponent,
-    SessionAnalyseComponent,
-    SessionLearnerAnalyseComponent],
-  declarations: [
-    SessionEditComponent,
-    SessionListComponent,
-    SessionPlayComponent,
-    SessionAnalyseComponent,
-    SessionLearnerAnalyseComponent]
+    imports: [CommonModule, FormsModule, IonicModule, SessionRoutingModule],
+    declarations: [
+        SessionEditComponent,
+        SessionListComponent,
+        SessionPlayComponent,
+        SessionAnalyseComponent,
+        SessionLearnerAnalyseComponent
+    ]
 })
 export class SessionModule {}

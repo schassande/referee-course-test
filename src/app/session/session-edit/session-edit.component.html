@@ -36,15 +36,23 @@
                 <ion-label i18n="@@session-edit.status">Status:</ion-label>
                 <ion-input type="text" [(ngModel)]="session.status" [readonly]="true" style="text-align: right;"></ion-input>
             </ion-item>
-            <ion-item>
+            <ion-item button="true" id="open-startdate-input">
                 <ion-label i18n="@@session-edit.start-date">Start Date:</ion-label>
-                <ion-input *ngIf="readonly" type="text" [(ngModel)]="startDate" readonly="true" style="text-align: right;"></ion-input>
-                <ion-datetime *ngIf="!readonly" displayFormat="YYYY-MM-DD HH:mm" pickerFormat="YYYY-MM-DD HH:mm" [(ngModel)]="startDate" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" style="text-align: center;"></ion-datetime>
+                <ion-text slot="end">{{ dateService.date2string(this.session.startDate) }}&nbsp;{{ dateService.time2string(this.session.startDate) }}</ion-text>
+                <ion-popover trigger="open-startdate-input" show-backdrop="false" *ngIf="!readonly">
+                    <ng-template>
+                        <ion-datetime #popoverStartDatetime hour-cycle="h23" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" presentation="date-time" (ionChange)="startDate = popoverStartDatetime.value"></ion-datetime>
+                    </ng-template>
+                </ion-popover>
             </ion-item>
-            <ion-item>
+            <ion-item button="true" id="open-expiredate-input" *ngIf="session.status !== 'REGISTRATION'">
                 <ion-label i18n="@@session-edit.expire-date">Expire Date:</ion-label>
-                <ion-input *ngIf="readonly && session.status !== 'REGISTRATION'" type="text" [(ngModel)]="expireDate" readonly="true" style="text-align: right;"></ion-input>
-                <ion-datetime *ngIf="!readonly && session.status !== 'REGISTRATION'" displayFormat="YYYY-MM-DD HH:mm" pickerFormat="YYYY-MM-DD HH:mm" [(ngModel)]="expireDate" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" style="text-align: center;"></ion-datetime>
+                <ion-text slot="end">{{ dateService.date2string(this.session.expireDate) }}&nbsp;{{ dateService.time2string(this.session.expireDate) }}</ion-text>
+                <ion-popover trigger="open-expiredate-input" show-backdrop="false" *ngIf="!readonly">
+                    <ng-template>
+                        <ion-datetime #popoverExpireDatetime hour-cycle="h23" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" presentation="date-time" (ionChange)="expireDate = popoverExpireDatetime.value"></ion-datetime>
+                    </ng-template>
+                </ion-popover>
             </ion-item>
             <ion-item *ngIf="session.status == 'REGISTRATION'">
                 <ion-label i18n="@@session-edit.force-no-random">No Random:</ion-label>

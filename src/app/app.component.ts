@@ -40,7 +40,7 @@ export class AppComponent implements OnInit {
   }
 
   public reloadPage() {
-    window.location.reload(true);
+    window.location.reload();
   }
 
   public logout() {

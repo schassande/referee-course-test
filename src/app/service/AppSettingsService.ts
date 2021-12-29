@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
-import { map, flatMap } from 'rxjs/operators';
+import { map, mergeMap } from 'rxjs/operators';
 import { LocalAppSettings } from './../model/settings';
-import { Storage } from '@ionic/storage';
+import { Storage } from '@ionic/storage-angular';
 import { Injectable } from '@angular/core';
 import { LocalSingletonDataService } from './LocalSingletonDataService';
 import { environment } from '../../environments/environment';
@@ -52,7 +52,7 @@ export class AppSettingsService extends LocalSingletonDataService<LocalAppSettin
     }
     public setLastUserObs(email: string, password: string): Observable<LocalAppSettings> {
         return this.get().pipe(
-            flatMap((setting: LocalAppSettings) => {
+            mergeMap((setting: LocalAppSettings) => {
                 setting.lastUserEmail = email;
                 setting.lastUserPassword = password;
                 this.settings = setting;

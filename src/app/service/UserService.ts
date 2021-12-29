@@ -1,9 +1,8 @@
 import { DataRegion } from './../model/model';
-import { AngularFireFunctions } from '@angular/fire/functions';
+import { Functions, httpsCallable } from '@angular/fire/functions';
 import { LocalAppSettings } from './../model/settings';
 import { AppSettingsService } from './AppSettingsService';
 import { AlertController, ToastController, LoadingController, NavController } from '@ionic/angular';
-import { UserCredential } from '@firebase/auth-types';
 
 import { ResponseWithData, Response } from './response';
 import { Observable, of, from, Subject, forkJoin } from 'rxjs';
@@ -12,8 +11,13 @@ import { Injectable } from '@angular/core';
 import { User, AuthProvider } from '../model/model';
 import { RemotePersistentDataService } from './RemotePersistentDataService';
 import { mergeMap, map, catchError } from 'rxjs/operators';
-import { AngularFirestore, Query } from '@angular/fire/firestore';
-import { AngularFireAuth } from '@angular/fire/auth';
+import { Firestore, query, Query, where } from '@angular/fire/firestore';
+import { Auth, 
+    createUserWithEmailAndPassword,
+    sendPasswordResetEmail,
+    signInWithEmailAndPassword,
+    signInWithPopup,
+    UserCredential } from '@angular/fire/auth';
 import { ToolService } from './ToolService';
 import { PersistentDataFilter } from './PersistentDataFonctions';
 
@@ -21,17 +25,15 @@ import { PersistentDataFilter } from './PersistentDataFonctions';
 export class UserService  extends RemotePersistentDataService<User> {
 
     constructor(
-        readonly db: AngularFirestore,
+        readonly db: Firestore,
         toastController: ToastController,
         private connectedUserService: ConnectedUserService,
         appSettingsService: AppSettingsService,
         private alertCtrl: AlertController,
-        private functions: AngularFireFunctions,
+        private functions: Functions,
         private loadingController: LoadingController,
         private navController: NavController,
-        private auth: AngularFireAuth,
-        private angularFireFunctions: AngularFireFunctions,
-        private angularFireAuth: AngularFireAuth,
+        private auth: Auth,
         private toolService: ToolService
     ) {
         super(appSettingsService, db, toastController);
@@ -62,7 +64,7 @@ export class UserService  extends RemotePersistentDataService<User> {
             if (cred !== null  && (user.authProvider === 'FACEBOOK' || user.authProvider === 'GOOGLE')) {
                 obs = of(cred);
             } else {
-                obs = from(this.auth.createUserWithEmailAndPassword(user.email, password));
+                obs = from(createUserWithEmailAndPassword(this.auth, user.email, password));
             }
             return obs.pipe(
                 mergeMap((userCred: UserCredential) => {
@@ -119,7 +121,7 @@ export class UserService  extends RemotePersistentDataService<User> {
                     return of (res);
                 } else {
                     // then delete the user from firestore user auth database
-                    return from(this.angularFireAuth.currentUser).pipe(
+                    return of(this.auth.currentUser).pipe(
                         mergeMap((user) => from(user.delete())),
                         map(() => {
                             return {error: null};
@@ -143,7 +145,7 @@ export class UserService  extends RemotePersistentDataService<User> {
     public login(email: string, password: string): Observable<ResponseWithData<User>> {
         this.logger.debug(() => 'UserService.login(' + email + ', ' + password + ')');
         let credential = null;
-        return from(this.auth.signInWithEmailAndPassword(email, password)).pipe(
+        return from(signInWithEmailAndPassword(this.auth, email, password)).pipe(
             mergeMap( (cred: UserCredential) => {
                 credential = cred;
                 this.logger.debug(() => 'login: cred=' + JSON.stringify(cred, null, 2));
@@ -246,7 +248,7 @@ export class UserService  extends RemotePersistentDataService<User> {
 
     public resetPassword(email, sub: Subject<ResponseWithData<User>> = null) {
         this.logger.debug(() => 'Reset password of the account ' + email);
-        this.auth.sendPasswordResetEmail(email).then(() => {
+        sendPasswordResetEmail(this.auth, email).then(() => {
             this.alertCtrl.create({message: 'An email has been sent to \'' + email + '\' to reset the password.'})
                 .then((alert) => alert.present());
             if (sub) {
@@ -259,7 +261,7 @@ export class UserService  extends RemotePersistentDataService<User> {
     public loginWithEmailNPassword(email: string,
                                    password: string,
                                    savePassword: boolean): Observable<ResponseWithData<User>> {
-        this.logger.debug(() => 'loginWithEmailNPassword(' + email + ', ' + password + ', ' + savePassword + ')');
+        this.logger.debug(() => 'loginWithEmailNPassword(' + email + ', ' + (password?'********':password) + ', ' + savePassword + ')');
         return this.login(email, password).pipe(
             mergeMap ( (ruser) => {
                 if (ruser.error) {
@@ -314,7 +316,7 @@ export class UserService  extends RemotePersistentDataService<User> {
     }
 
     public getByEmail(email: string): Observable<ResponseWithData<User>> {
-        return this.queryOne(this.getCollectionRef().where('email', '==', email), 'default').pipe(
+        return this.queryOne(query(this.getCollectionRef(), where('email', '==', email))).pipe(
             map((ruser => {
                 this.logger.debug(() => 'UserService.getByEmail(' + email + ')=' + JSON.stringify(ruser.data, null, 2));
                 return ruser;
@@ -325,12 +327,12 @@ export class UserService  extends RemotePersistentDataService<User> {
         );
     }
     public findByShortName(shortName: string): Observable<ResponseWithData<User[]>> {
-        return this.query(this.getCollectionRef().where('shortName', '==', shortName), 'default');
+        return this.query(query(this.getCollectionRef(), where('shortName', '==', shortName)));
     }
 
     public authWith(authProvider: any, authName: AuthProvider): Observable<ResponseWithData<User>> {
         let credential = null;
-        return from(this.angularFireAuth.signInWithPopup(authProvider)).pipe(
+        return from(signInWithPopup(this.auth, authProvider)).pipe(
             mergeMap( (cred: UserCredential) => {
                 credential = cred;
                 this.logger.debug(() => 'authWith: cred=' + JSON.stringify(cred, null, 2));
@@ -397,16 +399,16 @@ export class UserService  extends RemotePersistentDataService<User> {
         } as User;
     }
     public sendNewAccountToAdmin(userId: string): Observable<any> {
-        return this.angularFireFunctions.httpsCallable('sendNewAccountToAdmin')({userId});
+        return from(httpsCallable(this.functions, 'sendNewAccountToAdmin')({userId}));
     }
     public sendNewAccountToUser(userId: string): Observable<any> {
-        return this.angularFireFunctions.httpsCallable('sendNewAccountToUser')({userId});
+        return from(httpsCallable(this.functions, 'sendNewAccountToUser')({userId}));
     }
     public sendAccountValidated(userId: string): Observable<any> {
-        return this.angularFireFunctions.httpsCallable('sendAccountValidated')({userId});
+        return from(httpsCallable(this.functions, 'sendAccountValidated')({userId}));
     }
     public sendAccountNotValidated(userId: string): Observable<any> {
-        return this.angularFireFunctions.httpsCallable('sendAccountNotValidated')({userId});
+        return from(httpsCallable(this.functions, 'sendAccountNotValidated')({userId}));
     }
 
     public sortUsers(users: User[]): User[] {
@@ -424,13 +426,9 @@ export class UserService  extends RemotePersistentDataService<User> {
 
     public findTeachers(text: string, region: DataRegion, speakingLanguage: string = null): Observable<ResponseWithData<User[]>> {
         return forkJoin([
-            this.query(this.getCollectionRef()
-                .where('dataRegion', '==', region)
-                .where('role', '==', 'ADMIN'), 'default'),
-            this.query(this.getCollectionRef()
-                .where('dataRegion', '==', region)
-                .where('role', '==', 'TEACHER'), 'default')]
-        ).pipe(
+            this.query(query(this.getBaseQuery(), where('dataRegion', '==', region), where('role', '==', 'ADMIN'))),
+            this.query(query(this.getBaseQuery(), where('dataRegion', '==', region), where('role', '==', 'TEACHER')))])
+        .pipe(
             map((list) => this.mergeObservables(list)),
             map(ruser => {
                 const str = text !== null && text && text.trim().length > 0 ? text.trim() : null;
@@ -459,28 +457,34 @@ export class UserService  extends RemotePersistentDataService<User> {
     }
     public searchUsers(criteria: UserSearchCriteria):
             Observable<ResponseWithData<User[]>> {
-        let q: Query = this.getCollectionRef();
+        let q: Query = this.getBaseQuery();
         if (this.toolService.isValidString(criteria.region)) {
             console.log('filter by region ' + criteria.region);
-            q = q.where('region', '==', criteria.region);
+            q = query(q, where('region', '==', criteria.region));
         }
         if (this.toolService.isValidString(criteria.country)) {
             console.log('filter by country ' + criteria.country);
-            q = q.where('country', '==', criteria.country);
+            q = query(q, where('country', '==', criteria.country));
         }
         return super.filter(this.query(q, 'default'), this.getFilterByText(criteria.text));
     }
 
     public notifyNewTeacher(userId: string): Observable<Response> {
         this.logger.debug(() => 'notifyNewTeacher(userId=' + userId + ')');
-        const callable = this.functions.httpsCallable('notifyNewTeacher');
-        return callable({ userId });
+        const callable = httpsCallable(this.functions, 'notifyNewTeacher');
+        return from(callable({ userId })
+            .then(() => { return {}; } )
+            .catch(err => { return { error: err}; })
+        );
     }
 
     public askToBecomeTeacher(learnerId: string, teacherId: string): Observable<Response> {
         this.logger.debug(() => 'askToBecomeTeacher(learnerId=' + learnerId + ', teacherId=' + teacherId + ')');
-        const callable = this.functions.httpsCallable('askToBecomeTeacher');
-        return callable({ learnerId, teacherId });
+        const callable = httpsCallable(this.functions, 'askToBecomeTeacher');
+        return from(callable({ learnerId, teacherId })
+            .then(() => { return {}; } )
+            .catch(err => { return { error: err}; })
+        );
     }
     public getFilterByText(text: string): PersistentDataFilter<User> {
         const validText = text && text !== null  && text.trim().length > 0 ? text.trim() : null;

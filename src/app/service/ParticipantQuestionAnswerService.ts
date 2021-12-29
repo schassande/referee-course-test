@@ -2,7 +2,7 @@ import { ResponseWithData } from './response';
 import { Observable } from 'rxjs';
 import { DateService } from './DateService';
 import { AppSettingsService } from './AppSettingsService';
-import { AngularFirestore } from '@angular/fire/firestore';
+import { Firestore, query, where } from '@angular/fire/firestore';
 import { AlertController, ToastController } from '@ionic/angular';
 import { ConnectedUserService } from './ConnectedUserService';
 import { Injectable } from '@angular/core';
@@ -15,7 +15,7 @@ import { ParticipantQuestionAnswer } from './../model/model';
 export class ParticipantQuestionAnswerService extends RemotePersistentDataService<ParticipantQuestionAnswer> {
 
   constructor(
-      readonly db: AngularFirestore,
+      readonly db: Firestore,
       private dateService: DateService,
       toastController: ToastController,
       appSettingsService: AppSettingsService,
@@ -40,18 +40,18 @@ export class ParticipantQuestionAnswerService extends RemotePersistentDataServic
   }
 
   public findMyAnwsers(sessionId: string, learnerId: string): Observable<ResponseWithData<ParticipantQuestionAnswer[]>> {
-    return this.query(this.getCollectionRef()
-      .where('dataRegion', '==', this.connectedUserService.getCurrentUser().dataRegion)
-      .where('sessionId', '==', sessionId)
-      .where('learnerId', '==', learnerId),
+    return this.query(query(this.getCollectionRef(),
+      where('dataRegion', '==', this.connectedUserService.getCurrentUser().dataRegion),
+      where('sessionId', '==', sessionId),
+      where('learnerId', '==', learnerId)),
       'default');
   }
   public getAnwser(sessionId: string, learnerId: string, questionId: string): Observable<ResponseWithData<ParticipantQuestionAnswer[]>> {
-    return this.query(this.getCollectionRef()
-      .where('dataRegion', '==', this.connectedUserService.getCurrentUser().dataRegion)
-      .where('sessionId', '==', sessionId)
-      .where('questionId', '==', questionId)
-      .where('learnerId', '==', learnerId),
+    return this.query(query(this.getCollectionRef(),
+      where('dataRegion', '==', this.connectedUserService.getCurrentUser().dataRegion),
+      where('sessionId', '==', sessionId),
+      where('questionId', '==', questionId),
+      where('learnerId', '==', learnerId)),
       'default');
   }
 }

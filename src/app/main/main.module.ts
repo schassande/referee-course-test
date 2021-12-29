@@ -28,18 +28,18 @@ import { UserSelectorComponent } from './widget/user-selector-component';
 
 
 @NgModule({
-  declarations: [
-    CameraIconComponent,
-    HomeComponent, HelpWidgetComponent,
-    SettingsPage, SharingComponent,
-    UserLoginComponent, UserEditPage, UserSelectorComponent],
-  imports: [
-    CommonModule,
-    FormsModule,
-    MainRoutingModule,
-    IonicModule,
-    MarkdownModule.forRoot({ loader: HttpClient }),
-  ],
-  entryComponents: [HomeComponent, UserSelectorComponent]
+    declarations: [
+        CameraIconComponent,
+        HomeComponent, HelpWidgetComponent,
+        SettingsPage, SharingComponent,
+        UserLoginComponent, UserEditPage, UserSelectorComponent
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        MainRoutingModule,
+        IonicModule,
+        MarkdownModule.forRoot({ loader: HttpClient }),
+    ]
 })
 export class MainModule {}

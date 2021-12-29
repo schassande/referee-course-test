@@ -1,12 +1,8 @@
 import { Category } from 'typescript-logging';
-import { AngularFirestore } from '@angular/fire/firestore';
 import { AppSettingsService } from 'src/app/service/AppSettingsService';
 import { LocalAppSettings } from 'src/app/model/settings';
-import { map, flatMap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
-import { ResponseWithData } from 'src/app/service/response';
-import { User } from 'src/app/model/model';
-import { Subject, from } from 'rxjs';
 import { NavController, LoadingController, AlertController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
 import { UserService } from 'src/app/service/UserService';

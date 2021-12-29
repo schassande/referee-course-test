@@ -2,8 +2,6 @@ import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
-import { registerLocaleData } from '@angular/common';
-import localeFr from '@angular/common/locales/fr';
 
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
@@ -12,13 +10,14 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
-import { AngularFireModule } from '@angular/fire';
-import { AngularFirestoreModule } from '@angular/fire/firestore';
-import { AngularFireAuthModule } from '@angular/fire/auth';
-import { AngularFireStorageModule } from '@angular/fire/storage';
-import { AngularFireFunctionsModule, REGION, ORIGIN } from '@angular/fire/functions';
-import { AngularFireMessagingModule } from '@angular/fire/messaging';
-import { IonicStorageModule } from '@ionic/storage';
+import { provideFirebaseApp, getApp, initializeApp } from '@angular/fire/app';
+import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { getAuth, provideAuth } from '@angular/fire/auth';
+import { getStorage, provideStorage } from '@angular/fire/storage';
+import { getFunctions, provideFunctions } from '@angular/fire/functions';
+import { getMessaging, provideMessaging } from '@angular/fire/messaging';
+import { Drivers } from '@ionic/storage';
+import { IonicStorageModule } from '@ionic/storage-angular';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -46,46 +45,43 @@ import { ToolService } from './service/ToolService';
 export class CustomHammerConfig extends HammerGestureConfig {}
 
 @NgModule({
-  declarations: [AppComponent],
-  entryComponents: [],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    FormsModule,
-    IonicModule.forRoot(),
-    ToastrModule.forRoot(),
-    AppRoutingModule,
-    AngularFireModule.initializeApp(environment.firebaseConfig),
-    AngularFirestoreModule,
-    AngularFireAuthModule,
-    AngularFireFunctionsModule,
-    AngularFireStorageModule,
-    AngularFireMessagingModule,
-    IonicStorageModule.forRoot({ name: '__mydb', driverOrder: ['indexeddb', 'sqlite', 'websql'] }),
-    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
-    MainModule,
-    TeacherModule,
-    SessionModule,
-    CourseModule
-  ],
-  providers: [
-    StatusBar,
-    SplashScreen,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    // { provide: REGION, useValue: 'us-central1' },
-    // { provide: ORIGIN, useValue: 'http://localhost:5005' },
-    AppSettingsService,
-    ConnectedUserService,
-    CourseService,
-    DateService,
-    NtaService,
-    ParticipantQuestionAnswerService,
-    SessionService,
-    ToastrService,
-    ToolService,
-    TranslationService,
-    UserService,
-  ],
-  bootstrap: [AppComponent]
+    declarations: [AppComponent],
+    imports: [
+        BrowserModule,
+        BrowserAnimationsModule,
+        FormsModule,
+        IonicModule.forRoot(),
+        ToastrModule.forRoot(),
+        AppRoutingModule,
+        provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
+        provideFirestore(() => getFirestore()),
+        provideAuth(() => getAuth()),
+        provideStorage(() => getStorage()),
+        provideFunctions(() => getFunctions()),
+        provideMessaging(() => getMessaging()),
+        IonicStorageModule.forRoot({ name: '__mydb', driverOrder: [Drivers.IndexedDB, Drivers.LocalStorage] }),
+        ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
+        MainModule,
+        TeacherModule,
+        SessionModule,
+        CourseModule
+    ],
+    providers: [
+        StatusBar,
+        SplashScreen,
+        { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+        AppSettingsService,
+        ConnectedUserService,
+        CourseService,
+        DateService,
+        NtaService,
+        ParticipantQuestionAnswerService,
+        SessionService,
+        ToastrService,
+        ToolService,
+        TranslationService,
+        UserService,
+    ],
+    bootstrap: [AppComponent]
 })
 export class AppModule {}

@@ -134,13 +134,13 @@ export class UserEditPage implements OnInit {
       this.saving = true;
       this.userService.save(this.user).pipe(
         map((response: ResponseWithData<User>) => {
-          if (response.error) {
-            this.saving = false;
-            this.loadingCtrl.dismiss();
+          this.saving = false;
+          this.loadingCtrl.dismiss();
+        if (response.error) {
             this.error = response.error.error;
             if (response.error.code === 'auth/email-already-in-use') {
-              logger.debug(() => 'The email addresse is already used.');
-              this.toastController.create({ message: 'The email addresse is already used: ' + this.user.email, duration: 10000})
+              logger.debug(() => 'The email address is already used.');
+              this.toastController.create({ message: 'The email address is already used: ' + this.user.email, duration: 10000})
                 .then((toast) => toast.present());
             } else {
               logger.warn(() => 'Error' + response.error);
@@ -155,7 +155,6 @@ export class UserEditPage implements OnInit {
             } else {
               this.navController.navigateRoot('/home');
             }
-            this.saving = false;
           }
         })
       ).subscribe();

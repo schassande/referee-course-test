@@ -45,7 +45,7 @@ export class SessionEditComponent implements OnInit {
     private clipboard: Clipboard,
     private connectedUserService: ConnectedUserService,
     private courseService: CourseService,
-    private dateService: DateService,
+    public dateService: DateService,
     private modalController: ModalController,
     private navController: NavController,
     private participantQuestionAnswerService: ParticipantQuestionAnswerService,
@@ -57,13 +57,13 @@ export class SessionEditComponent implements OnInit {
   }
 
   get startDate(): string {
-    return this.dateService.datetime2string(this.session.startDate);
+    return this.session.startDate.toISOString();
   }
   set startDate(dateStr: string) {
     this.session.startDate = moment(dateStr).toDate();
   }
   get expireDate(): string {
-    return this.dateService.datetime2string(this.session.expireDate);
+    return this.session.expireDate.toISOString();
   }
   set expireDate(dateStr: string) {
     this.session.expireDate = moment(dateStr).toDate();

@@ -1,11 +1,11 @@
 <ion-app>
-    <ion-menu menuId="main" side="end" disabled="false" contentId="ctt">
+    <ion-menu menuId="main" side="end" disabled="false" content-id="ctt">
         <ion-header>
             <ion-toolbar>
                 <ion-title>Menu</ion-title>
             </ion-toolbar>
         </ion-header>
-        <ion-content id="ctt">
+        <ion-content>
             <ion-list>
                 <ion-item *ngIf="this.connectedUserService.isConnected()">
                     <ion-icon name="home-outline" scope="start"></ion-icon>
@@ -38,5 +38,6 @@
             </ion-list>
         </ion-content>
     </ion-menu>
+    <div id="ctt"></div>
     <ion-router-outlet id="main-content"></ion-router-outlet>
 </ion-app>

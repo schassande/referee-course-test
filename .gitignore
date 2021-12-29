@@ -1,3 +1,4 @@
+/.angular/cache
 # Specifies intentionally untracked files to ignore when using Git
 # http://git-scm.com/docs/gitignore
 
@@ -25,7 +26,7 @@ npm-debug.log*
 /.vscode
 /coverage
 /dist
-/node_modules
+/node_modules*
 /platforms
 /plugins
 /www

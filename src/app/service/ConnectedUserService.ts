@@ -3,7 +3,6 @@ import { Category } from 'typescript-logging';
 import { AppSettingsService } from './AppSettingsService';
 import { Injectable, EventEmitter, Type } from '@angular/core';
 import { User } from './../model/model';
-import * as firebase from 'firebase/app';
 import { UserCredential } from '@firebase/auth-types';
 
 const logger = new Category('connected', logUser);

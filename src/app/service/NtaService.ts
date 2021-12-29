@@ -1,5 +1,5 @@
 import { AppSettingsService } from './AppSettingsService';
-import { AngularFirestore } from '@angular/fire/firestore';
+import { Firestore } from '@angular/fire/firestore';
 import { AlertController, ToastController } from '@ionic/angular';
 import { ConnectedUserService } from './ConnectedUserService';
 import { Injectable } from '@angular/core';
@@ -12,7 +12,7 @@ import { Nta } from './../model/model';
 export class NtaService extends RemotePersistentDataService<Nta> {
 
   constructor(
-      readonly db: AngularFirestore,
+      readonly db: Firestore,
       toastController: ToastController,
       appSettingsService: AppSettingsService,
       private connectedUserService: ConnectedUserService,

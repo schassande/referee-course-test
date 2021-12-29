@@ -12,14 +12,13 @@ import { MainModule } from '../main/main.module';
 
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    CourseRoutingModule,
-    MainModule
-  ],
-  declarations: [CourseEditComponent, CourseListComponent, CourseTranslationComponent],
-  entryComponents: [CourseEditComponent, CourseListComponent, CourseTranslationComponent]
+    imports: [
+        CommonModule,
+        FormsModule,
+        IonicModule,
+        CourseRoutingModule,
+        MainModule
+    ],
+    declarations: [CourseEditComponent, CourseListComponent, CourseTranslationComponent]
 })
 export class CourseModule {}

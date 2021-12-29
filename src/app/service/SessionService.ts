@@ -1,15 +1,15 @@
 import { UserService } from 'src/app/service/UserService';
-import { map, mergeMap } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
 import { ParticipantQuestionAnswerService } from 'src/app/service/ParticipantQuestionAnswerService';
 import { DurationUnit, Course, ParticipantQuestionAnswer, Question, User, QuestionSerie } from 'src/app/model/model';
 import { ParticipantResult, SessionParticipant, TestParticipantResult, DataRegion } from './../model/model';
 import { DateService } from 'src/app/service/DateService';
 import { ResponseWithData } from 'src/app/service/response';
-import { Observable, of, forkJoin } from 'rxjs';
+import { Observable, of, forkJoin, from } from 'rxjs';
 import { AppSettingsService } from './AppSettingsService';
-import { AngularFirestore, Query } from '@angular/fire/firestore';
-import { AngularFireFunctions } from '@angular/fire/functions';
-import { AlertController, ToastController } from '@ionic/angular';
+import { Firestore, query, Query, where } from '@angular/fire/firestore';
+import { Functions, httpsCallable } from '@angular/fire/functions';
+import { ToastController } from '@ionic/angular';
 import { ConnectedUserService } from './ConnectedUserService';
 import { Injectable } from '@angular/core';
 import { RemotePersistentDataService } from './RemotePersistentDataService';
@@ -24,10 +24,10 @@ import { SessionStatus } from 'functions/src/model';
 export class SessionService extends RemotePersistentDataService<Session> {
 
   constructor(
-      readonly db: AngularFirestore,
+      readonly db: Firestore,
       toastController: ToastController,
       appSettingsService: AppSettingsService,
-      private functions: AngularFireFunctions,
+      private functions: Functions,
       private connectedUserService: ConnectedUserService,
       private dateService: DateService,
       private participantQuestionAnswerService: ParticipantQuestionAnswerService,
@@ -52,12 +52,10 @@ export class SessionService extends RemotePersistentDataService<Session> {
   }
 
   /** Query basis for course limiting access to the session of the region */
-  private getBaseQuery(): Query {
-    return this.getCollectionRef().where('dataRegion', '==', this.connectedUserService.getCurrentUser().dataRegion);
-  }
-
-  public all(options: 'default' | 'server' | 'cache' = 'default'): Observable<ResponseWithData<Session[]>> {
-    return this.query(this.getBaseQuery(), options);
+  public getBaseQuery(): Query<Session> {
+    return query(
+      super.getBaseQuery(), 
+      where('dataRegion', '==', this.connectedUserService.getCurrentUser().dataRegion));
   }
 
   public search(text: string,
@@ -65,24 +63,24 @@ export class SessionService extends RemotePersistentDataService<Session> {
                 year: number,
                 status: SessionStatus,
                 options: 'default' | 'server' | 'cache' = 'default'): Observable<ResponseWithData<Session[]>> {
-    let q = this.getBaseQuery();
+    let q: Query<Session> = this.getBaseQuery();
     if (year) {
       const begin = moment(year + '-01-01 00:00:00').toDate();
       const end = moment((year+1) + '-01-01 00:00:00').toDate();
       // console.log('filter by: year \n\t' + begin + '\n\t' + end);
-      q = q.where('startDate', '>=', begin);
-      q = q.where('startDate', '<', end);
+      q = query(q, where('startDate', '>=', begin), where('startDate', '<', end));
     }
-    console.log('filter by: autoPlay', includeIndividual);
-    q = q.where('autoPlay', '==', includeIndividual);
+    // console.log('filter by: autoPlay', includeIndividual);
+    q = query(q, where('autoPlay', '==', includeIndividual));
     if (status) {
       // console.log('filter by: status', status);
-      q = q.where('status', '==', status);
+      q = query(q, where('status', '==', status));
     }
     const str = text !== null && text && text.trim().length > 0 ? text.trim() : null;
     if (str) {
       // console.log('filter by: text', str);
     }
+    
     return super.filter(this.query(q, options),
       (session: Session) => !str || this.stringContains(str, session.keyCode));
   }
@@ -95,12 +93,12 @@ export class SessionService extends RemotePersistentDataService<Session> {
   }
 
   public findTeacherSessions(): Observable<ResponseWithData<Session[]>> {
-    return this.query(this.getBaseQuery()
-      .where('teacherIds', 'array-contains', this.connectedUserService.getCurrentUser().id), 'default');
+    return this.query(query(this.getBaseQuery(),
+      where('teacherIds', 'array-contains', this.connectedUserService.getCurrentUser().id)));
   }
   public findLearnerSessions(): Observable<ResponseWithData<Session[]>> {
-    return this.query(this.getBaseQuery()
-      .where('participantIds', 'array-contains', this.connectedUserService.getCurrentUser().id), 'default');
+    return this.query(query(this.getBaseQuery(),
+      where('participantIds', 'array-contains', this.connectedUserService.getCurrentUser().id)));
   }
 
   public computeLearnerScores(session: Session, course: Course): Observable<any> {
@@ -273,7 +271,7 @@ export class SessionService extends RemotePersistentDataService<Session> {
   }
 
   public getByKeyCode(keyCode: string): Observable<ResponseWithData<Session>> {
-    return this.queryOne(this.getBaseQuery().where('keyCode', '==', keyCode), 'default');
+    return this.queryOne(query(this.getBaseQuery(), where('keyCode', '==', keyCode)));
   }
 
   public newSession(course: Course, teacher: User, dataRegion: DataRegion): Session {
@@ -425,8 +423,11 @@ export class SessionService extends RemotePersistentDataService<Session> {
       return of({error: { error: 'Learner did found or failed', errorCode: 2}});
     }
     this.logger.debug(() => 'sendCertificate(sessionId=' + session.id + ', learnerId=' + learnerId + ')');
-    const callable = this.functions.httpsCallable('sendCertificate');
-    return callable({ sessionId: session.id, learnerId });
+    const callable = httpsCallable<any,any>(this.functions, 'sendCertificate');
+    return from(callable({ sessionId: session.id, learnerId })
+      .then(() => { return {}; } )
+      .catch(err => { return { error: err}; })
+    );
   }
 
   public sendCertificateAll(session: Session): Observable<any> {

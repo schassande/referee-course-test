@@ -61,7 +61,7 @@ export class SessionListComponent implements OnInit {
           session['isTeacher'] = session.teacherIds.indexOf(this.currentUser.id) >= 0;
           return session;
         });
-      console.log('Session loaded.')
+      // console.log('Session loaded.')
     });
   }
 
@@ -82,7 +82,7 @@ export class SessionListComponent implements OnInit {
           text: 'Delete',
           handler: () => {
             this.sessionService.delete(session.id).subscribe(() => {
-              console.log('session deleted');
+              // console.log('session deleted');
               this.searchSessions();
             });
           }
