@@ -2,22 +2,13 @@
 import { User } from './model';
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import * as nodemailer from 'nodemailer';
 import * as cors from 'cors';
 import * as express from 'express';
-import Mail = require('nodemailer/lib/mailer');
+import * as mailer          from './mailer';
 
 const firestore = admin.firestore();
 
 const gmailEmail = functions.config().gmail.email;
-const gmailPassword = functions.config().gmail.password;
-const mailTransport = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: gmailEmail,
-    pass: gmailPassword,
-  },
-});
 
 const app = express();
 // Automatically allow cross-origin requests
@@ -55,18 +46,19 @@ app.post('/', async (req:any, res:any) => {
     }
     try {
         const email = await buildEmail(teacher);
-        const info: nodemailer.SentMessageInfo = await mailTransport.sendMail(email);
-        console.log('Certificate email sent to ' + teacher.email + ':' + JSON.stringify(info, null, 2));
-        res.send({ error: null, data: info});
+        return mailer.sendMail(email, res);
+        // const info: nodemailer.SentMessageInfo = await mailTransport.sendMail(email);
+        // console.log('Certificate email sent to ' + teacher.email + ':' + JSON.stringify(info, null, 2));
+        // res.send({ error: null, data: info});
     } catch(error) {
       console.error('There was an error while sending the email:', error);
       res.send({ error: { code: 10, error: 'Problem when sending the email'}, data: null});
     }
 });
 
-function buildEmail(teacher: User): Mail.Options {
+function buildEmail(teacher: User) {
   // Building Email message.
-  const mailOptions: Mail.Options = {
+  const mailOptions = {
     from: `"CoachReferee" <${gmailEmail}>`,
     to: teacher.email,
     bcc: gmailEmail,

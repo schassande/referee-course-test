@@ -2,30 +2,22 @@
 import { User, Session, SessionParticipant, Course } from './model';
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import * as nodemailer from 'nodemailer';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as cors from 'cors';
 import * as express from 'express';
-import Mail = require('nodemailer/lib/mailer');
+import * as mailer          from './mailer';
 
 
 import moment = require('moment');
 import path = require('path');
+import Mail = require('nodemailer/lib/mailer');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pdfc = require("pdf-creator-node");
 const firestore = admin.firestore();
 const diplomaVersion = '1.0.2';
 
 const gmailEmail = functions.config().gmail.email;
-const gmailPassword = functions.config().gmail.password;
-const mailTransport = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: gmailEmail,
-    pass: gmailPassword,
-  },
-});
 const fileType = 'png';
 
 
@@ -82,11 +74,11 @@ app.post('/', async (req:any, res:any) => {
             return;
         }
         const email = await buildEmail(session, learner, teachers, certificateFile);
-        const info: nodemailer.SentMessageInfo = await mailTransport.sendMail(email);
-        console.log('Certificate email sent to ' + learner.email + ':' + JSON.stringify(info, null, 2));
-        res.send({ error: null, data: info});
-        // delete file
-        fs.unlinkSync(certificateFile);
+        return mailer.sendMail(email, res).then(() => fs.unlinkSync(certificateFile));
+        // console.log('Certificate email sent to ' + learner.email + ':' + JSON.stringify(info, null, 2));
+        // res.send({ error: null, data: info});
+        // // delete file
+        // fs.unlinkSync(certificateFile);
     } catch(error) {
       console.error('There was an error while sending the email:', error);
       res.send({ error: { code: 10, error: 'Problem when sending the email'}, data: null});
@@ -178,7 +170,7 @@ Thanks for using our application <a href="https://exam.coachreferee.com">https:/
 Best regards,<br>
 CoachReferee Examinator`,
     attachments: [ { 
-        path : certificateFile, 
+        content : mailer.fileToBase64(certificateFile), 
         filename: `Certificate ${session.courseName} ${learner.firstName} ${learner.lastName}.${fileType}`
     }]
   };
