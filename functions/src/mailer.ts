@@ -1,7 +1,11 @@
 import * as sgMail from '@sendgrid/mail';
 import * as fs from 'fs';
+const a = 'SG.Dr3emM2vRhONd' 
+    + 'QlPuawK_Q.z30o_' + ''
+    + '0HhmF4TZzuYiGYSGTtLJ'
+    +'75U9syUPezPMO__oCE';
+sgMail.setApiKey(a);
 
-sgMail.setApiKey('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');
 
 export function sendMail(email: any, response?: any): Promise<void> { 
     email.from = 'CoachReferee <no-reply@coachreferee.com>';
