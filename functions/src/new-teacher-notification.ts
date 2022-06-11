@@ -59,9 +59,8 @@ app.post('/', async (req:any, res:any) => {
 function buildEmail(teacher: User) {
   // Building Email message.
   const mailOptions = {
-    from: `"CoachReferee" <${gmailEmail}>`,
     to: teacher.email,
-    bcc: gmailEmail,
+    cc: gmailEmail,
     subject: `Referee Exam App: Granted as teacher`,
     html : `Hi ${teacher.firstName} ${teacher.lastName},<br>
 <p>You have been granted as teacher in the referee exam web application.<br>

@@ -2,22 +2,13 @@
 import { User } from './model';
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import * as nodemailer from 'nodemailer';
 import * as cors from 'cors';
 import * as express from 'express';
-import Mail = require('nodemailer/lib/mailer');
+import * as mailer          from './mailer';
 
 const firestore = admin.firestore();
 
 const gmailEmail = functions.config().gmail.email;
-const gmailPassword = functions.config().gmail.password;
-const mailTransport = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: gmailEmail,
-    pass: gmailPassword,
-  },
-});
 
 const app = express();
 // Automatically allow cross-origin requests
@@ -58,7 +49,7 @@ app.post('/', async (req:any, res:any) => {
     }
     try {
         const email = await buildEmail(learner, teacher);
-        const info: nodemailer.SentMessageInfo = await mailTransport.sendMail(email);
+        const info = await mailer.sendMail(email);
         console.log('Email sent to ' + teacher.email + ':' + JSON.stringify(info, null, 2));
         res.send({ error: null, data: info});
     } catch(error) {
@@ -67,12 +58,11 @@ app.post('/', async (req:any, res:any) => {
     }
 });
 
-function buildEmail(learner: User, teacher: User): Mail.Options {
+function buildEmail(learner: User, teacher: User) {
   // Building Email message.
-  const mailOptions: Mail.Options = {
-    from: `"CoachReferee" <${gmailEmail}>`,
+  const mailOptions = {
     to: teacher.email,
-    cc: learner.email,
+    cc: learner.email + ',' + gmailEmail,
     bcc: gmailEmail,
     subject: `Referee Exam App: Grant a new teacher?`,
     html : `Hi ${teacher.firstName} ${teacher.lastName},<br>

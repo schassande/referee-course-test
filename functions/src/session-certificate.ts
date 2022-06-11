@@ -11,7 +11,6 @@ import * as mailer          from './mailer';
 
 import moment = require('moment');
 import path = require('path');
-import Mail = require('nodemailer/lib/mailer');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pdfc = require("pdf-creator-node");
 const firestore = admin.firestore();
@@ -155,13 +154,11 @@ function string2date(dateStr: string, aDate: Date = new Date()): Date {
 function buildEmail(session: Session, 
                     learner: User, 
                     teachers: User[],
-                    certificateFile: any): Mail.Options {
+                    certificateFile: any) {
   // Building Email message.
-  const mailOptions: Mail.Options = {
-    from: `"CoachReferee" <${gmailEmail}>`,
+  const mailOptions = {
     to: learner.email,
-    cc: teachers.map(teacher=> `"${teacher.firstName} ${teacher.lastName}" <${teacher.email}>`).join(","),
-    bcc: gmailEmail,
+    cc: gmailEmail + ',' + teachers.map(teacher=> `"${teacher.firstName} ${teacher.lastName}" <${teacher.email}>`).join(","),
     subject: `${session.courseName} Exam passed : Congratulations !`,
     html : `Hi ${learner.firstName} ${learner.lastName},<br>
 <p>Congratulation ! You passed the ${session.courseName} exam. The certificate is joined to this email.<br>

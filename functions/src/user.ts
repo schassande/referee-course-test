@@ -1,22 +1,14 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import * as nodemailer from 'nodemailer';
 import * as promisePool from 'es6-promise-pool';
 import { User } from './model';
+import * as mailer          from './mailer';
 const PromisePool = promisePool.default;
 
 admin.initializeApp();
 const firestore = admin.firestore();
 
 const gmailEmail = "coachreferee@gmail.com"; // functions.config().gmail.email;
-const gmailPassword = "Lm2pCRanpo."; // functions.config().gmail.password;
-const mailTransport = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: gmailEmail,
-    pass: gmailPassword,
-  },
-});
 
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
@@ -42,9 +34,8 @@ export const sendEmailConfirmation = functions.firestore.document('User/{uid}').
 
   // Building Email message.
   const mailOptions = {
-    from: `"CoachReferee" <${gmailEmail}>`,
     to: email,
-    bcc: gmailEmail,
+    cc: gmailEmail,
     subject: 'Welcome CoachReferee Exam!',
     html : `Hi ${firstName} ${lastName},<br>
 <p>Thanks you for subscribing to our referee exam application.<br>
@@ -56,7 +47,7 @@ CoachReferee Examinator`
   };
   console.log('Sending message: ' + JSON.stringify(mailOptions, null, 2));
   try {
-    await mailTransport.sendMail(mailOptions);
+    await mailer.sendMail(mailOptions);
     console.log('New subscription confirmation email sent to:' + email);
   } catch(error) {
     console.error('There was an error while sending the email:', error);
@@ -189,9 +180,8 @@ async function sendDeleteEmail(user: UserToDelete) {
 
   // Building Email message.
   const mailOptions = {
-    from: `"CoachReferee" <${gmailEmail}>`,
     to: email,
-    bcc: gmailEmail,
+    cc: gmailEmail,
     subject: 'CoachReferee Exam: account delete',
     html : `Hi ${firstName} ${lastName},<br>
 <p>Your account on <a href="https://exam.coachreferee.com">https://exam.coachreferee.com</a> has been removed after a too long inactivity.<br>
@@ -201,7 +191,7 @@ CoachReferee web admin`
   };
   console.log('Sending message: ' + JSON.stringify(mailOptions, null, 2));
   try {
-    return await mailTransport.sendMail(mailOptions);
+    return await mailer.sendMail(mailOptions);
     console.log('New subscription confirmation email sent to:' + email);
   } catch(error) {
     console.error('There was an error while sending the email:', error);
