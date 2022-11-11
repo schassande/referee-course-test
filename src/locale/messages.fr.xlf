@@ -523,6 +523,13 @@
           <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="course-edit.language" datatype="html">
+        <source>Language:</source>
+        <target>Langue:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="course-edit.supported_languages" datatype="html">
         <source>Languages:</source>
         <target>Langues:</target>

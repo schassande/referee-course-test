@@ -127,7 +127,9 @@ export class CourseService extends RemotePersistentDataService<Course> {
     serie.questions.push(question);
     // Sort the question by id
     serie.questions.sort((q1, q2) => this.toQuestionId(q1) - this.toQuestionId(q2));
-  }
+    serie.nbQuestion = serie.questions.length;
+    course.test.nbQuestion = course.test.series.map(s=> s.nbQuestion).reduce((a,b)=> a+b);
+}
 
   private generateQuestion(questionId: string, questionKey: string): Question {
     const question: Question = {

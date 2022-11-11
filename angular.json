@@ -68,7 +68,11 @@
                                 "maximumError": "5mb"
                             }],
                             "serviceWorker": true,
-                            "ngswConfigPath": "ngsw-config.json"
+                            "ngswConfigPath": "ngsw-config.json",
+                            "progress": true,
+                            "outputPath": "www",
+                            "deleteOutputPath":false,
+                            "i18nMissingTranslation": "error"
                         },
                         "en": {
                             "localize": ["en"]
@@ -78,9 +82,6 @@
                         },
                         "test": {
                             "localize": ["en"]
-                        },
-                        "ci": {
-                            "progress": false
                         }
                     },
                     "defaultConfiguration": ""

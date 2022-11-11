@@ -2,3 +2,11 @@
     font-weight: bold;
     color: green;
 }
+
+.duration-unit {
+    float: right;
+}
+
+.duration-unit::part(text) {
+    flex: 0 0 auto;
+}

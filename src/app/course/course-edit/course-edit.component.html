@@ -41,47 +41,30 @@
                 <ion-input type="text" [(ngModel)]="course.name" [readonly]="readonly"></ion-input>
             </ion-item>
             <ion-item>
-                <ion-label i18n="@@course.edit.level">Level:</ion-label>
-                <ion-input type="number" [(ngModel)]="course.level" [readonly]="readonly"></ion-input>
-            </ion-item>
-            <ion-item>
-                <ion-label i18n="@@course.edit.theme">Theme:</ion-label>
-                <ion-input type="text" [(ngModel)]="course.theme" [readonly]="readonly"></ion-input>
-            </ion-item>
-            <ion-item>
-                <ion-label i18n="@@course.edit.enabled">Enabled:</ion-label>
-                <ion-input *ngIf="readonly" type="text" [readonly]="true">{{course.enabled?'Yes':'No'}}</ion-input>
-                <ion-toggle *ngIf="!readonly" [(ngModel)]="course.enabled"></ion-toggle>
-            </ion-item>
-            <ion-item>
-                <ion-label i18n="@@course.edit.version">Version:</ion-label>
-                <ion-input type="text" [(ngModel)]="course.test.version" [readonly]="readonly"></ion-input>
-            </ion-item>
-            <ion-item>
                 <ion-label i18n="@@course.edit.duration">Duration:</ion-label>
-                <ion-input type="number" [(ngModel)]="course.test.duration" [readonly]="readonly"></ion-input>
-            </ion-item>
-            <ion-item>
-                <ion-label i18n="@@course.edit.duration-unit">Duration Unit:</ion-label>
-                <ion-input *ngIf="readonly" type="text" [(ngModel)]="course.test.durationUnit" readonly="true"></ion-input>
-                <ion-select *ngIf="!readonly" [(ngModel)]="course.test.durationUnit">
-                    <ion-select-option value="m" i18n="@@course.edit.minute">Minute</ion-select-option>
-                    <ion-select-option value="h" i18n="@@course.edit.hour">Hour</ion-select-option>
-                    <ion-select-option value="d" i18n="@@course.edit.day">Day</ion-select-option>
-                </ion-select>
+                <div style="text-align: right; width: 60%;">
+                    <ion-select class="duration-unit" *ngIf="!readonly" [(ngModel)]="course.test.durationUnit" interface="popover">
+                        <ion-select-option value="m" i18n="@@course.edit.minute">Minute</ion-select-option>
+                        <ion-select-option value="h" i18n="@@course.edit.hour">Hour</ion-select-option>
+                        <ion-select-option value="d" i18n="@@course.edit.day">Day</ion-select-option>
+                    </ion-select>
+                    <ion-input *ngIf="readonly" type="text" [(ngModel)]="course.test.durationUnit" readonly="true" class="duration-unit"></ion-input>
+                    <ion-input type="number" [(ngModel)]="course.test.duration" [readonly]="readonly" class="duration-unit" style="width: 30%;"></ion-input>
+                </div>
             </ion-item>
             <ion-item>
                 <ion-label i18n="@@course.edit.score">Score:</ion-label>
-                <ion-input type="number" [(ngModel)]="course.test.requiredScore" [readonly]="readonly" (ionChange)="onNbQuestionChange()"></ion-input>
-            </ion-item>
-            <ion-item>
-                <ion-label i18n="@@course.edit.nbQuestion">Nb Question:</ion-label>
-                <ion-input type="number" [(ngModel)]="course.test.nbQuestion" [readonly]="readonly"></ion-input>
+                <ion-input type="number" [(ngModel)]="course.test.requiredScore" [readonly]="readonly" inputmode="numeric" min="0" max="{{course.test.nbQuestion}}"></ion-input>
             </ion-item>
             <ion-item>
                 <ion-label i18n="@@course.edit.allowedAlone">Individual allowed:</ion-label>
                 <ion-input *ngIf="readonly" type="text" [readonly]="true">{{course.allowedAlone?'Yes':'No'}}</ion-input>
                 <ion-toggle *ngIf="!readonly" [(ngModel)]="course.allowedAlone"></ion-toggle>
+            </ion-item>
+            <ion-item>
+                <ion-label i18n="@@course.edit.enabled">Enabled:</ion-label>
+                <ion-input *ngIf="readonly" type="text" [readonly]="true">{{course.enabled?'Yes':'No'}}</ion-input>
+                <ion-toggle *ngIf="!readonly" [(ngModel)]="course.enabled"></ion-toggle>
             </ion-item>
         </ion-item-group>
         <ion-item>
@@ -91,7 +74,7 @@
             </div>
             <ion-button slot="end" (click)="goToTranslation()" i18n="@@course-edit.manage-translation">Manage</ion-button>
         </ion-item>
-        <ion-item>
+        <ion-item *ngIf="!readonly">
             <div style="text-align: center; margin: 10px auto;">
                 <div style="text-align: center; margin: 10px auto;">
                     <ion-button (click)="editMode = !editMode">
@@ -113,10 +96,17 @@
                 </div>
             </div>
         </ion-item>
+        <ion-item *ngIf="course.test.supportedLanguages.length > 1">
+            <ion-label i18n="@@course-edit.language">Language:</ion-label>
+            <ion-select [(ngModel)]="lang" (ionChange)="onLanguageChange()">
+                <ion-select-option *ngFor="let l of course.test.supportedLanguages" value="{{l}}">{{l}}</ion-select-option>
+            </ion-select>
+        </ion-item>
         <ion-item-group style="border-left: 1px solid lightgrey; border-right: 1px solid lightgrey;" *ngFor="let serie of course.test.series; let index = index">
             <ion-item-divider color="light" style="text-align: center; font-size: 1.2em; padding: 10px;">
                 <ion-label><span i18n="@@course-edit.serie_questions">Serie of questions</span> {{index + 1}} {{serie.serieName}}</ion-label>
-                <ion-icon *ngIf="editMode" slot="end" name="add" (click)="addQuestion(serie)">Q</ion-icon>
+                <ion-icon *ngIf="editMode && course.test.series.length > 1" slot="end" name="trash" style="margin-right: 10px;" (click)="deleteSerie(serie, index)"></ion-icon>
+                <ion-icon *ngIf="editMode" slot="end" name="add" style="margin-right: 5px;" (click)="addQuestion(serie)">Q</ion-icon>
             </ion-item-divider>
             <ion-item>
                 <ion-label i18n="@@course.edit.random-selection">Select question randomly:</ion-label>
@@ -154,6 +144,7 @@
                 </div>
             </ion-item>
         </ion-item-group>
+        <div style="width: 100%; text-align: right; margin-top: 10px; padding: 5px;" *ngIf="editMode"><a (click)="addSerie()">Add a new serie</a></div>
     </ion-list>
     <div style="height: 100px;"></div>
 </ion-content>

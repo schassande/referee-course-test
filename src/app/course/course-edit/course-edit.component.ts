@@ -63,26 +63,28 @@ export class CourseEditComponent implements OnInit {
     return this.courseService.get(this.courseId).pipe(
       map((rcourse) => this.course = rcourse.data),
       mergeMap(() => {
-        const obs: Observable<any>[] = [of('')];
         this.lang = this.connectedUserService.getLang();
         if (this.course.test.supportedLanguages.indexOf(this.lang) < 0) {
           this.lang = this.course.test.supportedLanguages[0];
         }
-        this.course.test.series.forEach(serie => {
-          console.log('Serie ' + serie.serieName, serie.questions.length);
-          serie.questions.forEach(question => {
-            obs.push(this.translationService.translate(question, this.lang));
-            question.answers.forEach(answer => {
-              obs.push(this.translationService.translate(answer, this.lang));
-            });
-          });
-        });
-        return forkJoin(obs);
+        return this.loadLanguage();
       }),
       map(() => this.loading = false)
     );
   }
-
+  private loadLanguage(): Observable<any> {
+    const obs: Observable<any>[] = [of('')];
+    this.course.test.series.forEach(serie => {
+      console.log('Serie ' + serie.serieName, serie.questions.length);
+      serie.questions.forEach(question => {
+        obs.push(this.translationService.translate(question, this.lang));
+        question.answers.forEach(answer => {
+          obs.push(this.translationService.translate(answer, this.lang));
+        });
+      });
+    });
+    return forkJoin(obs);
+  }
   private createNewCourse(): Observable<any> {
     logger.debug(() => 'Create new course');
     this.course = {
@@ -101,10 +103,10 @@ export class CourseEditComponent implements OnInit {
       test: {
         version: '1.0',
         enabled: true,
-        duration: 30,
+        duration: 2,
         durationUnit: 'm',
-        requiredScore: 23,
-        nbQuestion: 30,
+        requiredScore: 3,
+        nbQuestion: 3,
         supportedLanguages: ['EN'],
         certificateTemplateUrl: '',
         series: [ {
@@ -117,6 +119,7 @@ export class CourseEditComponent implements OnInit {
         }]
       }
     };
+    this.courseService.generateQuestions(this.course);
     this.lang = this.course.test.supportedLanguages[0];
     return of({ error: null, data: this.course});
   }
@@ -135,10 +138,6 @@ export class CourseEditComponent implements OnInit {
   save(): Observable<ResponseWithData<Course>> {
     if (this.readonly) {
       return of({ data: this.course, error: null});
-    }
-    logger.debug(() => 'before saving. this.course.id: ' + this.course.id);
-    if (!this.course.id) {
-      this.courseService.generateQuestions(this.course);
     }
     return this.courseService.save(this.course).pipe(
       map((rcourse) => {
@@ -230,7 +229,9 @@ export class CourseEditComponent implements OnInit {
       })
     ).subscribe();
   }
-
+  onLanguageChange(){
+    this.loadLanguage().subscribe();
+  }
   editQuestion(question: Question) {
     this.alertCtrl.create({
       message: 'Edit the title of the question ' + question.questionId + '?',
@@ -301,6 +302,31 @@ export class CourseEditComponent implements OnInit {
       }
     }
   }
+  addSerie() {
+    this.course.test.series.push({
+      enabled: true,
+      requiredScore: 0,
+      passRequired: true,
+      questions: [],
+      nbQuestion: 0,
+      selectionMode: 'RANDOM'
+    });
+  }
+  deleteSerie(serie, index) {
+    this.alertCtrl.create({
+      message: 'Do you really want to delete the serie of question n°' + (index+1) + ' ?',
+      buttons: [
+        { text: 'Cancel', role: 'cancel'},
+        {
+          text: 'Delete',
+          handler: () => {
+            this.course.test.series.splice(index, 1);
+            this.course.test.nbQuestion = this.course.test.series.length ? this.course.test.series.map(s=> s.nbQuestion).reduce((a,b)=> a+b) : 0;
+          }
+        }
+      ]
+    }).then( (alert) => alert.present() );
+  }
   onNbQuestionChange() {
     if (this.course.test.series.length === 1) {
       this.course.test.series[0].nbQuestion = this.course.test.nbQuestion;
@@ -358,6 +384,8 @@ export class CourseEditComponent implements OnInit {
           text: 'Delete',
           handler: () => {
             serie.questions.splice(qIdx, 1);
+            serie.nbQuestion = serie.questions.length;
+            this.course.test.nbQuestion = this.course.test.series.length ? this.course.test.series.map(s=> s.nbQuestion).reduce((a,b)=> a+b) : 0;
           }
         }
       ]
