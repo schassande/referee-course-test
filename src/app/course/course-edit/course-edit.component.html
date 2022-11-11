@@ -98,9 +98,10 @@
         </ion-item>
         <ion-item *ngIf="course.test.supportedLanguages.length > 1">
             <ion-label i18n="@@course-edit.language">Language:</ion-label>
-            <ion-select [(ngModel)]="lang" (ionChange)="onLanguageChange()">
+            <ion-select [(ngModel)]="lang" (ionChange)="onLanguageChange()" (click)="loadFlags()" interface="popover">
                 <ion-select-option *ngFor="let l of course.test.supportedLanguages" value="{{l}}">{{l}}</ion-select-option>
             </ion-select>
+            <img src="assets/flags/{{ lang.toUpperCase() }}.png" height="30px">
         </ion-item>
         <ion-item-group style="border-left: 1px solid lightgrey; border-right: 1px solid lightgrey;" *ngFor="let serie of course.test.series; let index = index">
             <ion-item-divider color="light" style="text-align: center; font-size: 1.2em; padding: 10px;">

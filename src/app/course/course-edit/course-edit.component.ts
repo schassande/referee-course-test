@@ -232,6 +232,30 @@ export class CourseEditComponent implements OnInit {
   onLanguageChange(){
     this.loadLanguage().subscribe();
   }
+  loadFlags(attempt=2) {
+    setTimeout(() => { 
+      let radios=document.getElementsByClassName('sc-ion-select-popover-md');
+      if (radios) {
+        let i=0;
+        for (let index = 1; index < radios.length; index++) {
+          let element:any = radios[index];
+          if ('ION-LABEL' === element.nodeName) {
+            element.innerHTML=
+              '<img style="height:20px; margin-right: 20px;" src="assets/flags/'
+              + this.course.test.supportedLanguages[i].toUpperCase() + '.png" />'
+              + element.innerHTML;
+            i++;
+          }
+        }
+      } else {
+        if (attempt > 0) {
+          this.loadFlags(attempt-1)
+        } else {
+          console.log('No element');
+        }
+      }
+    }, 200);
+}
   editQuestion(question: Question) {
     this.alertCtrl.create({
       message: 'Edit the title of the question ' + question.questionId + '?',
