@@ -8,24 +8,26 @@ import { mergeMap, map, catchError } from 'rxjs/operators';
 import { Firestore,
     collection,
     CollectionReference,
+    deleteDoc,
     doc,
     DocumentReference,
     DocumentSnapshot,
     getDoc,
     getDocFromCache,
+    getDocFromServer,
+    getDocs,
+    getDocsFromCache,
+    getDocsFromServer,
     query,
     limit,
     QuerySnapshot,
     QueryDocumentSnapshot,
     Query,
-    getDocs,
-    getDocsFromServer,
-    deleteDoc} from '@angular/fire/firestore';
+    setDoc} from '@angular/fire/firestore';
 import { ToastController } from '@ionic/angular';
 import { DateService } from './DateService';
 import { Category } from 'typescript-logging';
 import { logService } from '../logging-config';
-import { getDocsFromCache, setDoc } from 'firebase/firestore';
 
 export abstract class RemotePersistentDataService<D extends PersistentData> implements Crud<D> {
 
@@ -104,7 +106,6 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
                 data.id = docRef.id;
             }
             this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + ']: Creating objet with new id: ' + data.id);
-            // from(setDoc(docRef, data));
             return this.manageWritePromise(setDoc(docRef, data), data);
 
         } else {
@@ -218,7 +219,7 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
                 if (adjustedOptions === 'default') {
                     adjustedOptions = las.forceOffline ? 'cache' : 'server';
                 }
-                this.logger.debug(() => 'query' + JSON.stringify(adjustedOptions, null, 2));
+                this.logger.debug(() => 'query ' + JSON.stringify(adjustedOptions, null, 2));
                 if (adjustedOptions === 'cache') {
                     return from(getDocsFromCache(query(q)) as Promise<QuerySnapshot<D>>);
                 } else if (adjustedOptions === 'server') {

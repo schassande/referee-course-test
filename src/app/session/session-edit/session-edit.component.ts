@@ -5,7 +5,7 @@ import { ParticipantQuestionAnswer } from 'functions/src/model';
 import * as moment from 'moment';
 import { ToastrService } from 'ngx-toastr';
 import { forkJoin, Observable, of } from 'rxjs';
-import { flatMap, map, mergeMap } from 'rxjs/operators';
+import { map, mergeMap } from 'rxjs/operators';
 import { logSession } from 'src/app/logging-config';
 import { Course, Session, SessionParticipant, SharedWith, User } from 'src/app/model/model';
 import { ConnectedUserService } from 'src/app/service/ConnectedUserService';

@@ -7,7 +7,7 @@ import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
 import { UserService } from 'src/app/service/UserService';
 import { Component, OnInit } from '@angular/core';
 import { logTeacher } from 'src/app/logging-config';
-import { map, flatMap, mergeMap } from 'rxjs/operators';
+import { map, mergeMap } from 'rxjs/operators';
 import { AlertInput } from '@ionic/core';
 import { ToolService } from 'src/app/service/ToolService';
 

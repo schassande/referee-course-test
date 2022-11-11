@@ -1,7 +1,6 @@
 import { Observable, from, of } from 'rxjs';
 import { Storage } from '@ionic/storage-angular';
 import { map } from 'rxjs/operators';
-import { resolve } from 'dns';
 
 export abstract class LocalSingletonDataService<D extends any> {
 

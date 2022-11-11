@@ -1,6 +1,6 @@
 import { map, mergeMap, catchError } from 'rxjs/operators';
-import { Observable, from, of } from 'rxjs';
-import { Component, Input, forwardRef, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+import { Observable, from } from 'rxjs';
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { getDownloadURL, ref, Storage, StorageReference, uploadString } from '@angular/fire/storage';
 import { ToastController } from '@ionic/angular';
 import { v4 as uuid } from 'uuid';

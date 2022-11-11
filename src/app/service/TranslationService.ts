@@ -1,5 +1,5 @@
 import { ResponseWithData } from './response';
-import { map, flatMap } from 'rxjs/operators';
+import { map, mergeMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { AppSettingsService } from './AppSettingsService';
 import { Firestore } from '@angular/fire/firestore';
@@ -58,7 +58,7 @@ export class TranslationService extends RemotePersistentDataService<Translation>
   public setTranslation(item: Translatable, lang: string, text: string, dataRegion: DataRegion): Observable<ResponseWithData<Translation>> {
     const id = this.getTranslationId(item.key, lang);
     return this.getTranslation(item.key, lang).pipe(
-      flatMap((trad: Translation) => {
+      mergeMap((trad: Translation) => {
         if (trad) {
           trad.text = text;
         } else {

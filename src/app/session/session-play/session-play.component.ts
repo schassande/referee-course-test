@@ -7,7 +7,7 @@ import { NavController, AlertController } from '@ionic/angular';
 import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, forkJoin, NEVER, of } from 'rxjs';
-import { map, flatMap } from 'rxjs/operators';
+import { map, mergeMap } from 'rxjs/operators';
 
 import { TranslationService } from 'src/app/service/TranslationService';
 import { SessionService } from 'src/app/service/SessionService';
@@ -90,8 +90,8 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
       map((params) => this.sessionId = params.get('id')),
 
       // load session
-      flatMap(() => this.sessionService.get(this.sessionId)),
-      flatMap((rses) => {
+      mergeMap(() => this.sessionService.get(this.sessionId)),
+      mergeMap((rses) => {
         this.session = rses.data;
         this.nbQuestion = this.session.questionIds.length;
         this.checkExpiration();
@@ -101,7 +101,7 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
 
       // load course
       map(() => this.loading = 'Loading the course ...'),
-      flatMap(() => this.courseService.get(this.session.courseId)),
+      mergeMap(() => this.courseService.get(this.session.courseId)),
       map((rcourse) => {
         this.course = rcourse.data;
         this.lang = this.courseService.getLang(this.course);
@@ -110,11 +110,11 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
 
       // load translationService
       map(() => this.loading = 'Loading the translations ...'),
-      flatMap(() => this.loadTranslation()),
+      mergeMap(() => this.loadTranslation()),
 
       // load participant answers
       map(() => this.loading = 'Loading your previous answers ...'),
-      flatMap(() => this.loadAnswers()),
+      mergeMap(() => this.loadAnswers()),
       map(() => this.loading = null)
     ).subscribe();
   }
@@ -143,9 +143,9 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
     this.intervalId = null;
 
     this.save().pipe(
-      flatMap(() => this.sessionService.computeLearnerScores(this.session, this.course)),
-      flatMap(() => this.save()),
-      flatMap(() => this.sessionService.sendCertificateAll(this.session)),
+      mergeMap(() => this.sessionService.computeLearnerScores(this.session, this.course)),
+      mergeMap(() => this.save()),
+      mergeMap(() => this.sessionService.sendCertificateAll(this.session)),
       map(() => this.navController.navigateRoot('/session/edit/' + this.session.id))
     ).subscribe();
   }
@@ -306,18 +306,25 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
   }
 
   private saveAnswer(pa: ParticipantQuestionAnswer, retryCount: number = 2) {
-    this.participantQuestionAnswerService.save(pa).subscribe(
-      (rpqa) => this.learnerAnswers.set(this.getAnswerKey(), rpqa.data),
-      (err) => {
-        console.error(`The answer of the question ${pa.questionId} hadn't be saved on server, retry #${retryCount}: ${err}`);
-        if (retryCount > 0) {
-          this.saveAnswer(pa, retryCount - 1);
-        } else {
-          this.toastrService.error(`The answer of the question ${pa.questionId} hadn't registered with success, please retry.`);
-          this.loadAnswers().subscribe();
-        }
+    const onErrorFunction = (err) => {
+      console.error(`The answer of the question ${pa.questionId} hadn't be saved on server, retry #${retryCount}: ${JSON.stringify(err)}`);
+      if (retryCount > 0) {
+        this.saveAnswer(pa, retryCount - 1);
+      } else {
+        this.toastrService.error(`The answer of the question ${pa.questionId} hadn't registered with success, please retry.`);
+        this.loadAnswers().subscribe();
       }
-    );
+    };
+    this.participantQuestionAnswerService.save(pa).subscribe({
+      next: (rpqa) => {
+        if (rpqa.data) {
+          this.learnerAnswers.set(this.getAnswerKey(), rpqa.data)
+        } else {
+          onErrorFunction(rpqa.error)
+        }
+      },
+      error: onErrorFunction
+    });
   }
 
   updateAnswer() {
@@ -380,8 +387,8 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
   correction() {
     this.session.status = 'CORRECTION';
     this.sessionService.computeLearnerScores(this.session, this.course).pipe(
-      flatMap(() => this.save()),
-      flatMap(() => this.sessionService.sendCertificateAll(this.session))
+      mergeMap(() => this.save()),
+      mergeMap(() => this.sessionService.sendCertificateAll(this.session))
     ).subscribe(() => this.toastrService.success('Marking step of the exam.', '', this.toastCfg));
   }
 

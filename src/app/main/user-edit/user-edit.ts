@@ -1,7 +1,7 @@
 import { Category } from 'typescript-logging';
 import { logUser } from 'src/app/logging-config';
 import { Component, OnInit } from '@angular/core';
-import { map, flatMap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { LoadingController, NavController, ToastController, AlertController } from '@ionic/angular';
 import { ConnectedUserService } from 'src/app/service/ConnectedUserService';

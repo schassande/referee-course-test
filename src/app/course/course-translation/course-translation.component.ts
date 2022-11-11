@@ -1,7 +1,7 @@
 import { Category } from 'typescript-logging';
 import { LANGUAGES } from './../../model/model';
 import { ResponseWithData } from 'src/app/service/response';
-import { map, flatMap } from 'rxjs/operators';
+import { map, mergeMap } from 'rxjs/operators';
 import { Observable, forkJoin, of } from 'rxjs';
 import { Course, Translatable, Translation } from 'src/app/model/model';
 import { TranslationService } from 'src/app/service/TranslationService';
@@ -49,7 +49,7 @@ export class CourseTranslationComponent implements OnInit {
   ngOnInit() {
     this.readonly = this.connectedUserService.getCurrentUser().role === 'LEARNER';
     this.loadParams().pipe(
-      flatMap(() => this.loadCourse())
+      mergeMap(() => this.loadCourse())
     ).subscribe();
   }
 
@@ -64,7 +64,7 @@ export class CourseTranslationComponent implements OnInit {
     this.loading = true;
     return this.courseService.get(this.courseId).pipe(
       map((rcourse) => this.course = rcourse.data),
-      flatMap(() => this.compute()),
+      mergeMap(() => this.compute()),
       map(() => this.loading = false)
     );
   }
@@ -205,7 +205,7 @@ export class CourseTranslationComponent implements OnInit {
 
   integrateTranslation(transId: string, text: string, nbs: number[]): Observable<any> {
     return this.translationService.get(transId).pipe(
-      flatMap((rtrans) => {
+      mergeMap((rtrans) => {
         let translation: Translation = rtrans.data;
         if (rtrans.data) {
           translation.text = text;
@@ -240,7 +240,7 @@ export class CourseTranslationComponent implements OnInit {
     }
     this.loading = true;
     this.save().pipe(
-      flatMap(() => this.compute()),
+      mergeMap(() => this.compute()),
       map(() => this.loading = false)
     ).subscribe();
   }

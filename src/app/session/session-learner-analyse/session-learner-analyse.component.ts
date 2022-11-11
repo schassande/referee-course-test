@@ -1,7 +1,7 @@
 import { UserService } from 'src/app/service/UserService';
 import { FailReasonCode } from './../../service/SessionService';
 import { ParticipantQuestionAnswerService } from 'src/app/service/ParticipantQuestionAnswerService';
-import { map, flatMap } from 'rxjs/operators';
+import { map, mergeMap } from 'rxjs/operators';
 import { Observable, forkJoin, of, NEVER } from 'rxjs';
 import { TranslationService } from 'src/app/service/TranslationService';
 import { SessionService, AnswerCheck } from 'src/app/service/SessionService';
@@ -71,16 +71,16 @@ export class SessionLearnerAnalyseComponent implements OnInit {
         this.learnerId = params.get('learnerId');
       }),
 
-      flatMap(() => { // load session
+      mergeMap(() => { // load session
         this.loading = 'Loading the session ...';
         return this.sessionService.get(this.sessionId);
       }),
-      flatMap((rses) => {
+      mergeMap((rses) => {
         this.session = rses.data;
         return this.checkSession();
       }),
 
-      flatMap(() => { // load learner
+      mergeMap(() => { // load learner
         this.loading = 'Loading the learner ...';
         return this.userService.get(this.learnerId);
       }),
@@ -89,7 +89,7 @@ export class SessionLearnerAnalyseComponent implements OnInit {
         return this.learner;
       }),
 
-      flatMap(() => { // load course
+      mergeMap(() => { // load course
         this.loading = 'Loading the course ...';
         return this.courseService.get(this.session.courseId);
       }),
@@ -98,17 +98,17 @@ export class SessionLearnerAnalyseComponent implements OnInit {
         this.lang = this.courseService.getLang(this.course);
       }),
 
-      flatMap(() => {
+      mergeMap(() => {
         this.loading = 'Loading the learner answers ...';
         return this.loadLearnerAnswers();
       }),
 
-      flatMap(() => {
+      mergeMap(() => {
         this.loading = 'Analysis the learner answers ...';
         return this.analyseFailedQuestions();
       }),
 
-      // flatMap(() => {
+      // mergeMap(() => {
       //  this.loading = 'Loading the translations ...';
       //  return this.loadTranslation();
       // }),

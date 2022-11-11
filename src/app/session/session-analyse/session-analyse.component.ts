@@ -4,7 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AlertController, ModalController, NavController } from '@ionic/angular';
 import { forkJoin, Observable, of, NEVER } from 'rxjs';
-import { flatMap, map, catchError } from 'rxjs/operators';
+import { mergeMap, map, catchError } from 'rxjs/operators';
 import { logSession } from 'src/app/logging-config';
 import { Course, Question, Session, User, PersonRef, ParticipantQuestionAnswer } from 'src/app/model/model';
 import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
@@ -71,13 +71,13 @@ export class SessionAnalyseComponent implements OnInit {
       map((params) => this.sessionId = params.get('id')),
 
       // load session
-      flatMap(() => this.sessionService.get(this.sessionId)),
-      flatMap((rses) => {
+      mergeMap(() => this.sessionService.get(this.sessionId)),
+      mergeMap((rses) => {
         this.session = rses.data;
         return this.checkSession();
       }),
 
-      flatMap(() => { // load course
+      mergeMap(() => { // load course
         this.loading = 'Loading the course ...';
         return this.courseService.get(this.session.courseId);
       }),
@@ -86,14 +86,14 @@ export class SessionAnalyseComponent implements OnInit {
         this.lang = this.courseService.getLang(this.course);
       }),
 
-      flatMap(() => { // Analysis failed questions
+      mergeMap(() => { // Analysis failed questions
         this.loading = 'Analysing failed questions ...';
         return this.analyseFailedQuestions();
       }),
 
 
       // load translationService
-      flatMap(() => {
+      mergeMap(() => {
         this.loading = 'Loading the translations ...';
         console.log(this.loading);
         return this.loadTranslation();
