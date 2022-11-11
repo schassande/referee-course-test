@@ -54,7 +54,7 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
         if (id == null || id === '-1' || id === '') {
             return of({ error: null, data: null});
         }
-        this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + '].get(' + id + ')');
+        // this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + '].get(' + id + ')');
         return from(getDoc<D>(doc<D>(this.fireStoreCollection, id))).pipe(
             catchError((err) => {
                 return of({ error: err, data: null});

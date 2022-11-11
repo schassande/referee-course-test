@@ -230,11 +230,12 @@ export class CourseTranslationComponent implements OnInit {
   }
 
   toggleLanguage(lang: string, event) {
+    // logger.debug(() => 'toggleLanguage ' + lang + ' to ' + event.detail.checked);
     if (event.detail.checked) {
       this.course.test.supportedLanguages.push(lang);
     } else {
       const idx = this.course.test.supportedLanguages.indexOf(lang);
-      if (idx > 0) {
+      if (idx >= 0) {
         this.course.test.supportedLanguages.splice(idx, 1);
       }
     }
