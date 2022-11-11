@@ -146,7 +146,7 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
 
     protected docSnapNTToResponse(docSnap: DocumentSnapshot<D>): ResponseWithData<D> {
         const data: D = docSnap && docSnap.exists ? docSnap.data() as D : null;
-        this.logger.debug(() => 'load item ' + docSnap.id + ' exists=' + docSnap.exists + ' + data=' + data);
+        // this.logger.debug(() => 'load item ' + docSnap.id + ' exists=' + docSnap.exists + ' + data=' + data);
         if (data) {
             // store id inside persistent object
             data.id = docSnap.id;
@@ -157,7 +157,7 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
 
     protected docSnapToResponse(docSnap: DocumentSnapshot<D>): ResponseWithData<D> {
         const data: D = docSnap && docSnap.exists ? docSnap.data() : null;
-        this.logger.debug(() => 'load item ' + docSnap.id + ' exists=' + docSnap.exists + ', data=' + JSON.stringify(data, null, 2));
+        //this.logger.debug(() => 'load item ' + docSnap.id + ' exists=' + docSnap.exists + ', data=' + JSON.stringify(data, null, 2));
         if (data) {
             // store id inside persistent object
             data.id = docSnap.id;

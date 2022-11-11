@@ -247,6 +247,7 @@ export class CourseTranslationComponent implements OnInit {
 
   save(): Observable<ResponseWithData<Course>> {
     if (this.readonly) {
+      logger.debug(() => 'Course NOT saved because of readonly.');
       return of({ data: this.course, error: null});
     }
     return this.courseService.save(this.course).pipe(
@@ -254,7 +255,7 @@ export class CourseTranslationComponent implements OnInit {
         if (!rcourse.error) {
           this.course = rcourse.data;
         }
-        // .debug(() => 'Course saved: ' + JSON.stringify(this.course, null, 2));
+        logger.debug(() => 'Course saved: ' + JSON.stringify(this.course, null, 2));
         return rcourse;
       }));
   }
