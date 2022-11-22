@@ -6,7 +6,7 @@ import { ResponseWithData } from 'src/app/service/response';
 import { NavController, AlertController } from '@ionic/angular';
 import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Observable, forkJoin, NEVER, of } from 'rxjs';
+import { Observable, forkJoin, NEVER, of, from } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 
 import { TranslationService } from 'src/app/service/TranslationService';
@@ -17,6 +17,7 @@ import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
 import { ParticipantQuestionAnswerService } from 'src/app/service/ParticipantQuestionAnswerService';
 import { Course, DurationUnit, QuestionSerie, Question, Session, Translation, ParticipantQuestionAnswer } from 'src/app/model/model';
 import * as moment from 'moment';
+import { AppSettingsService } from 'src/app/service/AppSettingsService';
 
 const logger = new Category('play', logSession);
 
@@ -66,6 +67,7 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
 
   constructor(
     private alertCtrl: AlertController,
+    protected appSettingsService: AppSettingsService,
     private changeDetectorRef: ChangeDetectorRef,
     private connectedUserService: ConnectedUserService,
     private courseService: CourseService,
@@ -83,6 +85,10 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
   }
 
   loadData() {
+    // force online mode
+    if (this.appSettingsService.settings.forceOffline) {
+      this.appSettingsService.settings.forceOffline = false;
+    }
     this.loading = 'Loading the session ...';
     this.isAdmin = this.connectedUserService.getCurrentUser().role === 'ADMIN';
     // load params
@@ -135,7 +141,26 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
     }
   }
 
-  autoClose() {
+  manualClose() {
+    this.loadAnswers().pipe(
+      map(() => {
+        const delta = this.nbQuestion - this.learnerAnswers.size;
+        if (delta > 0) {
+          // Some question don't have answer, ask a confirmation to the participant
+          return from(this.alertCtrl.create({
+            message: 'Threre is/are ' + delta + ' question(s) without answer. Do you really want to close your exam?',
+            buttons: [
+              { text: 'Cancel', role: 'cancel'},
+              { text: 'Close', handler: () => this.autoClose() }
+            ]
+          }).then( (alert) => alert.present() ));
+        } else {
+          this.autoClose();
+        }   
+      })
+    ).subscribe();
+  }
+  public autoClose() {
     logger.debug(() => 'Auto close');
     this.session.status = 'CLOSED';
 
@@ -196,14 +221,19 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
   }
 
   nextNoAnswerQuestion() {
-    logger.debug(() => 'nextNoAnswerQuestion()' + this.nbQuestion + ' ' + this.learnerAnswers.size + ' ' + this.answerValue);
-    if (this.nbQuestion > this.learnerAnswers.size) {
-      while (this.hasAnswer()) {
-        this.incQuestionIdx();
-        logger.debug(() => 'nextNoAnswerQuestion() questionIdx=' + this.questionIdx
-          + ', answerValue=' + this.answerValue + ', answerValues=' + this.answerValues);
-      }
-    }
+    this.loading = "Loading your answers from server";
+    this.loadAnswers().pipe(
+      map(() => {
+        logger.debug(() => 'nextNoAnswerQuestion()' + this.nbQuestion + ' ' + this.learnerAnswers.size + ' ' + this.answerValue);
+        if (this.nbQuestion > this.learnerAnswers.size) {
+          while (this.hasAnswer()) {
+            this.incQuestionIdx();
+            logger.debug(() => 'nextNoAnswerQuestion() questionIdx=' + this.questionIdx
+              + ', answerValue=' + this.answerValue + ', answerValues=' + this.answerValues);
+          }
+        }
+      })
+    ).subscribe(() => this.loading = null);
   }
 
   hasAnswer(): boolean {
@@ -306,6 +336,7 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
   }
 
   private saveAnswer(pa: ParticipantQuestionAnswer, retryCount: number = 2) {
+    let success = false;
     const onErrorFunction = (err) => {
       console.error(`The answer of the question ${pa.questionId} hadn't be saved on server, retry #${retryCount}: ${JSON.stringify(err)}`);
       if (retryCount > 0) {
@@ -318,12 +349,19 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
     this.participantQuestionAnswerService.save(pa).subscribe({
       next: (rpqa) => {
         if (rpqa.data) {
+          success = true;
           this.learnerAnswers.set(this.getAnswerKey(), rpqa.data)
         } else {
           onErrorFunction(rpqa.error)
         }
       },
-      error: onErrorFunction
+      error: (err) => { onErrorFunction(err) },
+      complete: () => { 
+        if (!success) {
+          this.toastrService.error(`The answer of the question ${pa.questionId} hadn't registered with success, please retry.`);
+          this.loadAnswers().subscribe();
+        }
+      }
     });
   }
 

@@ -71,7 +71,7 @@
                 </ion-button>
             </div>
             <div class="questionNumber" *ngIf="session.autoPlay">
-                <ion-button shape="round" (click)="autoClose()" class="questionButton" i18n="@@session-play.button-close">Close the exam (cannot undo)</ion-button>
+                <ion-button shape="round" (click)="manualClose()" class="questionButton" i18n="@@session-play.button-close">Close the exam (cannot undo)</ion-button>
             </div>
             <div class="questionNumber">
                 <span *ngIf="sessionExpired" class="expired"><span i18n="@@session-play.session-expired">Session expired</span> ({{dateService.datetime2string(session.expireDate)}})</span>

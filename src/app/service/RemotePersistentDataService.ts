@@ -119,14 +119,19 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
 
     manageWritePromise(promise: any, data: D): Observable<ResponseWithData<D>> {
         if (this.appSettingsService.settings.forceOffline) {
-            this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + '](' + data.id
-                 + '): offline mode, remote action is queued.');
-            // store the data but don't wait the end because the promise is resolved only when data are store on remote server
-            promise.then((value) => {
-                // TODO emit an event to show data are synchronised.
-                this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + '](' + data.id + ') data pushed on server.');
-            });
-            return of({ error: null, data});
+            return new Observable<ResponseWithData<D>>((o) => {
+                this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + '](' + data.id
+                        + '): offline mode, remote action is queued.');
+                // store the data but don't wait the end because the promise is resolved only when data are store on remote server
+                o.next({ error: null, data});
+                promise.then(() => {
+                    this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + '](' + data.id + ') data pushed on server.');
+                    o.complete();
+                }).catch(err => {
+                    o.error({ error: err, data: null});
+                    o.complete();
+                });
+           });
         } else {
             this.logger.debug(() => 'DatabaseService[' + this.getLocalStoragePrefix() + '](' + data.id
                 + '): online mode, wait server response.');
