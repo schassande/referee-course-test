@@ -831,6 +831,12 @@
           <context context-type="linenumber">96</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="session-play.button-checkanswered" datatype="html">
+        <target>Check all questions have an answer</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/session/session-play/session-play.component.html</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="session-play.session-expired" datatype="html">
         <source>Session expired</source>
         <target>Session expired</target>
