@@ -140,10 +140,15 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
       this.autoClose();
     }
   }
-
+  public checkAllAnswered() {
+    this.loading = "Loading your answers from server";
+    this.loadAnswers().subscribe(() => this.loading = null);
+  }
   manualClose() {
+    this.loading = "Loading your answers from server";
     this.loadAnswers().pipe(
       map(() => {
+        this.loading = null;
         const delta = this.nbQuestion - this.learnerAnswers.size;
         if (delta > 0) {
           // Some question don't have answer, ask a confirmation to the participant
