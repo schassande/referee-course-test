@@ -71,8 +71,7 @@
         </ion-card-header>
         <ion-card-content>
             <div class="keyCodeLine">
-                <ion-label class="keyCodeLabel" i18n="@@home.session-code">Code: </ion-label>
-                <ion-input class="keyCodeInput" type="text" autocapitalize="true" autofocus="true" size="8" minlength="8" color="danger" maxlength="8" [(ngModel)]="sessionCode">
+                <ion-input class="keyCodeInput" type="text" autocapitalize="true" autofocus="true" size="8" minlength="8" color="danger" maxlength="8" [(ngModel)]="sessionCode" placeholder="Code">
                 </ion-input>
                 <div class="keyCodeButton">
                     <ion-button (click)="registerToSession()" shape="round">

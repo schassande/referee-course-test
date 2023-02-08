@@ -25,29 +25,17 @@
     text-align: center;
 }
 
-.keyCodeLabel,
 .keyCodeInput,
 .keyCodeButton {
-    margin: auto 10px;
-}
-
-.keyCodeLabel {
-    width: 60px;
-    text-align: right;
-    display: inline-block;
+    margin: auto 5px;
 }
 
 .keyCodeInput {
-    font-size: 2em;
+    font-size: 1.8em;
     text-transform: uppercase;
     border: 1px solid blue;
-    width: 170px;
+    width: 80%;
     display: inline-block;
-}
-
-.keyCodeButton {
-    display: inline-block;
-    padding-right: 30px;
 }
 
 .instantLine {
