@@ -103,6 +103,7 @@ export class HomeComponent implements OnInit {
               this.teachers = sameCountry;
             }
           }
+          this.teachers.sort((u1,u2) => (u1.firstName+u1.lastName).localeCompare((u2.firstName+u2.lastName)));
           // Pick up randomly a teacher
           const teacherIdx: number = Math.round(Math.random() * 10000) % this.teachers.length;
           this.teacherId = this.teachers[teacherIdx].id;
