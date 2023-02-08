@@ -31,7 +31,7 @@
         <div style="text-align: center; margin: 10px auto; font-size: 1.3em;">{{course.name}}</div>
         <div style="text-align: center; margin: 10px auto; font-size: 1em;">Session: {{session.keyCode}}</div>
         <div class="questionNumberLine">
-            <ion-button shape="round" (click)="decQuestionIdx()" class="questionButton" style="margin-left: 20px;">
+            <ion-button shape="round" (click)="decQuestionIdx()" class="questionButton">
                 <ion-icon name="arrow-back-outline"></ion-icon>
             </ion-button>
             <div class="questionNumber"><span i18n="@@session-play.question">Question</span> {{questionIdx + 1}}/{{questions.length}}
