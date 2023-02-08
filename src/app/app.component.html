@@ -9,31 +9,31 @@
             <ion-list>
                 <ion-item *ngIf="this.connectedUserService.isConnected()">
                     <ion-icon name="home-outline" scope="start"></ion-icon>
-                    <ion-button fill="clear" (click)="route()">Home</ion-button>
+                    <ion-button fill="clear" (click)="route()" i18n="@@menu.home">Home</ion-button>
                 </ion-item>
                 <ion-item *ngIf="this.connectedUserService.isConnected()">
                     <ion-icon name="log-out-outline" scope="start"></ion-icon>
-                    <ion-button fill="clear" (click)="logout()">Log out</ion-button>
+                    <ion-button fill="clear" (click)="logout()" i18n="@@menu.logout">Log out</ion-button>
                 </ion-item>
                 <ion-item>
                     <ion-icon name="refresh-outline" scope="start"></ion-icon>
-                    <ion-button fill="clear" (click)="reloadPage()">Reload application</ion-button>
+                    <ion-button fill="clear" (click)="reloadPage()" i18n="@@menu.reload">Reload application</ion-button>
                 </ion-item>
                 <ion-item *ngIf="this.connectedUserService.isConnected()">
                     <ion-icon name="file-tray-stacked-outline" scope="start"></ion-icon>
-                    <ion-button fill="clear" (click)="route('/course')">Courses</ion-button>
+                    <ion-button fill="clear" (click)="route('/course')" i18n="@@menu.courses">Courses</ion-button>
                 </ion-item>
                 <ion-item *ngIf="this.connectedUserService.isConnected()">
                     <ion-icon name="alarm-outline" scope="start"></ion-icon>
-                    <ion-button fill="clear" (click)="route('/session')">Sessions</ion-button>
+                    <ion-button fill="clear" (click)="route('/session')" i18n="@@menu.sessions">Sessions</ion-button>
                 </ion-item>
                 <ion-item *ngIf="this.connectedUserService.isConnected()">
                     <ion-icon name="people-outline" scope="start"></ion-icon>
-                    <ion-button fill="clear" (click)="route('/teacher')">Teachers</ion-button>
+                    <ion-button fill="clear" (click)="route('/teacher')" i18n="@@menu.teachers">Teachers</ion-button>
                 </ion-item>
                 <ion-item *ngIf="this.connectedUserService.isConnected()">
                     <ion-icon name="options-outline" scope="start"></ion-icon>
-                    <ion-button fill="clear" (click)="route('/settings')">Settings</ion-button>
+                    <ion-button fill="clear" (click)="route('/settings')" i18n="@@menu.settings">Settings</ion-button>
                 </ion-item>
             </ion-list>
         </ion-content>

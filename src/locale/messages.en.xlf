@@ -2,6 +2,13 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en" target-language="en" datatype="plaintext" original="ng2.template">
     <body>
+      <trans-unit id="menu.home" datatype="html"><target>Home</target></trans-unit>
+      <trans-unit id="menu.logout" datatype="html"><target>Log out</target></trans-unit>
+      <trans-unit id="menu.reload" datatype="html"><target>Reload</target></trans-unit>
+      <trans-unit id="menu.courses" datatype="html"><target>Courses</target></trans-unit>
+      <trans-unit id="menu.sessions" datatype="html"><target>Sessions</target></trans-unit>
+      <trans-unit id="menu.teachers" datatype="html"><target>Teachers</target></trans-unit>
+      <trans-unit id="menu.settings" datatype="html"><target>Settings</target></trans-unit>
       <trans-unit id="home.page-title" datatype="html">
         <source>Test Course Referee App</source>
         <target>Test Course App</target>
@@ -384,8 +391,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="course.edit.title" datatype="html">
-        <source>Test Edit</source>
-        <target>Test Edit</target>
+        <source>Test Edition</source>
+        <target>Course Edit</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/course/course-edit/course-edit.component.html</context>
           <context context-type="linenumber">8</context>
