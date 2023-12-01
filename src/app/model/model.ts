@@ -141,6 +141,8 @@ export interface Session extends RootNode {
    * The questions are extracted from the course.
    */
   questionIds: string[];
+  /** Does the question have been choosen randomly */
+  randomQuestions: boolean;
 }
 
 export interface PersonRef {

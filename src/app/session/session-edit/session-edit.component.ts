@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AlertController, ModalController, NavController } from '@ionic/angular';
-import { ParticipantQuestionAnswer } from 'functions/src/model';
 import * as moment from 'moment';
 import { ToastrService } from 'ngx-toastr';
 import { forkJoin, Observable, of } from 'rxjs';
@@ -15,7 +14,6 @@ import { ParticipantQuestionAnswerService } from 'src/app/service/ParticipantQue
 import { Response, ResponseWithData } from 'src/app/service/response';
 import { SessionService } from 'src/app/service/SessionService';
 import { UserService } from 'src/app/service/UserService';
-import { createSuper } from 'typescript';
 import { Category } from 'typescript-logging';
 import { UserSelectorComponent } from './../../main/widget/user-selector-component';
 import { Clipboard } from '@angular/cdk/clipboard';
@@ -38,7 +36,6 @@ export class SessionEditComponent implements OnInit {
   isTeacher = false;
   isAdmin = false;
   math = Math;
-  forceNoRandom = false;
 
   constructor(
     public alertCtrl: AlertController,
@@ -119,7 +116,7 @@ export class SessionEditComponent implements OnInit {
   }
 
   private createNewSession(): Observable<any> {
-    this.course = this.courses && this.courses.length ? this.courses[0] : null;
+    this.course = this.courses?.length ? this.courses[0] : null;
     const teacher: User = this.connectedUserService.getCurrentUser();
     this.session = this.sessionService.newSession(this.course, teacher, teacher.dataRegion);
     this.readonly = false;
@@ -148,7 +145,7 @@ export class SessionEditComponent implements OnInit {
         if (!rses.error) {
           this.session = rses.data;
         }
-        logger.debug(() => 'Session saved: ' + this.session);
+        logger.debug(() => 'Session saved: ' + JSON.stringify(this.session));
         if (canNavigation && !sid && this.session.id) {
           // the session has been created, then move to edit page
           this.navController.navigateRoot(`/session/edit/${this.session.id}`);
@@ -169,8 +166,8 @@ export class SessionEditComponent implements OnInit {
   }
 
   onForceNoRandom() {
-    logger.debug(() => 'onForceNoRandom(): forceNoRandom=' + this.forceNoRandom);
-    this.sessionService.selectQuestions(this.session, this.course, this.forceNoRandom);
+    logger.debug(() => 'onForceNoRandom(): randomQuestions=' + this.session.randomQuestions);
+    this.sessionService.selectQuestions(this.session, this.course);
     this.save().subscribe();
   }
 
@@ -230,7 +227,7 @@ export class SessionEditComponent implements OnInit {
           text: 'Invite',
           handler: (data) => {
             if (data.text) {
-              // console.log(data.text);
+              // comment console.log(data.text);
               const emails: string[] = (data.text as string)
                 .split(';').join(' ')
                 .split(',').join(' ')
@@ -242,15 +239,15 @@ export class SessionEditComponent implements OnInit {
                 console.log('email:' + email);
                 return this.userService.getByEmail(email).pipe(
                   mergeMap(ruser => {
-                    if (ruser.data && ruser.data.id) {
-                      console.log('User exist:' + ruser.data.id);
+                    if (ruser.data?.id) {
+                      // comment console.log('User exist:' + ruser.data.id);
                       return of(ruser);
                     } else {
                       return this.createUserFromEmail(email);
                     }
                   }),
                   map((ruser) => {
-                    if (ruser && ruser.data && ruser.data.id) {
+                    if (ruser?.data?.id) {
                       this.addParticipant(ruser.data);
                     }
                     return ruser;
@@ -311,7 +308,7 @@ export class SessionEditComponent implements OnInit {
     } else {
       this.course = null;
     }
-    if (this.sessionService.changeCourse(this.session, this.course, this.forceNoRandom)) {
+    if (this.sessionService.changeCourse(this.session, this.course)) {
       logger.debug(() => 'onCourseIdChange(): ' + this.session.courseName);
       this.save().subscribe();
     }
@@ -432,7 +429,7 @@ export class SessionEditComponent implements OnInit {
     this.sessionService.sendCertificate(learner.person.personId, this.session).subscribe((response: Response) => {
       if (response.error) {
         this.toastrService.error('Certificate error.', '', this.toastCfg);
-        logger.error('Certificate error: ' + response.error, null);
+        logger.error('Certificate error: ' + JSON.stringify(response.error), null);
       } else {
         this.toastrService.info('Certificate sent.', '', this.toastCfg);
         logger.info('Certificate sent.');

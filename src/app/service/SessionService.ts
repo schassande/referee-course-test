@@ -1,5 +1,5 @@
 import { UserService } from 'src/app/service/UserService';
-import { map, catchError } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { ParticipantQuestionAnswerService } from 'src/app/service/ParticipantQuestionAnswerService';
 import { DurationUnit, Course, ParticipantQuestionAnswer, Question, User, QuestionSerie } from 'src/app/model/model';
 import { ParticipantResult, SessionParticipant, TestParticipantResult, DataRegion } from './../model/model';
@@ -67,18 +67,18 @@ export class SessionService extends RemotePersistentDataService<Session> {
     if (year) {
       const begin = moment(year + '-01-01 00:00:00').toDate();
       const end = moment((year+1) + '-01-01 00:00:00').toDate();
-      // console.log('filter by: year \n\t' + begin + '\n\t' + end);
+      // comment console.log('filter by: year \n\t' + begin + '\n\t' + end);
       q = query(q, where('startDate', '>=', begin), where('startDate', '<', end));
     }
-    // console.log('filter by: autoPlay', includeIndividual);
+    // comment console.log('filter by: autoPlay', includeIndividual);
     q = query(q, where('autoPlay', '==', includeIndividual));
     if (status) {
-      // console.log('filter by: status', status);
+      // comment console.log('filter by: status', status);
       q = query(q, where('status', '==', status));
     }
     const str = text !== null && text && text.trim().length > 0 ? text.trim() : null;
     if (str) {
-      // console.log('filter by: text', str);
+      // comment console.log('filter by: text', str);
     }
     
     return super.filter(this.query(q, options),
@@ -297,19 +297,21 @@ export class SessionService extends RemotePersistentDataService<Session> {
       courseName: course ? course.name : null,
       participants: [],
       participantIds: [],
-      questionIds: []
+      questionIds: [],
+      randomQuestions: course.allowedAlone
     };
     this.selectQuestions(session, course);
     return session;
   }
 
-  public changeCourse(session: Session, course: Course, forceNoRandom = false): boolean {
-    console.log('changeCourse', course, session, forceNoRandom);
+  public changeCourse(session: Session, course: Course): boolean {
+    console.log('changeCourse', course, session);
     if (course) {
       if (session.courseId !== course.id) {
         session.courseId = course.id;
         session.courseName = course.name;
-        this.selectQuestions(session, course, forceNoRandom);
+        session.randomQuestions = course.allowedAlone;
+        this.selectQuestions(session, course);
         return true;
       }
     }  else {
@@ -320,7 +322,7 @@ export class SessionService extends RemotePersistentDataService<Session> {
     }
     return false;
   }
-  public selectQuestions(session: Session, course: Course, forceNoRandom = false) {
+  public selectQuestions(session: Session, course: Course) {
     session.questionIds = [];
     // for each serie extract the required number of question
     course.test.series.forEach((serie, serieIdx) => {
@@ -329,11 +331,11 @@ export class SessionService extends RemotePersistentDataService<Session> {
       if (!serie.selectionMode) {
         serie.selectionMode = 'RANDOM';
       }
-      if (serie.selectionMode === 'RANDOM' && !forceNoRandom) {
+      if (serie.selectionMode === 'RANDOM' || session.randomQuestions) {
         const limit = serie.nbQuestion === 0 ? course.test.nbQuestion - session.questionIds.length : serie.nbQuestion;
         this.selectRamdomQuestionsSerie(session, serie, limit);
 
-      } else if (serie.selectionMode === 'ALL' || forceNoRandom) {
+      } else if (serie.selectionMode === 'ALL') {
         serie.questions.forEach((question, index) => {
           if (serie.nbQuestion < 1 || index < serie.nbQuestion) { // limit to the number of questions if defined
             this.logger.debug(() => 'Add question ' + question.questionId);
