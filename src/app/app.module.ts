@@ -22,6 +22,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { environment } from '../environments/environment';
 import { HammerGestureConfig, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import {MatIconModule} from '@angular/material/icon';
+import {MatSelectModule} from '@angular/material/select';
 import { MainModule } from './main/main.module';
 import { TeacherModule } from './teacher/teacher.module';
 import { SessionModule } from './session/session.module';
@@ -39,8 +41,16 @@ import { TranslationService } from 'src/app/service/TranslationService';
 import { UserService } from 'src/app/service/UserService';
 import { ToastrService } from 'ngx-toastr';
 import { ToolService } from './service/ToolService';
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import {HttpClientModule, HttpClient} from '@angular/common/http';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { I18NService } from './service/I18NService';
 
 export class CustomHammerConfig extends HammerGestureConfig {}
+
+export function HttpLoaderFactory(http: HttpClient) {
+    return new TranslateHttpLoader(http);
+}
 
 @NgModule({
     declarations: [AppComponent],
@@ -48,6 +58,7 @@ export class CustomHammerConfig extends HammerGestureConfig {}
         BrowserModule,
         BrowserAnimationsModule,
         FormsModule,
+        HttpClientModule,
         IonicModule.forRoot(),
         ToastrModule.forRoot(),
         AppRoutingModule,
@@ -58,8 +69,17 @@ export class CustomHammerConfig extends HammerGestureConfig {}
         provideFunctions(() => getFunctions()),
         provideMessaging(() => getMessaging()),
         IonicStorageModule.forRoot({ name: '__mydb', driverOrder: [Drivers.IndexedDB, Drivers.LocalStorage] }),
+        MatIconModule, MatSelectModule,
         ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
         MainModule,
+        TranslateModule.forRoot({
+            defaultLanguage: 'en',
+            loader: {
+                provide: TranslateLoader,
+                useFactory: HttpLoaderFactory,
+                deps: [HttpClient]
+            }
+        }),
         TeacherModule,
         SessionModule,
         CourseModule
@@ -70,6 +90,7 @@ export class CustomHammerConfig extends HammerGestureConfig {}
         ConnectedUserService,
         CourseService,
         DateService,
+        I18NService,
         NtaService,
         ParticipantQuestionAnswerService,
         SessionService,

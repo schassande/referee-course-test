@@ -11,6 +11,7 @@ import { DateService } from 'src/app/service/DateService';
 import { SessionService } from 'src/app/service/SessionService';
 import { Observable } from 'rxjs';
 import { ToolService } from 'src/app/service/ToolService';
+import { TranslateService } from '@ngx-translate/core';
 
 const logger = new Category('home', logApp);
 
@@ -45,6 +46,7 @@ export class HomeComponent implements OnInit {
       private navController: NavController,
       private sessionService: SessionService,
       private toolService: ToolService,
+      public translate: TranslateService,
       private userService: UserService,
       @Inject(LOCALE_ID) public localeId: string) {
   }

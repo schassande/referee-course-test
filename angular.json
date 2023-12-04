@@ -10,13 +10,6 @@
             "projectType": "application",
             "prefix": "app",
             "schematics": {},
-            "i18n": {
-                "sourceLocale": "en-US",
-                "locales": {
-                    "en": "src/locale/messages.en.xlf",
-                    "fr": "src/locale/messages.fr.xlf"
-                }
-            },
             "architect": {
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
@@ -74,14 +67,7 @@
                             "deleteOutputPath":false,
                             "i18nMissingTranslation": "error"
                         },
-                        "en": {
-                            "localize": ["en"]
-                        },
-                        "fr": {
-                            "localize": ["fr"]
-                        },
                         "test": {
-                            "localize": ["en"]
                         }
                     },
                     "defaultConfiguration": ""

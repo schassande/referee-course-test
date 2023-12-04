@@ -1,11 +1,14 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-button (click)="saveNback()">
-                <ion-icon name="arrow-back"></ion-icon>
+            <ion-button routerLink="/home">
+                <ion-icon name="home"></ion-icon>
+            </ion-button>
+            <ion-button routerLink="/session">
+                <mat-icon>search</mat-icon>
             </ion-button>
         </ion-buttons>
-        <ion-title style="text-align: center;" i18n="@@session-edit.title">Course session</ion-title>
+        <ion-title style="text-align: center;">{{"session-edit.title"|translate}}</ion-title>
         <ion-buttons slot="end">
             <ion-menu-button autoHide="false" menu="main"></ion-menu-button>
         </ion-buttons>
@@ -19,80 +22,89 @@
     <ion-list *ngIf="!loading">
         <ion-item-group style="border-left: 1px solid lightgrey; border-right: 1px solid lightgrey;">
             <ion-item-divider color="light" style="text-align: center; font-size: 1.2em; padding: 10px;">
-                <ion-label i18n="@@session-edit.general-info">General information</ion-label>
+                <ion-label>{{"session-edit.general-info"|translate}}</ion-label>
             </ion-item-divider>
             <ion-item>
-                <ion-label i18n="@@session-edit.course">Course:</ion-label>
-                <ion-input *ngIf="readonly" type="text" [(ngModel)]="course.name" readonly="true" style="text-align: right;"></ion-input>
-                <ion-select *ngIf="!readonly" [value]="session.courseId" (ionChange)="onCourseIdChange($event)" interface="action-sheet">
+                <ion-select label="{{'session-edit.course'|translate}}" labelPlacement="fixed" [disabled]="readonly" [value]="session.courseId" (ionChange)="onCourseIdChange($event)" interface="action-sheet">
                     <ion-select-option *ngFor="let course of courses" value="{{course.id}}">{{course.name}}</ion-select-option>
                 </ion-select>
             </ion-item>
             <ion-item>
-                <ion-label i18n="@@session-edit.code">Code:</ion-label>
-                <ion-input type="text" [(ngModel)]="session.keyCode" [readonly]="true" style="text-align: right;"></ion-input>
+                <ion-grid fixed="true">
+                    <ion-row>
+                        <ion-col size="6">
+                            <ion-input label="{{'session-edit.code'|translate}}" labelPlacement="fixed" type="text" [(ngModel)]="session.keyCode" [readonly]="true" style="text-align: center;"></ion-input>        
+                        </ion-col>
+                        <ion-col size="6">
+                            <ion-input label="{{'session-edit.status'|translate}}" labelPlacement="fixed" type="text" [(ngModel)]="session.status" [readonly]="true" style="text-align: center;"></ion-input>
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
             </ion-item>
             <ion-item>
-                <ion-label i18n="@@session-edit.status">Status:</ion-label>
-                <ion-input type="text" [(ngModel)]="session.status" [readonly]="true" style="text-align: right;"></ion-input>
+                <ion-grid fixed="true">
+                    <ion-row>
+                        <ion-col size="6">
+                            <div button="true" id="open-startdate-input">
+                                <ion-input readonly="true"  label="{{'session-edit.start-date'|translate}}" labelPlacement="fixed" type="text" [value]="startDate" style="text-align: center;"></ion-input>
+                                <ion-popover trigger="{{readonly ? undefined : 'open-startdate-input'}}" side="bottom" alignment="center" #popupStartDate>
+                                    <ng-template>
+                                        <ion-datetime #popoverStartDate presentation="date" first-day-of-week="1" (ionChange)="onStartDateChange(popoverStartDate.value)"></ion-datetime>
+                                    </ng-template>
+                                </ion-popover>
+                            </div>
+                        </ion-col>
+                        <ion-col size="6">
+                            <div button="true" id="open-expiredate-input" *ngIf="session.status !== 'REGISTRATION'">
+                                <ion-input readonly="true"  label="{{'session-edit.expire-date'|translate}}" labelPlacement="fixed" type="text" [value]="expireDate" style="text-align: center;"></ion-input>
+                                <ion-popover trigger="{{readonly ? undefined : 'open-expiredate-input'}}" side="bottom" alignment="center" #popupExpireDate>
+                                    <ng-template>
+                                        <ion-datetime #popoverExpireDate presentation="date" first-day-of-week="1" (ionChange)="onExpireDateChange(popoverExpireDate.value)"></ion-datetime>
+                                    </ng-template>
+                                </ion-popover>                
+                            </div>
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
             </ion-item>
-            <ion-item button="true" id="open-startdate-input">
-                <ion-label i18n="@@session-edit.start-date">Start Date:</ion-label>
-                <ion-text slot="end">{{ dateService.date2string(this.session.startDate) }}&nbsp;{{ dateService.time2string(this.session.startDate) }}</ion-text>
-                <ion-popover trigger="open-startdate-input" show-backdrop="false" *ngIf="!readonly">
-                    <ng-template>
-                        <ion-datetime #popoverStartDatetime hour-cycle="h23" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" presentation="date-time" (ionChange)="onStartDateChange(popoverStartDatetime.value)"></ion-datetime>
-                    </ng-template>
-                </ion-popover>
-            </ion-item>
-            <ion-item button="true" id="open-expiredate-input" *ngIf="session.status !== 'REGISTRATION'">
-                <ion-label i18n="@@session-edit.expire-date">Expire Date:</ion-label>
-                <ion-text slot="end">{{ dateService.date2string(this.session.expireDate) }}&nbsp;{{ dateService.time2string(this.session.expireDate) }}</ion-text>
-                <ion-popover trigger="open-expiredate-input" show-backdrop="false" *ngIf="!readonly">
-                    <ng-template>
-                        <ion-datetime #popoverExpireDatetime hour-cycle="h23" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" presentation="date-time" (ionChange)="onExpireDateChange(popoverExpireDatetime.value)"></ion-datetime>
-                    </ng-template>
-                </ion-popover>
-            </ion-item>
-            <ion-item *ngIf="session.status == 'REGISTRATION'">
-                <ion-label i18n="@@session-edit.force-no-random">Random questions:</ion-label>
-                <ion-toggle [(ngModel)]="session.randomQuestions" (ionChange)="onForceNoRandom()"></ion-toggle>
+            <ion-item>                
+                <ion-toggle justify="end" [(ngModel)]="session.randomQuestions" [disabled]="session.status !== 'REGISTRATION'" (ionChange)="onForceNoRandom()">{{'session-edit.random-questions'|translate}}</ion-toggle>
             </ion-item>
         </ion-item-group>
     </ion-list>
     <section style="text-align: center;" *ngIf="!loading">
         <ion-button routerLink="/session/play/{{session.id}}" *ngIf="session.status !== 'CLOSED' && session.status !== 'REGISTRATION' && session.id" size="large">
-            <ion-icon name="eye-outline"></ion-icon>&nbsp;<span i18n="@@session-edit.action.view">View</span>
+            <ion-icon name="eye-outline"></ion-icon>&nbsp;{{'session-edit.action.view'|translate}}
         </ion-button>
         <ion-button *ngIf="(session.status === 'REGISTRATION' || session.status === 'STARTED') && !session.autoPlay" size="large" (click)="copySession()">
-            <ion-icon name="copy-outline"></ion-icon>&nbsp;<span i18n="@@session-edit.action.copylink">Copy link</span>
+            <ion-icon name="copy-outline"></ion-icon>&nbsp;{{'session-edit.action.copy-link'|translate}}
         </ion-button>
         <ion-button (click)="start()" *ngIf="(isTeacher || isAdmin) && (session.status === 'REGISTRATION' || session.status === 'STOPPED')" size="large" color="success">
-            <ion-icon name="play-outline"></ion-icon>&nbsp;<span i18n="@@session-edit.action.start">Start</span>
+            <ion-icon name="play-outline"></ion-icon>&nbsp;{{'session-edit.action.start'|translate}}
         </ion-button>
         <ion-button (click)="stop()" *ngIf="(isTeacher || isAdmin) && session.id && (session.status === 'STARTED')" size="large" color="danger">
-            <ion-icon name="stop-outline"></ion-icon>&nbsp;<span i18n="@@session-edit.action.stop">Stop</span>
+            <ion-icon name="stop-outline"></ion-icon>&nbsp;{{'session-edit.action.stop'|translate}}
         </ion-button>
         <ion-button (click)="correction()" *ngIf="(isTeacher || isAdmin) && session.id && session.status === 'STOPPED'" size="large" color="warning">
-            <ion-icon name="checkmark-done-outline"></ion-icon>&nbsp;<span i18n="@@session-edit.action.correction">Correction</span>
+            <ion-icon name="checkmark-done-outline"></ion-icon>&nbsp;{{'session-edit.action.correction'|translate}}
         </ion-button>
         <ion-button (click)="computeScores()" *ngIf="(isTeacher || isAdmin) && session.id && (session.status === 'CORRECTION')" size="large">
-            <ion-icon name="calculator-outline"></ion-icon>&nbsp;<span i18n="@@session-edit.action.scores">Scores</span>
+            <ion-icon name="calculator-outline"></ion-icon>&nbsp;{{'session-edit.action.scores'|translate}}
         </ion-button>
         <ion-button routerLink="/session/analyse/{{session.id}}" *ngIf="(isTeacher || isAdmin) && session.id && (session.status === 'CORRECTION' || session.status === 'CLOSED')" size="large">
-            <ion-icon name="calculator-outline"></ion-icon>&nbsp;<span i18n="@@session-edit.action.analyse">Analyse</span>
+            <ion-icon name="calculator-outline"></ion-icon>&nbsp;{{'session-edit.action.analyse'|translate}}
         </ion-button>
         <ion-button (click)="exportResults()" *ngIf="(isTeacher || isAdmin) && session.id && (session.status === 'CORRECTION' || session.status === 'CLOSED')" size="large">
-            <ion-icon name="download-outline"></ion-icon>&nbsp;<span i18n="@@session-edit.action.export">Export</span>
+            <ion-icon name="download-outline"></ion-icon>&nbsp;{{'session-edit.action.export'|translate}}
         </ion-button>
         <ion-button (click)="close()" *ngIf="(isTeacher || isAdmin) && session.id && session.status === 'CORRECTION'" size="large" color="danger">
-            <ion-icon name="close-outline"></ion-icon>&nbsp;<span i18n="@@session-edit.action.close">Close</span>
+            <ion-icon name="close-outline"></ion-icon>&nbsp;{{'session-edit.action.close'|translate}}
         </ion-button>
     </section>
     <ion-list *ngIf="!loading">
         <ion-item-group style="border-left: 1px solid lightgrey; border-right: 1px solid lightgrey;">
             <ion-item-divider color="light" style="text-align: center; font-size: 1.2em; padding: 10px;">
-                <ion-label><span i18n="@@session-edit.teachers">Teachers</span> ({{session.teachers.length}})</ion-label>
+                <ion-label>{{'session-edit.teachers'|translate}} ({{session.teachers.length}})</ion-label>
                 <ion-button slot="end" (click)="addTeacher()" style='--background:green;' *ngIf="isTeacher && session.status !== 'CORRECTION' && session.status !== 'CLOSED'">
                     <ion-icon name="add"></ion-icon>
                 </ion-button>
@@ -106,9 +118,9 @@
         </ion-item-group>
         <ion-item-group style="border-left: 1px solid lightgrey; border-right: 1px solid lightgrey;">
             <ion-item-divider color="light" style="text-align: center; font-size: 1.2em; padding: 10px;">
-                <ion-label><span i18n="@@session-edit.learners">Learners</span> ({{session.participants.length}})</ion-label>
+                <ion-label>{{'session-edit.learners'|translate}} ({{session.participants.length}})</ion-label>
                 <ion-button slot="end" (click)="inviteLearner()" style='--background:green;' *ngIf="isTeacher && session.status !== 'CORRECTION' && session.status !== 'CLOSED'">
-                    Invite
+                    {{'session-edit.invite'|translate}}
                 </ion-button>
                 <ion-button slot="end" (click)="addLearner()" style='--background:green;' *ngIf="isTeacher && session.status !== 'CORRECTION' && session.status !== 'CLOSED'">
                     <ion-icon name="add"></ion-icon>
@@ -118,7 +130,7 @@
                 <ion-label style="border: none;" class="listItemButton">
                     {{learner.person.firstName}} {{learner.person.lastName}}
                     <div *ngIf="learner.score >= 0" [ngClass]="{'testPass': learner.pass, 'testFail': !learner.pass}" style="margin-top: 5px;">
-                        <span>{{learner.pass ? 'PASS' : 'FAIL'}}</span>&nbsp;
+                        <span>{{'session-edit.' + (learner.pass ? 'PASS' : 'FAIL') |translate}}</span>&nbsp;
                         <span>Score:{{learner.score}}/{{learner.maxScore}} ({{learner.percent}}%), Req:{{learner.requiredScore}}, #Q:{{course.test.nbQuestion}}</span>
                     </div>
                 </ion-label>
@@ -130,10 +142,10 @@
     </ion-list>
     <section style="text-align: center;" *ngIf="session && (isTeacher || isAdmin) && !loading && session.id">
         <ion-button (click)="delete()" size="large" color="danger">
-            <ion-icon name="close-outline"></ion-icon>&nbsp;Delete session
+            <ion-icon name="close-outline"></ion-icon>&nbsp;{{'session-edit.delete-session'|translate}}
         </ion-button>
         <ion-button (click)="rawExport()" size="large">
-            <ion-icon name="download-outline"></ion-icon>&nbsp;Raw Export
+            <ion-icon name="download-outline"></ion-icon>&nbsp;{{'session-edit.raw-export'|translate}}
         </ion-button>
     </section>
     <div style="height: 70px;"></div>

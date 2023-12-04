@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
-import { LocalAppSettings } from './../model/settings';
+import { LocalAppSettings, SupportedLanguages } from './../model/settings';
 import { Storage } from '@ionic/storage-angular';
 import { Injectable } from '@angular/core';
 import { LocalSingletonDataService } from './LocalSingletonDataService';
@@ -29,19 +29,22 @@ export class AppSettingsService extends LocalSingletonDataService<LocalAppSettin
                         lastUserEmail: null,
                         lastUserPassword: null,
                         forceOffline: false,
-                        nbPeriod: 2
+                        nbPeriod: 2,
+                        preferedLanguage: 'en'
                     };
                     super.save(result);
                 }
                 if (!result.nbPeriod) {
                     result.nbPeriod = 2;
                 }
+                if (!result.preferedLanguage) {
+                    result.preferedLanguage = 'en';
+                }
                 this.settings = result;
                 return result;
             })
         );
     }
-
     public setLastUser(email: string, password: string) {
         this.get().subscribe((setting: LocalAppSettings) => {
             setting.lastUserEmail = email;
@@ -73,5 +76,17 @@ export class AppSettingsService extends LocalSingletonDataService<LocalAppSettin
             this.settings = setting;
             this.save(setting).subscribe();
         });
+    }
+    public getPreferedLanguage(): Observable<string> {
+        return this.get().pipe(map(s=> s.preferedLanguage))
+    }
+    public setPreferedLanguage(preferedLanguage: SupportedLanguages): Observable<any> {
+        return this.get().pipe(
+            mergeMap((setting: LocalAppSettings) => {
+                setting.preferedLanguage = preferedLanguage;
+                console.log(('Saving prefered language: ' + preferedLanguage));
+                return this.save(this.settings);
+            })
+        );
     }
 }

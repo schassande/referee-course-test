@@ -50,7 +50,7 @@ export class TranslationService extends RemotePersistentDataService<Translation>
     return this.get(this.getTranslationId(item.key, lang)).pipe(
       map((rtrad) => {
         item.text = rtrad.data ? rtrad.data.text : item.key;
-        this.logger.debug(() => 'translate(' + item.key + '=' + item.text + ')');
+        // this.logger.debug(() => 'translate(' + item.key + '=' + item.text + ')');
         return item.text;
       })
     );
