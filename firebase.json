@@ -19,11 +19,9 @@
             "**/.*",
             "**/node_modules/**"
         ],
-        "redirects": [{ "source": "/", "destination": "/en", "type": 301 }],
         "rewrites": [
             { "source": "/test/**", "destination": "/test/index.html" },
-            { "source": "/en/**", "destination": "/en/index.html" },
-            { "source": "/fr/**", "destination": "/fr/index.html" }
+            { "source": "/**", "destination": "/index.html" },
         ],
         "headers": [{
                 "source": "/build/app/**",
