@@ -1,0 +1,193 @@
+{
+    "cancel": "Cancel",
+    "course" : {
+        "edit" : {
+            "name": "Name:"
+        },
+        "list": {
+            "title": "Courses"
+        },
+        "translation": {
+            "title": "Test translation",
+            "missing-translations": "Missing translations"
+        }
+    },
+    "home" : {
+        "page-title" : "Online tests",
+        "teacher-list-sessions": "Your sessions as teacher",
+        "learner-list-sessions": "Your personal tests",
+        "group-session-exam" : {
+            "title": "Create a group session",
+            "description": "To start an exam for a group of participants, please select the test name.",
+            "course": "Test"
+        },
+        "register-session": {
+            "title": "Register to an existing group session",
+            "code": "CODE"
+        },
+        "individual-online-exam": {
+            "title": "Individual online instant test",
+            "description": "To run immediately a new individual online test, please select the test name and the teacher who will validate the examen.",
+            "course": "Test",
+            "teacher": "Teacher"
+        },
+        "install-on-device": "Install on device",
+        "connected-as": "Connected as"
+    },
+    "menu": {
+        "home": "Home",
+        "logout": "Log out",
+        "reload": "Reload application",
+        "courses": "Tests",
+        "sessions": "Sessions",
+        "teachers": "Teachers",
+        "settings": "Settings",
+        "lang-en": "English",
+        "lang-fr": "Français"
+    },
+    "session" : {
+        "individual-learner": "Individual learner",
+        "individual-learner-participants": "{{value}} participants",
+        "status" : {
+            "any": "Any",
+            "REGISTRATION": "Registration",
+            "STARTED": "Started",
+            "STOPPED": "Stopped",
+            "CORRECTION" : "Correction",
+            "CLOSED": "Closed"
+        }
+    },
+    "session-analyse": {
+        "title": "Session analysis",
+        "learners-with-wrong-answers": "{{value}} learners with a wrong answer",
+        "questionId": "Question {{value}}"
+    },
+    "session-edit": {
+        "action": {
+            "view": "View",
+            "copy-link": "Copy Link",
+            "start": "Start",
+            "stop": "Stop",
+            "correction": "Correction",
+            "analyse": "Analyse",
+            "scores": "Scores",
+            "export": "Export",
+            "close": "Close"
+        },
+        "add-teacher-learner": "Do you want to add teaches or learners?",
+        "alert": {
+            "confirm-deletion": "Do you really want to delete this session?",
+            "email-list": "Write here the list of the participant's emails."
+        },
+        "code": "Code",
+        "course": "Course",
+        "delete-session": "Delete session",
+        "expire-date": "Expire date",
+        "FAIL": "FAIL",
+        "general-info": "General information",
+        "invite": "Invite",
+        "learner": "Learner",
+        "learners": "Learners",
+        "PASS": "PASS",
+        "random-questions": "Random questions",
+        "raw-export": "Raw Export",
+        "start-date": "Start date",
+        "status": "Status",
+        "teacher": "Teacher",
+        "teachers": "Teachers",
+        "title": "Test session",
+        "toast": {
+            "started": "The exam has been started.",
+            "stopped": "The exam has been stopped.",
+            "marked": "Marking step of the exam.",
+            "scored": "Scores have been computed.",
+            "closed": "The exam has been closed.",
+            "sending-certificate": "Sending certificate by email...",
+            "error-certificate": "Certificate error.",
+            "certificate-sent": "Certificate sent."
+        }
+    },
+    "session-learner-analyse":{
+        "course": "Test",
+        "email": "Email",
+        "individual": "Individual",
+        "Learner": "Learner",
+        "nb-answer-registered": "Nb registered answer",
+        "question": "Question",
+        "session": "Session",
+        "title": "Learner analysis"
+    },
+    "session-list": {
+        "title": "Sessions",
+        "individual": "Individual",
+        "individual-learner": "Individual learner",
+        "participants": "attendees",
+        "by": "by"
+    },
+    "session-play": {
+        "title": "Sessions",
+        "question": "Question",
+        "session-code": "Session",
+        "session-not-started": "The session is not yet started.",
+        "session-expired": "Session expired",
+        "remaining-time": "Remaining time",
+        "question-no-answer": "Questions without answer",
+        "button-checkanswered": "Check all questions have an answer",
+        "button-close": "Close the test (cannot undo)",
+        "available-languages": "Available languages",
+        "teacher-panel-control": {
+            "title": "Teacher panel control",
+            "edit": "Edit",
+            "start": "Start",
+            "stop": "Stop",
+            "correction": "Mark",
+            "analyse": "Analyse",
+            "close": "Close"
+        },
+        "learners": "Learners",
+        "PASS": "PASS",
+        "FAIL": "FAIL",
+        "answers": "Answers",
+        "rights": "Right",
+        "Required": "Required"
+   },
+   "teacher-list": {
+        "title": "Teachers",
+        "country": "Sort by country"
+   },
+   "user-edit" : {
+        "title": "Account Edition",
+        "genral-info": "General info",
+        "first-name": "First name",
+        "missing-value": "A value is required.",
+        "last-name": "Last name",
+        "email": "Email",
+        "password": "Password",
+        "region": "Region",
+        "speaking-languages": "Speaking languages",
+        "country": "Country",
+        "teacher-qualifications": "Teacher qualifications",
+        "qualification-notqualified": "Not Qualified",
+        "qualification-learner": "Learner",
+        "qualification-qualified": "Qualified",
+        "fix-pb": "Please fix the following problem(s)",
+        "button-delete-account": "Delete Account",
+        "button-save": "Save"
+   },
+   "user-login" : {
+        "title": "Login",
+        "welcome" : "Welcome to Referee course test !<br><br>Please enter your email and your password<br>to log in or create an account.",
+        "email": "Email",
+        "password": "Password",
+        "remember-on-device": "Remember on this device",
+        "reset-password": "Reset password",
+        "errors": "Errors:",
+        "button-create-account": "Register",
+        "button-login": "Login"
+   },
+   "user-selector": {
+        "select-user": "Select an user.",
+        "filtering-criteria": "Filtering criteria",
+        "search-result": "Search result"
+   }
+}

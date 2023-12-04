@@ -23,6 +23,7 @@ import { SharingComponent } from './widget/sharing-component';
 import { UserEditPage } from './user-edit/user-edit';
 import { UserLoginComponent } from './user-login/user-login.component';
 import { UserSelectorComponent } from './widget/user-selector-component';
+import { TranslateModule } from '@ngx-translate/core';
 
 
 
@@ -40,6 +41,7 @@ import { UserSelectorComponent } from './widget/user-selector-component';
         MainRoutingModule,
         IonicModule,
         MarkdownModule.forRoot({ loader: HttpClient }),
+        TranslateModule.forChild({extend: true})
     ]
 })
 export class MainModule {}

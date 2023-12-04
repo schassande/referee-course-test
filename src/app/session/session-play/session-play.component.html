@@ -1,11 +1,11 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-button routerLink="/home" detail>
-                <ion-icon name="arrow-back"></ion-icon>
+            <ion-button routerLink="/home">
+                <ion-icon name="home"></ion-icon>
             </ion-button>
         </ion-buttons>
-        <ion-title style="text-align: center;" i18n="@@session-play.title">Sessions</ion-title>
+        <ion-title style="text-align: center;">{{"session-play.title"|translate}}</ion-title>
         <ion-buttons slot="end">
             <ion-menu-button autoHide="false" menu="main"></ion-menu-button>
         </ion-buttons>
@@ -24,17 +24,17 @@
 
     <div *ngIf="!loading && session && session.status === 'REGISTRATION'">
         <div style="text-align: center; margin: 10px auto; font-size: 1.3em;">{{course.name}}</div>
-        <div style="text-align: center; margin: 10px auto; font-size: 1em;">Session: {{session.keyCode}}</div>
-        <div style="text-align: center; margin: 30px auto; font-size: 1em;"><b>The session is not yet started.</b><br>Please hold the teacher starts it.<br>Then, refresh the page<br>(ue the bottom right button).</div>
+        <div style="text-align: center; margin: 10px auto; font-size: 1em;">{{"session-play.session-code"|translate}}: {{session.keyCode}}</div>
+        <div style="text-align: center; margin: 30px auto; font-size: 1em;"><b>{{"session-play.session-not-started"|translate}}</b><br>Please hold the teacher starts it.<br>Then, refresh the page<br>(ue the bottom right button).</div>
     </div>
     <div *ngIf="!loading && session && session.status !== 'CLOSED' && session.status !== 'REGISTRATION'">
         <div style="text-align: center; margin: 10px auto; font-size: 1.3em;">{{course.name}}</div>
-        <div style="text-align: center; margin: 10px auto; font-size: 1em;">Session: {{session.keyCode}}</div>
+        <div style="text-align: center; margin: 10px auto; font-size: 1em;">{{"session-play.session-code"|translate}}: {{session.keyCode}}</div>
         <div class="questionNumberLine">
             <ion-button shape="round" (click)="decQuestionIdx()" class="questionButton">
                 <ion-icon name="arrow-back-outline"></ion-icon>
             </ion-button>
-            <div class="questionNumber"><span i18n="@@session-play.question">Question</span> {{questionIdx + 1}}/{{questions.length}}
+            <div class="questionNumber">{{"session-play.question"|translate}} {{questionIdx + 1}}/{{questions.length}}
                 <span *ngIf="isTeacher">({{question.questionId}})</span>
             </div>
             <ion-button shape="round" (click)="incQuestionIdx()" class="questionButton">
@@ -48,70 +48,70 @@
             </ion-item>
             <ion-radio-group name="question" [(ngModel)]="answerValue" *ngIf="!question.questionType || question.questionType === 'UNIQUE'">
                 <ion-item *ngFor="let answer of question.answers; let index = index;" (click)="answerSelected(index)" [ngClass]="{'rightAnswer': showRightAnswer && answer.right}">
-                    <ion-label class="answer">{{answerLetters[index]}} - <span innerHtml="{{answer.text}}"></span></ion-label>
+                    <span class="answer">{{answerLetters[index]}} - <span innerHtml="{{answer.text}}"></span></span>
                     <ion-icon *ngIf="sessionExpired && answerValue && answerValue === index.toString()" slot="end" name="radio-button-on-outline"></ion-icon>
-                    <ion-radio *ngIf="!sessionExpired && !showRightAnswer" slot="end" value="{{index}}"></ion-radio>
+                    <ion-radio label=" " *ngIf="!sessionExpired && !showRightAnswer" slot="end" value="{{index}}"></ion-radio>
                 </ion-item>
             </ion-radio-group>
             <div *ngIf="question.questionType === 'COMBINATION'">
                 <ion-item *ngFor="let answer of question.answers; let index = index;" (click)="answerSelected(index)" [ngClass]="{'rightAnswer': showRightAnswer && answer.right}">
-                    <ion-label class="answer">{{answerLetters[index]}} - <span innerHtml="{{answer.text}}"></span></ion-label>
+                    <span class="answer">{{answerLetters[index]}} - <span innerHtml="{{answer.text}}"></span></span>
                     <ion-icon *ngIf="sessionExpired && answerValues[index]" slot="end" name="radio-button-on-outline"></ion-icon>
-                    <ion-checkbox *ngIf="!sessionExpired && !showRightAnswer" slot="end" checked="{{answerValues[index]}}"></ion-checkbox>
+                    <ion-checkbox label=" "  *ngIf="!sessionExpired && !showRightAnswer" slot="end" checked="{{answerValues[index]}}"></ion-checkbox>
                 </ion-item>
             </div>
         </ion-list>
         <div class="questionNumberLine">
-            <div class="questionNumber" *ngIf="!isTeacher && session.status === 'CORRECTION'" [ngClass]="{'testPass': participantResult.pass, 'testFail': !participantResult.pass}">
+            <div class="buttonLine" style="margin-bottom: 20px;">
+                <span *ngIf="sessionExpired" class="expired">{{"session-play.session-expired"|translate}} ({{dateService.datetime2string(session.expireDate)}})</span>
+                <span *ngIf="!sessionExpired" class="notExpired">{{"session-play.remaining-time"|translate}}: {{remainingTime}}</span>
+            </div>
+            <div class="buttonLine" *ngIf="!isTeacher && session.status === 'CORRECTION'" [ngClass]="{'testPass': participantResult.pass, 'testFail': !participantResult.pass}">
                 <span i18n="@@session-play.score">Score</span>: {{participantResult.score}}/{{participantResult.maxScore}} (req: {{participantResult.requiredScore}}), {{participantResult.percent}}%,
             </div>
-            <div class="questionNumber" *ngIf="!isTeacher && (nbQuestion - learnerAnswers.size) > 0"><span i18n="@@session-play.question-no-answer">Questions without answer</span>: {{nbQuestion - learnerAnswers.size}}/{{nbQuestion}}
+            <div class="buttonLine" *ngIf="!isTeacher && (nbQuestion - learnerAnswers.size) > 0">{{"session-play.question-no-answer"|translate}}: {{nbQuestion - learnerAnswers.size}}/{{nbQuestion}}
                 <ion-button shape="round" (click)="nextNoAnswerQuestion()" class="questionButton" *ngIf="nbQuestion > learnerAnswers.size">
                     <ion-icon name="search-outline"></ion-icon>
                 </ion-button>
             </div>
-            <div class="questionNumber" *ngIf="session.autoPlay">
-                <ion-button shape="round" (click)="checkAllAnswered()" class="questionButton" i18n="@@session-play.button-checkanswered">Check all questions have an answer.</ion-button>
+            <div class="buttonLine" *ngIf="session.autoPlay">
+                <ion-button shape="round" (click)="checkAllAnswered()" class="questionButton">{{"session-play.button-checkanswered"|translate}}</ion-button>
             </div>
-            <div class="questionNumber" *ngIf="session.autoPlay">
-                <ion-button shape="round" color="danger" (click)="manualClose()" class="questionButton" i18n="@@session-play.button-close">Close the exam (cannot undo)</ion-button>
-            </div>
-            <div class="questionNumber">
-                <span *ngIf="sessionExpired" class="expired"><span i18n="@@session-play.session-expired">Session expired</span> ({{dateService.datetime2string(session.expireDate)}})</span>
-                <span *ngIf="!sessionExpired" class="notExpired"><span i18n="@@session-play.remaining-time">Remaining time</span>: {{remainingTime}}</span>
+            <div class="buttonLine" *ngIf="session.autoPlay">
+                <ion-button shape="round" color="danger" (click)="manualClose()" class="questionButton">{{"session-play.button-close"|translate}}</ion-button>
             </div>
             <div>
-                <span i18n="@@session-play.available-languages">Available languages</span>: <br><span *ngFor="let lg of course.test.supportedLanguages" [ngClass]="{ 'selectedLang': lg === lang}" style="margin: 0 10px;">
-                     <img src="assets/flags/{{lg.toUpperCase()}}.png" height="30px" (click)="changeLanguage(lg)" style="margin-top: 10px;">
+                {{"session-play.available-languages"|translate}}: <br><span *ngFor="let lg of course.test.supportedLanguages" [ngClass]="{ 'selectedLang': lg === lang}" style="margin: 0 10px;">
+                     <img src="assets/flags/{{lg.toUpperCase()}}.png" height="30px" (click)="changeLanguage(lg)" style="margin-top: 10px;" alt="{{lg}}">
                 </span>
             </div>
         </div>
     </div>
     <section style="margin-top: 20px;" *ngIf="session && isTeacher">
-        <header>Teacher panel control</header>
+        <header>{{"session-play.teacher-panel-control.title"|translate}}</header>
         <div style="text-align: center;">
             <ion-button routerLink="/session/edit/{{session.id}}" size="large">
-                <ion-icon name="create-outline"></ion-icon>&nbsp;<span i18n="@@session-play.action.edit">Edit</span>
+                <ion-icon name="create-outline"></ion-icon>&nbsp;{{"session-play.teacher-panel-control.edit"|translate}}
             </ion-button>
             <ion-button (click)="start()" *ngIf="session.status === 'REGISTRATION' || session.status === 'STOPPED'" size="large" color="success">
-                <ion-icon name="play-outline"></ion-icon>&nbsp;<span i18n="@@session-play.action.start">Start</span>
+                <ion-icon name="play-outline"></ion-icon>&nbsp;{{"session-play.teacher-panel-control.start"|translate}}
             </ion-button>
             <ion-button (click)="stop()" *ngIf="session.status === 'STARTED'" size="large" color="danger">
-                <ion-icon name="stop-outline"></ion-icon>&nbsp;<span i18n="@@session-play.action.stop">Stop</span>
+                <ion-icon name="stop-outline"></ion-icon>&nbsp;{{"session-play.teacher-panel-control.stop"|translate}}
             </ion-button>
             <ion-button (click)="correction()" *ngIf="session.status === 'STOPPED'" size="large" color="warning">
-                <ion-icon name="checkmark-done-outline"></ion-icon>&nbsp;<span i18n="@@session-play.action.correction">Correction</span>
+                <ion-icon name="checkmark-done-outline"></ion-icon>&nbsp;{{"session-play.teacher-panel-control.correction"|translate}}
             </ion-button>
             <ion-button routerLink="/session/analyse/{{session.id}}" *ngIf="(isTeacher || isAdmin) && session.id && (session.status === 'CORRECTION' || session.status === 'CLOSED')" size="large">
-                <ion-icon name="calculator-outline"></ion-icon>&nbsp;<span i18n="@@session-play.action.analyse">Analyse</span>
+                <ion-icon name="calculator-outline"></ion-icon>&nbsp;{{"session-play.teacher-panel-control.analyse"|translate}}
             </ion-button>
             <ion-button (click)="close()" *ngIf="session.status === 'CORRECTION'" size="large" color="danger">
-                <ion-icon name="close-outline"></ion-icon>&nbsp;<span i18n="@@session-play.action.close">Close</span>
+                <ion-icon name="close-outline"></ion-icon>&nbsp;{{"session-play.teacher-panel-control.close"|translate}}
             </ion-button>
         </div>
         <ion-item-group style="border-left: 1px solid lightgrey; border-right: 1px solid lightgrey;" *ngIf="course">
             <ion-item-divider color="light" style="text-align: center; font-size: 1.2em; padding: 10px;">
-                <ion-label><span i18n="@@session-edit.learners">Learners</span> ({{session.participants.length}})</ion-label>
+                <ion-label>{{"session-play.learners"|translate}} ({{session.participants.length}})</ion-label>
                 <ion-button slot="end" (click)="refreshLearnerResult()" *ngIf="session.status !== 'CLOSED'">
                     <ion-icon name="reload-outline" *ngIf="!refreshingStat"></ion-icon>
                     <ion-spinner name="bubbles" *ngIf="refreshingStat"></ion-spinner>
@@ -121,8 +121,10 @@
                 <ion-label style="border: none;" class="listItemButton">
                     {{learner.person.firstName}} {{learner.person.lastName}}
                     <div *ngIf="learner.score >= 0" [ngClass]="{'testPass': learner.pass, 'testFail': !learner.pass}" style="margin-top: 5px;">
-                        <span>{{learner.pass ? 'PASS' : 'FAIL'}}</span>&nbsp;
-                        <span>Answers:{{learner.answeredQuestions}}/{{course.test.nbQuestion}}, Right:{{learner.score}}/{{course.test.nbQuestion}} ({{learner.percent}}%), Required:{{learner.requiredScore}}</span>
+                        {{"session-play."+(learner.pass ? 'PASS' : 'FAIL')|translate}}&nbsp;
+                        <span>{{"session-play.answers"|translate}}:{{learner.answeredQuestions}}/{{course.test.nbQuestion}}, 
+                            {{"session-play.rights"|translate}}:{{learner.score}}/{{course.test.nbQuestion}} ({{learner.percent}}%), 
+                            {{"session-play.required"|translate}}:{{learner.requiredScore}}</span>
                     </div>
                 </ion-label>
             </ion-item>

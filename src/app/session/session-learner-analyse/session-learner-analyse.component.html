@@ -5,7 +5,7 @@
                 <ion-icon name="arrow-back"></ion-icon>
             </ion-button>
         </ion-buttons>
-        <ion-title style="text-align: center;" i18n="@@session-learner-analyse.title">Learner analysis</ion-title>
+        <ion-title style="text-align: center;">{{ "session-learner-analyse.title" | translate}}</ion-title>
         <ion-buttons slot="end">
             <ion-menu-button autoHide="false" menu="main"></ion-menu-button>
         </ion-buttons>
@@ -14,26 +14,26 @@
 
 <ion-content>
     <ion-item *ngIf="session">
-        <ion-label>Course: {{session.courseName}}</ion-label>
+        <ion-label>{{ "session-learner-analyse.course" | translate}}: {{session.courseName}}</ion-label>
     </ion-item>
     <ion-item *ngIf="session">
-        <ion-label>Session: {{session.keyCode}}
-            <span *ngIf="session.autoPlay">(Individual)</span>
+        <ion-label>{{ "session-learner-analyse.session" | translate}}: {{session.keyCode}}
+            <span *ngIf="session.autoPlay">({{ "session-learner-analyse.individual" | translate}})</span>
         </ion-label>
     </ion-item>
     <ion-item *ngIf="learner">
-        <ion-label>Learner: {{learner.firstName}} {{learner.lastName}}</ion-label>
+        <ion-label>{{ "session-learner-analyse.learner" | translate}}: {{learner.firstName}} {{learner.lastName}}</ion-label>
     </ion-item>
     <ion-item *ngIf="learner">
-        <ion-label>Email: {{learner.email}}</ion-label>
+        <ion-label>{{ "session-learner-analyse.email" | translate}}: {{learner.email}}</ion-label>
     </ion-item>
     <ion-item *ngIf="learnerAnswers">
-        <ion-label>Nb answer registered: {{learnerAnswers.size}}</ion-label>
+        <ion-label>{{ "session-learner-analyse.nb-answer-registered" | translate}}: {{learnerAnswers.size}}</ion-label>
     </ion-item>
     <ion-list *ngIf="!loading && failedQuestions && failedQuestions.length > 0">
         <ion-item-group *ngFor="let fq of failedQuestions" style="border-left: 1px solid lightgrey; border-right: 1px solid lightgrey;">
             <ion-item-divider color="light" style="text-align: center; font-size: 1.2em; padding: 10px;">
-                <ion-label>Question {{fq.question.questionId}}</ion-label>
+                <ion-label>{{ "session-learner-analyse.question" | translate}} {{fq.question.questionId}}</ion-label>
             </ion-item-divider>
             <ion-item>
                 <ion-label innerHtml="{{fq.question.text}}" class="question"></ion-label>

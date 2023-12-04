@@ -14,17 +14,17 @@ import { DataRegion } from 'functions/src/model';
     selector: 'user-selector',
     template: `
 <ion-content padding>
-  <div style="margin: 20px;" i18n="@@user-selector.select-user">Select an user.</div>
+  <div style="margin: 20px;" i18n="@@user-selector.select-user">{{'user-selector.select-user'|translate}}</div>
   <ion-list>
     <ion-item-group style="width: 100%;">
-      <ion-item-divider color="light">Filtering criteria</ion-item-divider>
+      <ion-item-divider color="light">{{'user-selector.filtering-criteria'|translate}}</ion-item-divider>
       <ion-item>
         <ion-label>Name</ion-label>
         <ion-searchbar [(ngModel)]="searchInput" [showCancelButton]="false" (ionChange)="loadUser()"></ion-searchbar>
       </ion-item>
     </ion-item-group>
     <ion-item-group style="width: 100%;">
-      <ion-item-divider color="light">Search result</ion-item-divider>
+      <ion-item-divider color="light">{{'user-selector.search-result'|translate}}</ion-item-divider>
       <div *ngIf="loading" style="margin: 20px; text-align: center;"><ion-spinner></ion-spinner></div>
       <div *ngIf="!loading">
         <ion-item *ngFor="let user of users">

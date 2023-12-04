@@ -3,8 +3,9 @@ import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
 import { Component, OnInit } from '@angular/core';
 
 import { Platform, MenuController, NavController } from '@ionic/angular';
-import { SplashScreen } from '@ionic-native/splash-screen/ngx';
-import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { TranslateService } from '@ngx-translate/core';
+import { I18NService } from './service/I18NService';
+import { SupportedLanguages } from './model/settings';
 
 @Component({
   selector: 'app-root',
@@ -15,24 +16,15 @@ export class AppComponent implements OnInit {
 
   constructor(
     private navController: NavController,
-    private platform: Platform,
-    private splashScreen: SplashScreen,
-    private statusBar: StatusBar,
     private userService: UserService,
     public connectedUserService: ConnectedUserService,
-    private menu: MenuController
+    private menu: MenuController,
+    public i18N: I18NService
   ) {
-    this.initializeApp();
   }
 
-  initializeApp() {
-    this.platform.ready().then(() => {
-      this.statusBar.styleDefault();
-      this.splashScreen.hide();
-    });
-  }
-
-  ngOnInit() {
+  public ngOnInit(): void {
+      this.i18N.initlang();
   }
   public route(url: string = '/home') {
     this.navController.navigateRoot(url);
@@ -46,5 +38,8 @@ export class AppComponent implements OnInit {
   public logout() {
     this.userService.logout();
     this.route('/user/login');
+  }
+  public switchLanguage(lang: SupportedLanguages) {
+    this.i18N.switchTo(lang);
   }
 }
