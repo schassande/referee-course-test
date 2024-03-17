@@ -427,7 +427,10 @@ export class SessionService extends RemotePersistentDataService<Session> {
     this.logger.debug(() => 'sendCertificate(sessionId=' + session.id + ', learnerId=' + learnerId + ')');
     const callable = httpsCallable<any,any>(this.functions, 'sendCertificate');
     return from(callable({ sessionId: session.id, learnerId })
-      .then(() => { return {}; } )
+      .then((val) => { 
+        console.log('response to sendCertificate:', val);
+        return {}; 
+      })
       .catch(err => { return { error: err}; })
     );
   }

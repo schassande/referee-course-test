@@ -41,7 +41,7 @@
                 <ion-text slot="end">{{ dateService.date2string(this.session.startDate) }}&nbsp;{{ dateService.time2string(this.session.startDate) }}</ion-text>
                 <ion-popover trigger="open-startdate-input" show-backdrop="false" *ngIf="!readonly">
                     <ng-template>
-                        <ion-datetime #popoverStartDatetime hour-cycle="h23" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" presentation="date-time" (ionChange)="startDate = popoverStartDatetime.value"></ion-datetime>
+                        <ion-datetime #popoverStartDatetime hour-cycle="h23" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" presentation="date-time" (ionChange)="onStartDateChange(popoverStartDatetime.value)"></ion-datetime>
                     </ng-template>
                 </ion-popover>
             </ion-item>
@@ -50,7 +50,7 @@
                 <ion-text slot="end">{{ dateService.date2string(this.session.expireDate) }}&nbsp;{{ dateService.time2string(this.session.expireDate) }}</ion-text>
                 <ion-popover trigger="open-expiredate-input" show-backdrop="false" *ngIf="!readonly">
                     <ng-template>
-                        <ion-datetime #popoverExpireDatetime hour-cycle="h23" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" presentation="date-time" (ionChange)="expireDate = popoverExpireDatetime.value"></ion-datetime>
+                        <ion-datetime #popoverExpireDatetime hour-cycle="h23" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" presentation="date-time" (ionChange)="onExpireDateChange(popoverExpireDatetime.value)"></ion-datetime>
                     </ng-template>
                 </ion-popover>
             </ion-item>
@@ -122,7 +122,7 @@
                         <span>Score:{{learner.score}}/{{learner.maxScore}} ({{learner.percent}}%), Req:{{learner.requiredScore}}, #Q:{{course.test.nbQuestion}}</span>
                     </div>
                 </ion-label>
-                <ion-icon *ngIf="learner.score >= 0 && learner.pass" slot="end" name="medal-outline" (click)="sendCertificate(learner, index)"></ion-icon>
+                <ion-icon *ngIf="learner.score >= 0 && learner.pass && course.test.certificateTemplateUrl" slot="end" name="medal-outline" (click)="sendCertificate(learner, index)"></ion-icon>
                 <ion-icon *ngIf="!readonly && (isTeacher || isAdmin) && session.status !== 'CLOSED'" slot="end" name="trash" (click)="deleteLearner(learner, index)"></ion-icon>
                 <ion-icon *ngIf="(isTeacher || isAdmin) && !learner.pass && (session.status === 'CORRECTION' || session.status === 'CLOSED')" slot="end" name="clipboard-outline" routerLink="/session/analyse/{{sessionId}}/learner/{{learner.person.personId}}"></ion-icon>
             </ion-item>

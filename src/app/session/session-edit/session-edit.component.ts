@@ -66,6 +66,13 @@ export class SessionEditComponent implements OnInit {
     this.session.expireDate = moment(dateStr).toDate();
   }
 
+  onStartDateChange(value) {
+    this.session.startDate = this.dateService.string2date(value[0], this.session.startDate);
+  }
+  onExpireDateChange(value) {
+    this.session.expireDate = this.dateService.string2date(value[0], this.session.expireDate);
+  }
+
   ngOnInit() {
     this.isAdmin = this.connectedUserService.getCurrentUser().role === 'ADMIN';
     console.log('role=', this.connectedUserService.getCurrentUser().role);
