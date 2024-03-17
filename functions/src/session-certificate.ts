@@ -7,14 +7,13 @@ import * as os from 'os';
 import * as cors from 'cors';
 import * as express from 'express';
 import * as mailer          from './mailer';
+import pdf = require('html-pdf');
 
 
 import moment = require('moment');
 import path = require('path');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const pdfc = require("pdf-creator-node");
 const firestore = admin.firestore();
-const diplomaVersion = '1.0.2';
 
 const gmailEmail = functions.config().gmail.email;
 const fileType = 'png';
@@ -63,7 +62,18 @@ app.post('/', async (req:any, res:any) => {
         res.send({ error: { code: 7, error: 'Wrong parameters'}, data: null});
         return;
     }
-    
+    console.log('Course: ' + JSON.stringify(course));
+    if (!course.test.certificateTemplateUrl) {
+        console.error('No template URL');
+        res.send({ error: { code: 12, error: 'No template for this course'}, data: null});
+        return;
+    }
+    if (!fs.existsSync(course.test.certificateTemplateUrl)) {
+        console.error('Template ' + course.test.certificateTemplateUrl + ' does not exist.');
+        fs.readdirSync('.').forEach(f => console.log(f));
+        res.send({ error: { code: 13, error: 'Template not found'}, data: null});
+        return;
+    }
     const part: SessionParticipant = getSessionParticipant(session, learnerId);
     try {
         const certificateFile = await generateCertificate(part, session, learner, course.test.certificateTemplateUrl);
@@ -73,62 +83,52 @@ app.post('/', async (req:any, res:any) => {
             return;
         }
         const email = await buildEmail(session, learner, teachers, certificateFile);
-        return mailer.sendMail(email, res).then(() => fs.unlinkSync(certificateFile));
-        // console.log('Certificate email sent to ' + learner.email + ':' + JSON.stringify(info, null, 2));
-        // res.send({ error: null, data: info});
-        // // delete file
-        // fs.unlinkSync(certificateFile);
+        return mailer.sendMail(email, res).then(() => {
+            console.log('Certificate email sent to ' + learner.email + '.');
+            // delete file
+            fs.unlinkSync(certificateFile);
+            res.send({ error: null, data: email})
+        });
     } catch(error) {
       console.error('There was an error while sending the email:', error);
       res.send({ error: { code: 10, error: 'Problem when sending the email'}, data: null});
     }
 });
 
-function generateCertificate(participant: SessionParticipant, 
+async function generateCertificate(participant: SessionParticipant, 
                              session: Session, 
                              learner: User, 
                              certificateTemplateUrl: string): Promise<string> {
     const tempLocalDir = os.tmpdir();      
+    console.log('template: "'+ certificateTemplateUrl+'"');
     const template = fs.readFileSync(certificateTemplateUrl, 'utf8');
     const awardDate = adjustDate(session.expireDate);
     
     const awardDateStr: string = moment(awardDate).format('Do MMM YYYY');
+    const fileType = 'pdf';
     const html = template
         .replace('${learner}', learner.firstName + '<br>' + learner.lastName)
+        .replace('${score}', participant.percent +'%')
         .replace('${teacher}', session.teachers[0].firstName + ' ' + session.teachers[0].lastName)
         .replace('${awardDate}', awardDateStr);
-    const options = { 
-        format: 'A4', 
-        orientation: 'landscape',
-        header: { height: '0' },
-        footer: { height: '0' },
-        zoomFactor: '1.0',
-        border: '0'
-    };
-    console.log('options', JSON.stringify(options));
     const outputFile = path.join(tempLocalDir, `Exam_Certificate_${session.id}_${learner.id}_${new Date().getTime()}.${fileType}`);
-    const document = { 
-        html: html,
-        data: {
-            learner: learner.firstName + '<br>' + learner.lastName,
-            score: participant.percent +'%',
-            teacher: session.teachers[0].firstName + ' ' + session.teachers[0].lastName,
-            awardDate: awardDateStr,
-            diplomaVersion: diplomaVersion
-        },
-        path: outputFile 
+
+    const config = {
+        "format": "A4",
+        "orientation": "landscape",
+        "type": fileType,
+        "border": "0"
     };
-    return new Promise<string>((resolve, reject) => {
-        pdfc.create(document, options).then((res:any) => {
-            console.log(`Document generated (version: ${diplomaVersion}): ${outputFile}`);
-            console.log(res)
-            resolve(outputFile);
-        })
-        .catch((error:any) => {
-            console.error('Document generation: err=' + error);
-            reject(error);
-        });
-    });
+    try {
+        return pdf.create(html, config).toFile(outputFile, (err, res) => {
+            if (err) return console.log(err);
+            console.log('PDF generated successfully:', res);
+            return outputFile;
+          });
+    } catch (error) {
+        console.error('Error fetching URL:', error);
+        return null;
+    }
 }
 function adjustDate(d: any): Date {
     if (d === null) {
