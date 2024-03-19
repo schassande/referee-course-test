@@ -89,7 +89,7 @@ async function sendCertificateInternal(res:any, sessionId:string, learnerId: str
         }
         const email = await buildEmail(session, learner, teachers, certificateFile);
         return mailer.sendMail(email, res).then(() => {
-            console.log('Certificate email sent to ' + learner.email + '.');
+            console.log('Certificate email sent to ' + email.to + ' and cc ' + email.cc + '.');
             // delete file
             fs.unlinkSync(certificateFile);
             res.status(200).send({ error: null, data: email})
