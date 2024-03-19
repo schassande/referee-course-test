@@ -7,14 +7,13 @@ import * as os from 'os';
 import * as cors from 'cors';
 import * as express from 'express';
 import * as mailer          from './mailer';
+import pdf = require('html-pdf');
 
 
 import moment = require('moment');
 import path = require('path');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const pdfc = require("pdf-creator-node");
 const firestore = admin.firestore();
-const diplomaVersion = '1.0.2';
 
 const gmailEmail = functions.config().gmail.email;
 const fileType = 'png';
@@ -26,20 +25,25 @@ app.use(cors({ origin: true }));
 
 // Expose Express API as a single Cloud Function:
 export const sendCertificate = functions.https.onRequest(app);
-
+// app.get('/', async (req:any, res:any) => {
+//     return sendCertificateInternal(res, req.params.sessionId, req.params.learnerId);
+// });
 // build multiple CRUD interfaces:
 // export const sendCertificate = functions.https.onRequest(async (req, res) => {
 app.post('/', async (req:any, res:any) => {
     if (!req.body || !req.body.data) {
         console.log('No body content', req.body);
-        res.send({ error: { code: 1, error: 'No body content'}, data: null});
+        res.status(400).send({ error: { code: 1, error: 'No body content'}, data: null});
         return;
     }
     const sessionId = req.body.data.sessionId;
     const learnerId = req.body.data.learnerId;
+    return sendCertificateInternal(res, sessionId, learnerId);
+});
+async function sendCertificateInternal(res:any, sessionId:string, learnerId: string): Promise<any> {
     console.log('sessionId=' + sessionId + ', learnerId=' + learnerId);
     if (!sessionId || !learnerId) {
-        res.send({ error: { code: 2, error: 'missing parameters'}, data: null});
+        res.status(400).send({ error: { code: 2, error: 'missing parameters'}, data: null});
         return;
     }
     const  learner: User = await getUser(learnerId);
@@ -48,88 +52,131 @@ app.post('/', async (req:any, res:any) => {
         const code = check(learner, session);
         console.log('code=' + code);
         if (code) {
-            res.send({ error: { code, error: 'Wrong parameters'}, data: null});
+            res.status(400).send({ error: { code, error: 'Wrong parameters'}, data: null});
             return;
         }
     } catch(err) {
         console.log(err);
-        res.send({ error: { code: 99, error: 'Technical server error'}, data: null});
+        res.status(500).send({ error: { code: 99, error: 'Technical server error'}, data: null});
         return;
     }
     const teachers: User[] = [await getUser(session.teacherIds[0])];
     const course: Course = await getCourse(session.courseId);
     if (!course) {
         console.log('Course has not been found! ' + session.courseId);
-        res.send({ error: { code: 7, error: 'Wrong parameters'}, data: null});
+        res.status(400).send({ error: { code: 7, error: 'Wrong parameters'}, data: null});
         return;
     }
-    
+    console.log('Course: ' + JSON.stringify(course));
+    if (!course.test.certificateTemplateUrl) {
+        console.error('No template URL');
+        res.status(500).send({ error: { code: 12, error: 'No template for this course'}, data: null});
+        return;
+    }
+    if (!fs.existsSync(course.test.certificateTemplateUrl)) {
+        console.error('Template ' + course.test.certificateTemplateUrl + ' does not exist.');
+        fs.readdirSync('.').forEach(f => console.log(f));
+        res.status(500).send({ error: { code: 13, error: 'Template not found'}, data: null});
+        return;
+    }
     const part: SessionParticipant = getSessionParticipant(session, learnerId);
     try {
         const certificateFile = await generateCertificate(part, session, learner, course.test.certificateTemplateUrl);
         console.log('certificateFile: ' + certificateFile);
         if (!certificateFile) {
-            res.send({ error: { code: 11, error: 'Problem of generation'}, data: null});
+            res.status(500).send({ error: { code: 11, error: 'Problem of generation'}, data: null});
             return;
         }
         const email = await buildEmail(session, learner, teachers, certificateFile);
-        return mailer.sendMail(email, res).then(() => fs.unlinkSync(certificateFile));
-        // console.log('Certificate email sent to ' + learner.email + ':' + JSON.stringify(info, null, 2));
-        // res.send({ error: null, data: info});
-        // // delete file
-        // fs.unlinkSync(certificateFile);
+        return mailer.sendMail(email, res).then(() => {
+            console.log('Certificate email sent to ' + email.to + ' and cc ' + email.cc + '.');
+            // delete file
+            fs.unlinkSync(certificateFile);
+            res.status(200).send({ error: null, data: email})
+        });
     } catch(error) {
       console.error('There was an error while sending the email:', error);
-      res.send({ error: { code: 10, error: 'Problem when sending the email'}, data: null});
+      res.status(500).send({ error: { code: 10, error: 'Problem when sending the email'}, data: null});
     }
-});
+}
 
-function generateCertificate(participant: SessionParticipant, 
+async function generateCertificate(participant: SessionParticipant, 
                              session: Session, 
                              learner: User, 
                              certificateTemplateUrl: string): Promise<string> {
     const tempLocalDir = os.tmpdir();      
+    console.log('Template: "'+ certificateTemplateUrl+'"');
     const template = fs.readFileSync(certificateTemplateUrl, 'utf8');
     const awardDate = adjustDate(session.expireDate);
     
     const awardDateStr: string = moment(awardDate).format('Do MMM YYYY');
-    const html = template
+    const fileType = 'pdf';
+    let html = template
         .replace('${learner}', learner.firstName + '<br>' + learner.lastName)
+        .replace('${score}', participant.percent +'%')
         .replace('${teacher}', session.teachers[0].firstName + ' ' + session.teachers[0].lastName)
         .replace('${awardDate}', awardDateStr);
-    const options = { 
-        format: 'A4', 
-        orientation: 'landscape',
-        header: { height: '0' },
-        footer: { height: '0' },
-        zoomFactor: '1.0',
-        border: '0'
-    };
-    console.log('options', JSON.stringify(options));
+    html = replaceImages(html);
     const outputFile = path.join(tempLocalDir, `Exam_Certificate_${session.id}_${learner.id}_${new Date().getTime()}.${fileType}`);
-    const document = { 
-        html: html,
-        data: {
-            learner: learner.firstName + '<br>' + learner.lastName,
-            score: participant.percent +'%',
-            teacher: session.teachers[0].firstName + ' ' + session.teachers[0].lastName,
-            awardDate: awardDateStr,
-            diplomaVersion: diplomaVersion
-        },
-        path: outputFile 
+
+    const config = {
+        "format": "A4",
+        "orientation": "landscape",
+        "type": fileType,
+        "border": "0",
+        childProcessOptions: { // workaround of a bug on firebase
+            env: {
+              OPENSSL_CONF: '/dev/null',
+            }
+        }
     };
     return new Promise<string>((resolve, reject) => {
-        pdfc.create(document, options).then((res:any) => {
-            console.log(`Document generated (version: ${diplomaVersion}): ${outputFile}`);
-            console.log(res)
-            resolve(outputFile);
-        })
-        .catch((error:any) => {
-            console.error('Document generation: err=' + error);
+        try {
+            console.log('Creating certificate in file: '+ outputFile);
+            return pdf.create(html, config).toFile(outputFile, (err, res) => {
+                if (err) {
+                    console.log(err);
+                    reject(err);
+                } else {
+                    console.log('PDF generated successfully:', res);
+                    resolve(outputFile);
+                }
+              });
+        } catch (error) {
+            console.error('Error fetching URL:', error);
             reject(error);
-        });
+        }
     });
 }
+
+function isOSWindows(): boolean { return /^win/.test(process.platform); }
+function getPathSeparator(): string { return isOSWindows() ? '\\' : '/'; }
+function replaceImages(html: string): string {
+    let result = html;
+    const KEY = '${BASE64_DATA_OF_IMG,';
+    let begin = result.indexOf(KEY);
+    while(begin >= 0) {
+        const end = result.indexOf('}',begin+KEY.length);
+        let imagePath = result.substring(begin+KEY.length,end);
+        const pathSep = getPathSeparator();
+        if (isOSWindows()) {
+            imagePath = imagePath.replace(/\//g, pathSep);
+        }
+        imagePath = __dirname + pathSep + imagePath;
+        let imageB64 = '';
+        if (fs.existsSync(imagePath)) {
+            imageB64 = fs.readFileSync(imagePath, {encoding: 'base64'});
+            console.log('Replacing image link by base64 for ', imagePath)
+        } else {
+            console.error('Image not found: ' + imagePath);
+            fs.readdirSync(__dirname).forEach(e => console.log('  ',e));
+        }
+        result = result.substring(0, begin) + imageB64 + result.substring(end+1);
+        begin = result.indexOf(KEY);
+    }
+    return result;
+}
+
 function adjustDate(d: any): Date {
     if (d === null) {
         return new Date();

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as sgMail from '@sendgrid/mail';
 import * as fs from 'fs';
 const a = 'SG.Dr3emM2vRhONd' 

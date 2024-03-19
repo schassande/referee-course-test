@@ -3,7 +3,7 @@ import * as fs from 'fs';
 
 import path = require('path');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const pdfc = require("pdf-creator-node");
+import pdf = require('html-pdf');
 
 const _learner: User = {
     "firstName": "Sébastien",
@@ -448,48 +448,8 @@ function string2date(dateStr: string, aDate: Date = new Date()): Date {
     aDate.setDate(Number.parseInt(elements[2], 0));
     return aDate;
 }
-/*
-function generateCertificate(participant: SessionParticipant, 
-                             session: Session, 
-                             learner: User, 
-                             certificateTemplateUrl: string): Promise<string> {
-    const tempLocalDir = '.';     
-    // Read HTML Template
-    const template = fs.readFileSync(certificateTemplateUrl, 'utf8');
-    const awardDate = adjustDate(session.expireDate);
-    const awardDateStr: string = awardDate.getFullYear()
-        + '/' + (awardDate.getMonth()+1)
-        + '/' + awardDate.getDate();
-    const html = template
-        .replace('${learner}', learner.firstName + ' ' + learner.lastName)
-        .replace('${score}', participant.percent +'%')
-        .replace('${teacher}', session.teachers[0].firstName + ' ' + session.teachers[0].lastName)
-        .replace('${awardDate}', awardDateStr);
-    const fileType = 'png';
-    const options = { 
-        height: "800px",
-        width: "1200px",
-        type: fileType,
-        quality: 75,
-        border: '0',
-        base: '/workspace/src'
-    };
 
-    const outputFile = path.join(tempLocalDir, `Exam_Certificate_${session.id}_${learner.id}_${new Date().getTime()}.${fileType}`);
-    return new Promise<string>((resolve, reject) => {
-        pdf.create(html, options).toFile(outputFile, (err: any, res: any) => {
-            if (err) {
-                console.log('Document generation: err=' + err);
-                reject(err);
-            } else {
-                console.log('Document generated: ' + outputFile);
-                resolve(outputFile);
-            }
-       });
-    });
-}
-*/
-function generateCertificate2(participant: SessionParticipant, 
+async function generateCertificate2(participant: SessionParticipant, 
                              session: Session, 
                              learner: User, 
                              certificateTemplateUrl: string): Promise<string> {
@@ -500,44 +460,59 @@ function generateCertificate2(participant: SessionParticipant,
     const awardDateStr: string = awardDate.getFullYear()
         + '/' + (awardDate.getMonth()+1)
         + '/' + awardDate.getDate();
-    const html = template
+    const fileType = 'pdf';
+    let html = template
         .replace('${learner}', learner.firstName + '<br>' + learner.lastName)
         .replace('${score}', participant.percent +'%')
         .replace('${teacher}', session.teachers[0].firstName + ' ' + session.teachers[0].lastName)
         .replace('${awardDate}', awardDateStr);
-    const fileType = 'png';
-    const options = {
-        format: 'A4', 
-        orientation: 'landscape',
-        header: { height: '0' },
-        footer: { height: '0' },
-        zoomFactor: '1.0',
-        border: '0'
-    };
-    console.log('options', JSON.stringify(options));
+    html = replaceImages(html);
+    
     const outputFile = path.join(tempLocalDir, `Exam_Certificate_${session.id}_${learner.id}_${new Date().getTime()}.${fileType}`);
-    const document = {
-        html: html,
-        data: {
-            learner: learner.firstName + '<br>' + learner.lastName,
-            score: participant.percent +'%',
-            teacher: session.teachers[0].firstName + ' ' + session.teachers[0].lastName,
-            awardDate: awardDateStr
-        },
-        path: outputFile
+    const config = {
+        "format": "A4",
+        "orientation": "landscape",
+        "type": fileType,
+        "border": "0"
     };
-    console.log('data', JSON.stringify(document.data));
-    return new Promise<string>((resolve, reject) => {
-        pdfc.create(document, options).then((res:unknown) => {
-            console.log('Document generated: ' + outputFile);
-            console.log(res)
-            resolve(outputFile);
-        })
-        .catch((error:unknown) => {
-            console.error('Document generation: err=' + error);
-            reject(error);
-        });
-    });
+    try {
+        return pdf.create(html, config).toFile(outputFile, (err, res) => {
+            if (err) return console.log(err);
+            console.log('PDF generated successfully:', res);
+            return outputFile;
+          });
+    } catch (error) {
+        console.error('Error fetching URL:', error);
+        return null;
+    }
+}
+function isOSWindows(): boolean { return /^win/.test(process.platform); }
+function getPathSeparator(): string { return isOSWindows() ? '\\' : '/'; }
+
+function replaceImages(html: string): string {
+    let result = html;
+    const KEY = '${BASE64_DATA_OF_IMG,';
+    let begin = result.indexOf(KEY);
+    while(begin >= 0) {
+        const end = result.indexOf('}',begin+KEY.length);
+        let imagePath;
+        const pathSep = getPathSeparator();
+        if (isOSWindows()) {
+            imagePath = __dirname + pathSep + result.substring(begin+KEY.length,end).replace(/\//g, pathSep);
+        } else {
+            imagePath = __dirname + pathSep + result.substring(begin+KEY.length,end);
+        }
+        let imageB64 = '';
+        if (fs.existsSync(imagePath)) {
+            imageB64 = fs.readFileSync(imagePath, {encoding: 'base64'});
+        } else {
+            console.error('Image not found: ' + imagePath);
+            fs.readdirSync(__dirname).forEach(e => console.log('  ',e));
+        }
+        result = result.substring(0, begin) + imageB64 + result.substring(end+1);
+        begin = result.indexOf(KEY);
+    }
+    return result;
 }
 
 try {
