@@ -461,11 +461,13 @@ async function generateCertificate2(participant: SessionParticipant,
         + '/' + (awardDate.getMonth()+1)
         + '/' + awardDate.getDate();
     const fileType = 'pdf';
-    const html = template
+    let html = template
         .replace('${learner}', learner.firstName + '<br>' + learner.lastName)
         .replace('${score}', participant.percent +'%')
         .replace('${teacher}', session.teachers[0].firstName + ' ' + session.teachers[0].lastName)
         .replace('${awardDate}', awardDateStr);
+    html = replaceImages(html);
+    
     const outputFile = path.join(tempLocalDir, `Exam_Certificate_${session.id}_${learner.id}_${new Date().getTime()}.${fileType}`);
     const config = {
         "format": "A4",
@@ -483,6 +485,34 @@ async function generateCertificate2(participant: SessionParticipant,
         console.error('Error fetching URL:', error);
         return null;
     }
+}
+function isOSWindows(): boolean { return /^win/.test(process.platform); }
+function getPathSeparator(): string { return isOSWindows() ? '\\' : '/'; }
+
+function replaceImages(html: string): string {
+    let result = html;
+    const KEY = '${BASE64_DATA_OF_IMG,';
+    let begin = result.indexOf(KEY);
+    while(begin >= 0) {
+        const end = result.indexOf('}',begin+KEY.length);
+        let imagePath;
+        const pathSep = getPathSeparator();
+        if (isOSWindows()) {
+            imagePath = __dirname + pathSep + result.substring(begin+KEY.length,end).replace(/\//g, pathSep);
+        } else {
+            imagePath = __dirname + pathSep + result.substring(begin+KEY.length,end);
+        }
+        let imageB64 = '';
+        if (fs.existsSync(imagePath)) {
+            imageB64 = fs.readFileSync(imagePath, {encoding: 'base64'});
+        } else {
+            console.error('Image not found: ' + imagePath);
+            fs.readdirSync(__dirname).forEach(e => console.log('  ',e));
+        }
+        result = result.substring(0, begin) + imageB64 + result.substring(end+1);
+        begin = result.indexOf(KEY);
+    }
+    return result;
 }
 
 try {
