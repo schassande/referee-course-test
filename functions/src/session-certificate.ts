@@ -15,8 +15,7 @@ import path = require('path');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const firestore = admin.firestore();
 
-const gmailEmail = functions.config().gmail.email;
-const fileType = 'png';
+const fileType = 'pdf';
 
 
 const app = express();
@@ -89,7 +88,7 @@ async function sendCertificateInternal(res:any, sessionId:string, learnerId: str
         }
         const email = await buildEmail(session, learner, teachers, certificateFile);
         return mailer.sendMail(email, res).then(() => {
-            console.log('Certificate email sent to ' + email.to + ' and cc ' + email.cc + '.');
+            console.log('Certificate email sent to ' + email.to + '.');
             // delete file
             fs.unlinkSync(certificateFile);
             res.status(200).send({ error: null, data: email})
@@ -110,7 +109,6 @@ async function generateCertificate(participant: SessionParticipant,
     const awardDate = adjustDate(session.expireDate);
     
     const awardDateStr: string = moment(awardDate).format('Do MMM YYYY');
-    const fileType = 'pdf';
     let html = template
         .replace('${learner}', learner.firstName + '<br>' + learner.lastName)
         .replace('${score}', participant.percent +'%')
@@ -121,9 +119,12 @@ async function generateCertificate(participant: SessionParticipant,
 
     const config = {
         "format": "A4",
+        "height": "21cm",        // allowed units: mm, cm, in, px
+        "width": "29.7cm",
         "orientation": "landscape",
-        "type": fileType,
         "border": "0",
+        "type": fileType,
+        "zoomFactor": "1",
         childProcessOptions: { // workaround of a bug on firebase
             env: {
               OPENSSL_CONF: '/dev/null',
@@ -205,7 +206,6 @@ function buildEmail(session: Session,
   // Building Email message.
   const mailOptions = {
     to: learner.email,
-    cc: gmailEmail + ',' + teachers.map(teacher=> `"${teacher.firstName} ${teacher.lastName}" <${teacher.email}>`).join(","),
     subject: `${session.courseName} Exam passed : Congratulations !`,
     html : `Hi ${learner.firstName} ${learner.lastName},<br>
 <p>Congratulation ! You passed the ${session.courseName} exam. The certificate is joined to this email.<br>

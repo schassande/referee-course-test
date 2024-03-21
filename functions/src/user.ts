@@ -8,8 +8,6 @@ const PromisePool = promisePool.default;
 admin.initializeApp();
 const firestore = admin.firestore();
 
-const gmailEmail = "coachreferee@gmail.com"; // functions.config().gmail.email;
-
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
 //
@@ -35,7 +33,6 @@ export const sendEmailConfirmation = functions.firestore.document('User/{uid}').
   // Building Email message.
   const mailOptions = {
     to: email,
-    cc: gmailEmail,
     subject: 'Welcome CoachReferee Exam!',
     html : `Hi ${firstName} ${lastName},<br>
 <p>Thanks you for subscribing to our referee exam application.<br>
@@ -181,7 +178,6 @@ async function sendDeleteEmail(user: UserToDelete) {
   // Building Email message.
   const mailOptions = {
     to: email,
-    cc: gmailEmail,
     subject: 'CoachReferee Exam: account delete',
     html : `Hi ${firstName} ${lastName},<br>
 <p>Your account on <a href="https://exam.coachreferee.com">https://exam.coachreferee.com</a> has been removed after a too long inactivity.<br>

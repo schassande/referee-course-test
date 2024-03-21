@@ -471,7 +471,9 @@ async function generateCertificate2(participant: SessionParticipant,
     const outputFile = path.join(tempLocalDir, `Exam_Certificate_${session.id}_${learner.id}_${new Date().getTime()}.${fileType}`);
     const config = {
         "format": "A4",
-        "orientation": "landscape",
+        "height": "21cm",        // allowed units: mm, cm, in, px
+        "width": "29.7cm", 
+        //"orientation": "landscape",
         "type": fileType,
         "border": "0"
     };
