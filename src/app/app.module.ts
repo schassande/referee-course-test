@@ -25,10 +25,6 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import {MatIconModule} from '@angular/material/icon';
 import {MatSelectModule} from '@angular/material/select';
 import { MainModule } from './main/main.module';
-import { TeacherModule } from './teacher/teacher.module';
-import { SessionModule } from './session/session.module';
-import { CourseModule } from './course/course.module';
-
 
 import { AppSettingsService } from 'src/app/service/AppSettingsService';
 import { CourseService } from './service/CourseService';
@@ -79,10 +75,7 @@ export function HttpLoaderFactory(http: HttpClient) {
                 useFactory: HttpLoaderFactory,
                 deps: [HttpClient]
             }
-        }),
-        TeacherModule,
-        SessionModule,
-        CourseModule
+        })
     ],
     providers: [
         { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
