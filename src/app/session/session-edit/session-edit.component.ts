@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AlertController, ModalController, NavController } from '@ionic/angular';
-import * as moment from 'moment';
 import { ToastrService } from 'ngx-toastr';
 import { forkJoin, lastValueFrom, Observable, of, Subject } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
@@ -59,19 +58,23 @@ export class SessionEditComponent implements OnInit {
     return this.dateService.date2string(this.session.startDate);
   }
   set startDate(dateStr: any) {
+    if (this.readonly) return;
     this.session.startDate = this.dateService.string2date(dateStr);
   }
   get expireDate(): string {
     return this.dateService.date2string(this.session.expireDate);
   }
   set expireDate(dateStr: any) {
+    if (this.readonly) return;
     this.session.expireDate = this.dateService.string2date(dateStr);
   }
 
   onStartDateChange(value) {
+    if (this.readonly) return;
     this.session.startDate = this.dateService.string2date(value, this.session.startDate);
   }
   onExpireDateChange(value) {
+    if (this.readonly) return;
     this.session.expireDate = this.dateService.string2date(value, this.session.expireDate);
   }
 
@@ -167,6 +170,7 @@ export class SessionEditComponent implements OnInit {
   }
 
   async add(role: string = 'Learner') {
+    if (this.readonly) return;
     const modal = await this.modalController.create({ component: UserSelectorComponent});
     modal.onDidDismiss().then( (data) => {
       const sharedWith: SharedWith = data.data as SharedWith;
@@ -188,6 +192,7 @@ export class SessionEditComponent implements OnInit {
     modal.present();
   }
   addParticipant(user: User) {
+    if (this.readonly) return;
     console.log(`addParticipant(${user.id})`);
     const participant = this.session.participants.find(p => p.person.personId === user.id);
     if (!participant) {
@@ -208,12 +213,15 @@ export class SessionEditComponent implements OnInit {
     }
   }
   addLearner(){
+    if (this.readonly) return;
     this.add('Learner');
   }
   addTeacher(){
+    if (this.readonly) return;
     this.add('Teacher');
   }
   async inviteLearner() {
+    if (this.readonly) return;
     this.alertCtrl.create({
       message: await this.translate('session-edit.alert.email-list'),
       inputs: [{ name: 'text', type: 'textarea'}],
@@ -260,6 +268,7 @@ export class SessionEditComponent implements OnInit {
     }).then( (alert) => alert.present() );
   }
   createUserFromEmail(email: string): Observable<ResponseWithData<User>> {
+    if (this.readonly) return;
     console.log(`createUser(${email})`);
     let password = '';
     for (let i = 0; i < 8; i++) {
@@ -298,6 +307,7 @@ export class SessionEditComponent implements OnInit {
       } as User, null, true);
   }
   onCourseIdChange(event) {
+    if (this.readonly) return;
     const newCourseId = event.target.value;
     if (newCourseId) {
       this.course = this.courses.find(c => c.id === newCourseId);
@@ -311,16 +321,19 @@ export class SessionEditComponent implements OnInit {
   }
 
   deleteTeacher(teacher: User, index: number) {
+    if (this.readonly) return;
     this.session.teachers.splice(index, 1);
     this.session.teacherIds.splice(index, 1);
     this.save().subscribe();
   }
   deleteLearner(learner: User, index: number) {
+    if (this.readonly) return;
     this.session.participants.splice(index, 1);
     this.session.participantIds.splice(index, 1);
     this.save().subscribe();
   }
   start() {
+    if (this.readonly) return;
     this.session.status = 'STARTED';
     this.session.startDate = new Date();
     this.session.expireDate = this.sessionService.computeExpireDate(
@@ -333,11 +346,13 @@ export class SessionEditComponent implements OnInit {
     return await lastValueFrom(this.i18n.get(key));
   }
   stop() {
+    if (this.readonly) return;
     this.session.status = 'STOPPED';
     this.session.expireDate = new Date();
     this.save(true).subscribe(async () => this.toastrService.success(await this.translate('session-edit.toast.stopped'), '', this.toastCfg));
   }
   correction() {
+    if (this.readonly) return;
     this.session.status = 'CORRECTION';
     this.sessionService.computeLearnerScores(this.session, this.course).pipe(
       mergeMap(() => this.save(true)),
@@ -346,16 +361,19 @@ export class SessionEditComponent implements OnInit {
     ).subscribe();
   }
   computeScores() {
+    if (this.readonly) return;
     this.sessionService.computeLearnerScores(this.session, this.course).pipe(
       mergeMap(() => this.save(true)),
       map(async () => this.toastrService.success(await this.translate('session-edit.totast.scored'), '', this.toastCfg))
     ).subscribe();
   }
   close() {
+    if (this.readonly) return;
     this.session.status = 'CLOSED';
     this.save(true).subscribe(async () => this.toastrService.success(await this.translate('session-edit.toast.closed'), '', this.toastCfg));
   }
   async delete() {
+    if (this.readonly) return;
     this.alertCtrl.create({
       message: await this.translate('session-edit.alert.confirm-deletion'),
       buttons: [
