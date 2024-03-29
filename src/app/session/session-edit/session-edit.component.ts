@@ -69,10 +69,10 @@ export class SessionEditComponent implements OnInit {
   }
 
   onStartDateChange(value) {
-    this.session.startDate = this.dateService.string2date(value[0], this.session.startDate);
+    this.session.startDate = this.dateService.string2date(value, this.session.startDate);
   }
   onExpireDateChange(value) {
-    this.session.expireDate = this.dateService.string2date(value[0], this.session.expireDate);
+    this.session.expireDate = this.dateService.string2date(value, this.session.expireDate);
   }
 
   ngOnInit() {
