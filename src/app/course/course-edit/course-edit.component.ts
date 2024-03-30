@@ -126,11 +126,11 @@ export class CourseEditComponent implements OnInit {
   goToTranslation() {
     this.save().subscribe(() => this.navController.navigateRoot(`/course/translation/${this.courseId}`));
   }
-  saveNback() {
+  saveNroute(route) {
     this.save().pipe(
       map((rcourse) => {
         if (!rcourse.error) {
-          this.navController.navigateRoot('/course');
+          this.navController.navigateRoot(route);
         }
       })).subscribe();
   }

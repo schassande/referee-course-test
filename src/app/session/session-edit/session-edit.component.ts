@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AlertController, ModalController, NavController } from '@ionic/angular';
-import * as moment from 'moment';
 import { ToastrService } from 'ngx-toastr';
-import { forkJoin, Observable, of } from 'rxjs';
+import { forkJoin, lastValueFrom, Observable, of, Subject } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { logSession } from 'src/app/logging-config';
 import { Course, Session, SessionParticipant, SharedWith, User } from 'src/app/model/model';
@@ -17,6 +16,7 @@ import { UserService } from 'src/app/service/UserService';
 import { Category } from 'typescript-logging';
 import { UserSelectorComponent } from './../../main/widget/user-selector-component';
 import { Clipboard } from '@angular/cdk/clipboard';
+import { TranslateService } from '@ngx-translate/core';
 
 const logger = new Category('edit', logSession);
 
@@ -49,28 +49,33 @@ export class SessionEditComponent implements OnInit {
     private route: ActivatedRoute,
     private sessionService: SessionService,
     private toastrService: ToastrService,
+    private i18n: TranslateService,
     private userService: UserService
     ) {
   }
 
   get startDate(): string {
-    return this.session.startDate.toISOString();
+    return this.dateService.date2string(this.session.startDate);
   }
-  set startDate(dateStr: string) {
-    this.session.startDate = moment(dateStr).toDate();
+  set startDate(dateStr: any) {
+    if (this.readonly) return;
+    this.session.startDate = this.dateService.string2date(dateStr);
   }
   get expireDate(): string {
-    return this.session.expireDate.toISOString();
+    return this.dateService.date2string(this.session.expireDate);
   }
-  set expireDate(dateStr: string) {
-    this.session.expireDate = moment(dateStr).toDate();
+  set expireDate(dateStr: any) {
+    if (this.readonly) return;
+    this.session.expireDate = this.dateService.string2date(dateStr);
   }
 
   onStartDateChange(value) {
-    this.session.startDate = this.dateService.string2date(value[0], this.session.startDate);
+    if (this.readonly) return;
+    this.session.startDate = this.dateService.string2date(value, this.session.startDate);
   }
   onExpireDateChange(value) {
-    this.session.expireDate = this.dateService.string2date(value[0], this.session.expireDate);
+    if (this.readonly) return;
+    this.session.expireDate = this.dateService.string2date(value, this.session.expireDate);
   }
 
   ngOnInit() {
@@ -131,20 +136,6 @@ export class SessionEditComponent implements OnInit {
     return of({ error: null, data: this.session});
   }
 
-
-  saveNback() {
-    if (this.readonly) {
-      this.navController.navigateRoot('/session');
-    } else {
-      this.save(false).pipe(
-        map((rses) => {
-          if (!rses.error) {
-            this.navController.navigateRoot('/session');
-          }
-        })).subscribe();
-    }
-  }
-
   save(canNavigation: boolean = true): Observable<ResponseWithData<Session>> {
     const sid = this.session.id;
     return this.sessionService.save(this.session).pipe(
@@ -163,11 +154,11 @@ export class SessionEditComponent implements OnInit {
 
   async addXXX() {
     this.alertCtrl.create({
-      message: 'Do you want to add teaches or learners?',
+      message: await this.translate('session-edit.add-teacher-learner'),
       buttons: [
-        { text: 'Learner', handler: () => this.addLearner() },
-        { text: 'Teacher', handler: () => this.addTeacher() },
-        { text: 'Cancel', role: 'cancel'}
+        { text: await this.translate('session-edit.learner'), handler: () => this.addLearner() },
+        { text: await this.translate('session-edit.teacher'), handler: () => this.addTeacher() },
+        { text: await this.translate('cancel'), role: 'cancel'}
       ]
     }).then( (alert) => alert.present() );
   }
@@ -179,6 +170,7 @@ export class SessionEditComponent implements OnInit {
   }
 
   async add(role: string = 'Learner') {
+    if (this.readonly) return;
     const modal = await this.modalController.create({ component: UserSelectorComponent});
     modal.onDidDismiss().then( (data) => {
       const sharedWith: SharedWith = data.data as SharedWith;
@@ -200,6 +192,7 @@ export class SessionEditComponent implements OnInit {
     modal.present();
   }
   addParticipant(user: User) {
+    if (this.readonly) return;
     console.log(`addParticipant(${user.id})`);
     const participant = this.session.participants.find(p => p.person.personId === user.id);
     if (!participant) {
@@ -216,22 +209,26 @@ export class SessionEditComponent implements OnInit {
         failedQuestionIds: []
       });
       this.session.participantIds.push(user.id);
+      this.save().subscribe();
     }
   }
   addLearner(){
+    if (this.readonly) return;
     this.add('Learner');
   }
   addTeacher(){
+    if (this.readonly) return;
     this.add('Teacher');
   }
-  inviteLearner() {
+  async inviteLearner() {
+    if (this.readonly) return;
     this.alertCtrl.create({
-      message: 'Write here the list of the participant\'s emails.',
+      message: await this.translate('session-edit.alert.email-list'),
       inputs: [{ name: 'text', type: 'textarea'}],
       buttons: [
-        { text: 'Cancel', role: 'cancel'},
+        { text: await this.translate('cancel'), role: 'cancel'},
         {
-          text: 'Invite',
+          text: await this.translate('session-edit.invite'),
           handler: (data) => {
             if (data.text) {
               // comment console.log(data.text);
@@ -271,6 +268,7 @@ export class SessionEditComponent implements OnInit {
     }).then( (alert) => alert.present() );
   }
   createUserFromEmail(email: string): Observable<ResponseWithData<User>> {
+    if (this.readonly) return;
     console.log(`createUser(${email})`);
     let password = '';
     for (let i = 0; i < 8; i++) {
@@ -309,6 +307,7 @@ export class SessionEditComponent implements OnInit {
       } as User, null, true);
   }
   onCourseIdChange(event) {
+    if (this.readonly) return;
     const newCourseId = event.target.value;
     if (newCourseId) {
       this.course = this.courses.find(c => c.id === newCourseId);
@@ -322,50 +321,63 @@ export class SessionEditComponent implements OnInit {
   }
 
   deleteTeacher(teacher: User, index: number) {
+    if (this.readonly) return;
     this.session.teachers.splice(index, 1);
     this.session.teacherIds.splice(index, 1);
+    this.save().subscribe();
   }
   deleteLearner(learner: User, index: number) {
+    if (this.readonly) return;
     this.session.participants.splice(index, 1);
     this.session.participantIds.splice(index, 1);
+    this.save().subscribe();
   }
   start() {
+    if (this.readonly) return;
     this.session.status = 'STARTED';
     this.session.startDate = new Date();
     this.session.expireDate = this.sessionService.computeExpireDate(
       this.session.startDate,
       this.course.test.duration,
       this.course.test.durationUnit);
-    this.save(true).subscribe(() => this.toastrService.success('The exam has been started.', '', this.toastCfg));
-    }
+    this.save(true).subscribe(async () => this.toastrService.success(await this.translate('session-edit.toast.started'), '', this.toastCfg));
+  }
+  async translate(key: string): Promise<string> {
+    return await lastValueFrom(this.i18n.get(key));
+  }
   stop() {
+    if (this.readonly) return;
     this.session.status = 'STOPPED';
     this.session.expireDate = new Date();
-    this.save(true).subscribe(() => this.toastrService.success('The exam has been stopped.', '', this.toastCfg));
+    this.save(true).subscribe(async () => this.toastrService.success(await this.translate('session-edit.toast.stopped'), '', this.toastCfg));
   }
   correction() {
+    if (this.readonly) return;
     this.session.status = 'CORRECTION';
     this.sessionService.computeLearnerScores(this.session, this.course).pipe(
       mergeMap(() => this.save(true)),
       mergeMap(() => this.sessionService.sendCertificateAll(this.session)),
-      map(() => this.toastrService.success('Marking step of the exam.', '', this.toastCfg))
+      map(async () => this.toastrService.success(await this.translate('session-edit.toast.marked'), '', this.toastCfg))
     ).subscribe();
   }
   computeScores() {
+    if (this.readonly) return;
     this.sessionService.computeLearnerScores(this.session, this.course).pipe(
       mergeMap(() => this.save(true)),
-      map(() => this.toastrService.success('Scores have been computed.', '', this.toastCfg))
+      map(async () => this.toastrService.success(await this.translate('session-edit.totast.scored'), '', this.toastCfg))
     ).subscribe();
   }
   close() {
+    if (this.readonly) return;
     this.session.status = 'CLOSED';
-    this.save(true).subscribe(() => this.toastrService.success('The exam has been closed.', '', this.toastCfg));
+    this.save(true).subscribe(async () => this.toastrService.success(await this.translate('session-edit.toast.closed'), '', this.toastCfg));
   }
-  delete() {
+  async delete() {
+    if (this.readonly) return;
     this.alertCtrl.create({
-      message: 'Do you reaaly want to delete this session?',
+      message: await this.translate('session-edit.alert.confirm-deletion'),
       buttons: [
-        { text: 'Cancel', role: 'cancel'},
+        { text: await this.translate('cancel'), role: 'cancel'},
         {
           text: 'Delete',
           handler: () => {
@@ -431,14 +443,14 @@ export class SessionEditComponent implements OnInit {
     }
   }
 
-  sendCertificate(learner: SessionParticipant, index: number) {
-    this.toastrService.info('Sending certificate by email...', '', this.toastCfg);
-    this.sessionService.sendCertificate(learner.person.personId, this.session).subscribe((response: Response) => {
+  async sendCertificate(learner: SessionParticipant, index: number) {
+    this.toastrService.info(await this.translate('session-edit.toast.sending-certificate'), '', this.toastCfg);
+    this.sessionService.sendCertificate(learner.person.personId, this.session).subscribe(async (response: Response) => {
       if (response.error) {
-        this.toastrService.error('Certificate error.', '', this.toastCfg);
+        this.toastrService.error(await this.translate('session-edit.toast.error-certificate'), '', this.toastCfg);
         logger.error('Certificate error: ' + JSON.stringify(response.error), null);
       } else {
-        this.toastrService.info('Certificate sent.', '', this.toastCfg);
+        this.toastrService.info(await this.translate('session-edit.toast.certificate-sent'), '', this.toastCfg);
         logger.info('Certificate sent.');
       }
     });

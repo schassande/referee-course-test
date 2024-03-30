@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { TeacherListComponent } from './teacher-list/teacher-list.component';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
     declarations: [TeacherListComponent],
@@ -11,7 +12,8 @@ import { IonicModule } from '@ionic/angular';
         CommonModule,
         FormsModule,
         IonicModule,
-        TeacherRoutingModule
+        TeacherRoutingModule,
+        TranslateModule.forChild({extend: true})
     ]
 })
 export class TeacherModule { }

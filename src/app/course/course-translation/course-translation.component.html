@@ -1,11 +1,14 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-button (click)="back()">
+            <ion-button routerLink="/home">
+                <ion-icon name="home"></ion-icon>
+            </ion-button>
+            <ion-button routerLink="/course/edit/{{courseId}}">
                 <ion-icon name="arrow-back"></ion-icon>
             </ion-button>
         </ion-buttons>
-        <ion-title style="text-align: center;" i18n="@@course.translation.title">Test translation</ion-title>
+        <ion-title style="text-align: center;">{{ "course.translation.title" | translate }}</ion-title>
         <ion-buttons slot="end">
             <ion-menu-button autoHide="false" menu="main"></ion-menu-button>
         </ion-buttons>
@@ -28,12 +31,12 @@
     </div>
     <ion-list *ngIf="!loading">
         <ion-item>
-            <ion-label position="fixed" i18n="@@course.edit.name">Name:</ion-label>
+            <ion-label position="fixed">{{ "course.edit.name" | translate}}</ion-label>
             <ion-input type="text" [(ngModel)]="course.name" readonly="true"></ion-input>
         </ion-item>
         <ion-item *ngFor="let lang of languages; let index = index;" rel="">
             <ion-checkbox slot="start" checked="{{ course.test.supportedLanguages.indexOf(lang[0]) >= 0}}" (ionChange)="toggleLanguage(lang[0], $event)"></ion-checkbox>
-            <img src="assets/flags/{{ lang[0].toUpperCase() }}.png" height="30px" style="margin: 5px 20px 5px 0;">{{lang[1]}}
+            <img src="assets/flags/{{ lang[0].toUpperCase() }}.png" height="30px" style="margin: 5px 20px 5px 0;" alt="{{lang[1]}}">{{lang[1]}}
 
             <span *ngIf="course.test.supportedLanguages.indexOf(lang[0]) >= 0">: {{ percentTranslations[lang[0]] }}%</span>
 
@@ -43,7 +46,7 @@
         </ion-item>
         <ion-item-group style="width: 100%;" *ngIf="nbMissingTranslations">
             <ion-item-divider color="light" style="text-align: center; font-size: 1.2em; padding: 10px;">
-                {{nbMissingTranslations}}&nbsp;<span i18n="@@course.translation.missing-translations">Missing translations</span>
+                {{nbMissingTranslations}}&nbsp;{{ "course.translation.missing-translations" | translate }}
             </ion-item-divider>
             <div *ngFor="let lang of course.test.supportedLanguages">
                 <div *ngIf="missingTranslations[lang].length">

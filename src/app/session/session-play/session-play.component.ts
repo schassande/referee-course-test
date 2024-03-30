@@ -387,7 +387,7 @@ export class SessionPlayComponent implements OnInit, OnDestroy {
       this.answerValue = '';
     }
     this.changeDetectorRef.detectChanges();
-    logger.debug(() => 'updateAnswer(): ' + this.getAnswerKey() + ' ' + pa + ' ' + this.answerValue + ' ' + this.answerValues);
+    // logger.debug(() => 'updateAnswer(): ' + this.getAnswerKey() + ' ' + pa + ' ' + this.answerValue + ' ' + this.answerValues);
   }
 
   onSwipe(event) {

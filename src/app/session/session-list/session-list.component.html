@@ -1,11 +1,11 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-button routerLink="/home" detail>
-                <ion-icon name="arrow-back"></ion-icon>
+            <ion-button routerLink="/home">
+                <ion-icon name="home"></ion-icon>
             </ion-button>
         </ion-buttons>
-        <ion-title style="text-align: center;" i18n="@@session-list.title">Sessions</ion-title>
+        <ion-title style="text-align: center;">{{ "session-list.title" | translate}}</ion-title>
         <ion-buttons slot="end">
             <ion-menu-button autoHide="false" menu="main"></ion-menu-button>
         </ion-buttons>
@@ -29,24 +29,21 @@
     </div>
     <ion-list style="margin: 0px 0 60px 0;">
         <ion-item>
-            <ion-label>Individual</ion-label>
-            <ion-toggle [(ngModel)]="showIndividual" (ngModelChange)="searchSessions()"></ion-toggle>
+            <ion-toggle [(ngModel)]="showIndividual" (ngModelChange)="searchSessions()">{{ "session-list.individual" | translate}}</ion-toggle>
         </ion-item>
         <ion-item>
-            <ion-label>Year</ion-label>
-            <ion-select [(ngModel)]="year" (ngModelChange)="searchSessions()" interface="action-sheet">
+            <ion-select label="Year" [(ngModel)]="year" (ngModelChange)="searchSessions()" interface="action-sheet">
                 <ion-select-option *ngFor="let y of years" value="{{y}}">{{y}}</ion-select-option>
             </ion-select>
         </ion-item>
         <ion-item>
-            <ion-label>Status</ion-label>
-            <ion-select [(ngModel)]="status" (ngModelChange)="searchSessions()" interface="action-sheet">
-                <ion-select-option value="">Any</ion-select-option>
-                <ion-select-option value="REGISTRATION">Registration</ion-select-option>
-                <ion-select-option value="STARTED">Started</ion-select-option>
-                <ion-select-option value="STOPPED">Stopped</ion-select-option>
-                <ion-select-option value="CORRECTION">Correction</ion-select-option>
-                <ion-select-option value="CLOSED">Closed</ion-select-option>
+            <ion-select label="Status" [(ngModel)]="status" (ngModelChange)="searchSessions()" interface="action-sheet">
+                <ion-select-option value="">{{ "session.status.any" | translate}}</ion-select-option>
+                <ion-select-option value="REGISTRATION">{{ "session.status.REGISTRATION" | translate}}</ion-select-option>
+                <ion-select-option value="STARTED">{{ "session.status.STARTED" | translate}}</ion-select-option>
+                <ion-select-option value="STOPPED">{{ "session.status.STOPPED" | translate}}</ion-select-option>
+                <ion-select-option value="CORRECTION">{{ "session.status.CORRECTION" | translate}}</ion-select-option>
+                <ion-select-option value="CLOSED">{{ "session.status.CLOSED" | translate}}</ion-select-option>
             </ion-select>
         </ion-item>
         <ion-item *ngFor="let session of sessions">
@@ -55,11 +52,11 @@
                 <div>{{dateService.date2string(session.startDate)}} / {{session.keyCode}} / {{session.status}}</div>
                 <div style="margin-left: 20px; font-weight: bold;">{{session.courseName}}</div>
                 <div *ngIf="session.autoPlay" style="margin-left: 20px;">
-                    <span i18n="@@session-list.individual-learner">Individual learner</span>: {{session.participants[0].person.firstName}} {{session.participants[0].person.lastName}}
+                    {{ "session-list.individual-learner" | translate}}: {{session.participants[0].person.firstName}} {{session.participants[0].person.lastName}}
                 </div>
                 <div *ngIf="!session.autoPlay" style="margin-left: 20px;">
-                    <div>{{session.participants.length}} participants.</div>
-                    <div *ngFor="let teacher of session.teachers">by {{teacher.firstName}} {{teacher.lastName}}</div>
+                    <div>{{session.participants.length}} {{"session-list.participants"|translate}}.</div>
+                    <div *ngFor="let teacher of session.teachers">{{"session-list.by"|translate}} {{teacher.firstName}} {{teacher.lastName}}</div>
                 </div>
             </ion-label>
             <ion-icon *ngIf="!readonly && session.teachers && session.teachers.length && (isAdmin || session['isTeacher'])" slot="end" name="trash" (click)="deleteItem(session)"></ion-icon>

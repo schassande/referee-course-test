@@ -224,7 +224,7 @@ export abstract class RemotePersistentDataService<D extends PersistentData> impl
                 if (adjustedOptions === 'default') {
                     adjustedOptions = las.forceOffline ? 'cache' : 'server';
                 }
-                this.logger.debug(() => 'query ' + JSON.stringify(adjustedOptions, null, 2));
+                // this.logger.debug(() => 'query ' + JSON.stringify(adjustedOptions, null, 2));
                 if (adjustedOptions === 'cache') {
                     return from(getDocsFromCache(query(q)) as Promise<QuerySnapshot<D>>);
                 } else if (adjustedOptions === 'server') {

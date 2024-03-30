@@ -1,0 +1,169 @@
+{
+    "cancel": "Annuler",
+     "course" : {
+        "edit" : {
+            "name": "Name:"
+        },
+        "list": {
+            "title" : "Formations"
+        },
+        "translation": {
+            "title" : "Traduction des tests",
+            "missing-translations": "Traductions manquantes"
+        }
+    },
+    "home" : {
+        "page-title" : "Examens en ligne",
+        "teacher-list-sessions": "Vos sessions en tant que formateur",
+        "learner-list-sessions": "Vos sessions",
+        "group-session-exam" : {
+            "title": "Creer une session de groupe",
+            "description": "Pour démarrer un test pour un groupe de participants, selectionner un test.",
+            "course": "Formation"
+        },
+        "register-session": {
+            "title": "S'enregistrer dans une session de groupe existante",
+            "code": "CODE"
+        },
+        "individual-online-exam": {
+            "title": "Individual online instant exam",
+            "description": "To run immediately a new individual online test, please select the test name and the teacher who will validate the examen.",
+            "course": "Examen",
+            "teacher": "Formateur"
+        },
+        "install-on-device": "Installer sur le périphérique",
+        "connected-as": "Connecté en tant que"
+    },
+    "menu": {
+        "home": "Accueil",
+        "logout": "Se déconnecter",
+        "reload": "Recharger l'application",
+        "courses": "Examens",
+        "sessions": "Sessions",
+        "teachers": "Formateurs",
+        "settings": "Configuration",
+        "lang-en": "English",
+        "lang-fr": "Français"
+    },
+    "session" : {
+        "individual-learner": "Apprenant",
+        "individual-learner-participants": "{{value}} participants",
+        "status" : {
+            "any": "Tous",
+            "REGISTRATION": "Enregistrement",
+            "STARTED": "Démarrée",
+            "STOPPED": "Arrêtée",
+            "CORRECTION" : "En correction",
+            "CLOSED": "Cloturée"
+        }
+    },
+    "session-analyse": {
+        "title": "Analyse de la session",
+        "learners-with-wrong-answers": "{{value}} apprenants ayant mal répondu",
+        "questionId": "Question {{value}}"
+    },
+    "session-edit": {
+        "action": {
+            "view": "Voir",
+            "copy-link": "Copier lien",
+            "start": "Démarrer",
+            "stop": "Arrêter",
+            "correction": "Corriger",
+            "analyse": "Analyser",
+            "scores": "Scores",
+            "export": "Exporter",
+            "close": "Cloturer"
+        },
+        "add-teacher-learner": "Voulez-vous ajouter un formteur ou un apprenant?",
+        "alert": {
+            "confirm-deletion": "Voulez-vous vraiment supprimer définitivement cette session?",
+            "email-list": "Ecrire ici la liste des emails des participants que vous voulez ajouter."
+        },
+        "code": "Code",
+        "course": "Examen",
+        "delete-session": "Supprimer session",
+        "expire-date": "Expiration",
+        "FAIL": "ECHEC",
+        "general-info": "Information generale",
+        "invite": "Inviter",
+        "learner": "Apprenant",
+        "learners": "Apprenants",
+        "PASS": "REUSSI",
+        "random-questions": "Random questions",
+        "raw-export": "Exporter",
+        "start-date": "Démarrage",
+        "status": "Status",
+        "teacher": "Formateur",
+        "teachers": "Formateurs",
+        "title": "Session d'examen",
+        "toast": {
+            "started": "L'examen a été démarré.",
+            "stopped": "L'examen a été arrêté.",
+            "marked": "Calcul des scores en cours.",
+            "scored": "Les scores ont été calculés.",
+            "closed": "L'examen a été cloturée.",
+            "sending-certificate": "Envoi du diplome par email...",
+            "error-certificate": "Erreur d'envoi du diplome.",
+            "certificate-sent": "Diplome envoyé."
+        }
+    },
+    "session-learner-analyse":{
+        "course": "Examen",
+        "email": "Email",
+        "individual": "Individuel",
+        "Learner": "Apprenant",
+        "nb-answer-registered": "Nb réponse enregistrées",
+        "question": "Question",
+        "session": "Session",
+        "title": "Analyses des réponses d'un apprenant"
+    },
+    "session-list": {
+        "title": "Sessions",
+        "individual": "Individuel",
+        "individual-learner": "Apprenant individuel",
+        "participants": "participants",
+        "by": "par"
+    },
+    "session-play": {
+        "title": "Sessions",
+        "question": "Question",
+        "session-code": "Session",
+        "session-not-started": "La session n'est pas encore démarrée.",
+        "session-expired": "Session terminée",
+        "remaining-time": "Temps restant",
+        "question-no-answer": "Questions sans réponse",
+        "button-checkanswered": "Rechercher les questions sans réponse",
+        "button-close": "Cloturer l'examen (opération définitive)",
+        "available-languages": "Langages disponibles",
+        "teacher-panel-control": {
+            "title": "Panneau de controle du formateur",
+            "edit": "Edit",
+            "start": "Démarrer",
+            "stop": "Arrêter",
+            "correction": "Corriger",
+            "analyse": "Analyser",
+            "close": "Cloturer"
+        },
+        "learners": "Apprenants",
+        "PASS": "REUSSI",
+        "FAIL": "ECHEC",
+        "answers": "Réponses",
+        "rights": "Bonnes",
+        "required": "Minimum"
+    },
+    "teacher-list": {
+        "title": "Formateurs",
+        "country": "Trier par pays"
+   },
+   "user-login" : {
+    "title": "Connexion",
+    "welcome" : "Bienvenue sur l'application d'examen en ligne !<br><br>Connectez-vous avec votre email et votre mot de passe.<br>Ou créer un compte.",
+    "email": "Email",
+    "password": "Mot de passe",
+    "remember-on-device": "Se souvenir sur ce périphérique",
+    "reset-password": "Remise à zero du mot de passe",
+    "errors": "Erreurs:",
+    "button-create-account": "S'enregistrer",
+    "button-login": "Se connecter"
+   }
+}
