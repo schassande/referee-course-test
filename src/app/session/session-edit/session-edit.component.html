@@ -70,6 +70,20 @@
             <ion-item>                
                 <ion-toggle justify="end" [(ngModel)]="session.randomQuestions" [disabled]="session.status !== 'REGISTRATION'" (ionChange)="onForceNoRandom()">{{'session-edit.random-questions'|translate}}</ion-toggle>
             </ion-item>
+            <ion-accordion-group>
+                <ion-accordion value="first">
+                  <ion-item slot="header">
+                    <ion-label>List of questions</ion-label>
+                  </ion-item>
+                  <div class="ion-padding" slot="content">
+                    <div *ngFor="let qId of session.questionIds; let idx = index">
+                      {{idx+1}}:{{qId}}: <span innerHtml="{{ getQuestionName(qId) }}"></span>
+                    </div>
+                  </div>
+                </ion-accordion>
+            </ion-accordion-group>
+            <ion-item>                
+            </ion-item>
         </ion-item-group>
     </ion-list>
     <section style="text-align: center;" *ngIf="!loading">

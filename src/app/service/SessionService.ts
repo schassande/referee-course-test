@@ -326,16 +326,13 @@ export class SessionService extends RemotePersistentDataService<Session> {
     session.questionIds = [];
     // for each serie extract the required number of question
     course.test.series.forEach((serie, serieIdx) => {
+      const random = serie.selectionMode === 'RANDOM' || session.randomQuestions;
       this.logger.debug(() => 'Looking for ' + serie.nbQuestion + ' question in the serie '
-        + serieIdx + ' with mode ' + serie.selectionMode + '. Nb question available: ' + serie.questions.length);
-      if (!serie.selectionMode) {
-        serie.selectionMode = 'RANDOM';
-      }
-      if (serie.selectionMode === 'RANDOM' || session.randomQuestions) {
+        + serieIdx + (random ? ' randomly':'') + '. Nb question available: ' + serie.questions.length);
+      if (random) {
         const limit = serie.nbQuestion === 0 ? course.test.nbQuestion - session.questionIds.length : serie.nbQuestion;
         this.selectRamdomQuestionsSerie(session, serie, limit);
-
-      } else if (serie.selectionMode === 'ALL') {
+      } else {
         serie.questions.forEach((question, index) => {
           if (serie.nbQuestion < 1 || index < serie.nbQuestion) { // limit to the number of questions if defined
             this.logger.debug(() => 'Add question ' + question.questionId);

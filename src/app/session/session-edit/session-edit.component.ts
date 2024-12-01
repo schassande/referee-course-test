@@ -485,4 +485,11 @@ export class SessionEditComponent implements OnInit {
       a.remove();
     });
   }
+
+  getQuestionName(questionId: string): string {
+    return this.course.test.series.map(s => {
+      const qs = s.questions.filter(q => q.questionId === questionId);
+      return qs.length > 0 ? qs[0].text : undefined;
+    }).filter(e=>e).join('')
+  }
 }
