@@ -10,5 +10,5 @@ export const environment = {
     functionRegion: 'us-central1',
     functionOrigin: 'https://referee-course-test.web.app'
   },
-  version: '1.16.3-2024-12-01T10:45:36.412Z'
+  version: '1.17.0-2025-01-08T06:41:57.603Z'
 };
