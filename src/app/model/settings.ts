@@ -8,6 +8,7 @@ export interface LocalAppSettings {
     apiKey?: string;
     nbPeriod?: number;
     preferedLanguage: SupportedLanguages;
+    pages: Object;
 }
 export type SupportedLanguages = 'fr' | 'en';
 export type NetworkConnection = 'UNKNOWN' | 'NONE'| '3G' | '4G' | 'WIFI' | 'WIRED';

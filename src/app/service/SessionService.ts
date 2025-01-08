@@ -82,7 +82,12 @@ export class SessionService extends RemotePersistentDataService<Session> {
     }
     
     return super.filter(this.query(q, options),
-      (session: Session) => !str || this.stringContains(str, session.keyCode));
+      (session: Session) => !str 
+        || this.stringContains(str, session.keyCode)
+        || session.participants.filter(participant => 
+          this.stringContains(str, participant.person.firstName) || this.stringContains(str, participant.person.lastName)
+        ).length > 0  
+      );
   }
 
   public sortSessionByStartDate(sessions: Session[], reverse: boolean = false): Session[] {

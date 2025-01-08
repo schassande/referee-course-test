@@ -7,6 +7,8 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { SessionService } from 'src/app/service/SessionService';
 import { Session, SessionStatus, User } from 'src/app/model/model';
 import * as moment from 'moment';
+import { AppSettingsService } from 'src/app/service/AppSettingsService';
+import { map } from 'rxjs';
 
 
 const logger = new Category('list', logSession);
@@ -17,20 +19,24 @@ const logger = new Category('list', logSession);
   templateUrl: './session-list.component.html'
 })
 export class SessionListComponent implements OnInit {
+  readonly PAGE_KEY = 'session-list';
   error: any;
-  searchInput: string;
   loading = false;
   sessions: Session[];
   currentUser: User;
   readonly = false;
   isAdmin = false;
-  showIndividual = false;
   year: string;
   years: string[] = [];
-  status: SessionStatus = null;
-
+  preferences = {
+    searchInput: '',
+    showIndividual: false,
+    year: '',
+    status: null as SessionStatus,
+  }
   constructor(
     public alertCtrl: AlertController,
+    private appSettingsService: AppSettingsService,
     private connectedUserService: ConnectedUserService,
     private sessionService: SessionService,
     public dateService: DateService,
@@ -47,13 +53,28 @@ export class SessionListComponent implements OnInit {
     this.years.push('' + y)
     this.years.push('' + (y-1));
     this.years.push('' + (y-2));
-    this.searchSessions();
+    this.appSettingsService.getPagePreferences(this.PAGE_KEY).pipe(
+      map((pref) => {
+        this.preferences = (pref as any);
+        this.setDefaultPagePreferences();
+        this.searchSessions();
+        return pref;
+      })
+    ).subscribe();
+  }
+  setDefaultPagePreferences() {
+    if (!this.preferences) this.preferences = ({} as any)
+    if (this.preferences.searchInput === undefined) this.preferences.searchInput = '';
+    if (this.preferences.showIndividual  === undefined) this.preferences.showIndividual = false;
+    if (this.preferences.year === undefined) this.preferences.year = '';
+    if (this.preferences.status === undefined) this.preferences.status = null;
   }
   onSearchBarInput() {
     this.searchSessions();
   }
   searchSessions(forceServer: boolean = false, event: any = null) {
-    this.sessionService.search(this.searchInput, this.showIndividual, Number.parseInt(this.year, 10), this.status,
+    this.appSettingsService.setPagePreferences(this.PAGE_KEY, this.preferences).subscribe();
+    this.sessionService.search(this.preferences.searchInput, this.preferences.showIndividual, Number.parseInt(this.year, 10), this.preferences.status,
       forceServer ? 'server' : 'default').subscribe((rsession) => {
       this.sessions = this.sessionService.sortSessionByStartDate(rsession.data, true)
         .map(session => {

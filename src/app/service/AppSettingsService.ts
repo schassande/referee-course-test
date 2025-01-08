@@ -30,7 +30,8 @@ export class AppSettingsService extends LocalSingletonDataService<LocalAppSettin
                         lastUserPassword: null,
                         forceOffline: false,
                         nbPeriod: 2,
-                        preferedLanguage: 'en'
+                        preferedLanguage: 'en',
+                        pages: {}
                     };
                     super.save(result);
                 }
@@ -84,7 +85,20 @@ export class AppSettingsService extends LocalSingletonDataService<LocalAppSettin
         return this.get().pipe(
             mergeMap((setting: LocalAppSettings) => {
                 setting.preferedLanguage = preferedLanguage;
-                console.log(('Saving prefered language: ' + preferedLanguage));
+                console.log('Saving prefered language: ' + preferedLanguage);
+                return this.save(this.settings);
+            })
+        );
+    }
+    public getPagePreferences(pageKey:string): Observable<Object> {
+        return this.get().pipe(map(s=> !s.pages ? undefined : s.pages[pageKey]))
+    }
+    public setPagePreferences(pageKey: string, preferences: Object): Observable<any> {
+        return this.get().pipe(
+            mergeMap((setting: LocalAppSettings) => {
+                if (!setting.pages) setting.pages = {};
+                setting.pages[pageKey] = preferences;
+                console.log('Saving page preference: ' + pageKey + ':', preferences);
                 return this.save(this.settings);
             })
         );
