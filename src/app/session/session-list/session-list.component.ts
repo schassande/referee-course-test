@@ -26,7 +26,6 @@ export class SessionListComponent implements OnInit {
   currentUser: User;
   readonly = false;
   isAdmin = false;
-  year: string;
   years: string[] = [];
   preferences = {
     searchInput: '',
@@ -49,7 +48,7 @@ export class SessionListComponent implements OnInit {
     this.isAdmin = this.connectedUserService.getCurrentUser().role === 'ADMIN';
     this.readonly = this.currentUser.role === 'LEARNER';
     const y = moment().year();
-    this.year = '' + y;
+    this.preferences.year = '' + y;
     this.years.push('' + y)
     this.years.push('' + (y-1));
     this.years.push('' + (y-2));
@@ -74,7 +73,7 @@ export class SessionListComponent implements OnInit {
   }
   searchSessions(forceServer: boolean = false, event: any = null) {
     this.appSettingsService.setPagePreferences(this.PAGE_KEY, this.preferences).subscribe();
-    this.sessionService.search(this.preferences.searchInput, this.preferences.showIndividual, Number.parseInt(this.year, 10), this.preferences.status,
+    this.sessionService.search(this.preferences.searchInput, this.preferences.showIndividual, Number.parseInt(this.preferences.year, 10), this.preferences.status,
       forceServer ? 'server' : 'default').subscribe((rsession) => {
       this.sessions = this.sessionService.sortSessionByStartDate(rsession.data, true)
         .map(session => {

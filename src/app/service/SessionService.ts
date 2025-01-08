@@ -67,7 +67,7 @@ export class SessionService extends RemotePersistentDataService<Session> {
     if (year) {
       const begin = moment(year + '-01-01 00:00:00').toDate();
       const end = moment((year+1) + '-01-01 00:00:00').toDate();
-      // comment console.log('filter by: year \n\t' + begin + '\n\t' + end);
+      // comment console.log('filter by: year('+year+') \n\t' + begin + '\n\t' + end);
       q = query(q, where('startDate', '>=', begin), where('startDate', '<', end));
     }
     // comment console.log('filter by: autoPlay', includeIndividual);
