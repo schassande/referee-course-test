@@ -31,6 +31,11 @@
         <ion-label>{{ "session-learner-analyse.nb-answer-registered" | translate}}: {{learnerAnswers.size}}</ion-label>
     </ion-item>
     <ion-list *ngIf="!loading && failedQuestions && failedQuestions.length > 0">
+        <div *ngIf="course" style="text-align: center; margin-top: 20px;">
+            {{"session-play.available-languages"|translate}}: <br><span *ngFor="let lg of course.test.supportedLanguages" [ngClass]="{ 'selectedLang': lg === lang}" style="margin: 0 10px;">
+                 <img src="assets/flags/{{lg.toUpperCase()}}.png" height="30px" (click)="changeLanguage(lg)" style="margin-top: 10px;" alt="{{lg}}">
+            </span>
+        </div>
         <ion-item-group *ngFor="let fq of failedQuestions" style="border-left: 1px solid lightgrey; border-right: 1px solid lightgrey;">
             <ion-item-divider color="light" style="text-align: center; font-size: 1.2em; padding: 10px;">
                 <ion-label>{{ "session-learner-analyse.question" | translate}} {{fq.question.questionId}}</ion-label>

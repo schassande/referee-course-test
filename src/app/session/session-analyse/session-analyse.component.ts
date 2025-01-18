@@ -203,4 +203,12 @@ export class SessionAnalyseComponent implements OnInit {
     });
     return forkJoin(obs);
   }
+  changeLanguage(newLang: string) {
+    if (newLang === this.lang) {
+      return;
+    }
+    this.lang = newLang;
+    this.loadTranslation().subscribe();
+  }
+
 }
