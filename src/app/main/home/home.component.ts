@@ -148,6 +148,7 @@ export class HomeComponent implements OnInit {
       answeredQuestions: 0,
       seriesResult: [],
       pass: false,
+      canPass: true,
       score: -1,
       requiredScore: course.test.requiredScore,
       maxScore: 0,

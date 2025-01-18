@@ -149,7 +149,7 @@
         "FAIL": "FAIL",
         "answers": "Answers",
         "rights": "Right",
-        "Required": "Required"
+        "required": "Required"
    },
    "teacher-list": {
         "title": "Teachers",

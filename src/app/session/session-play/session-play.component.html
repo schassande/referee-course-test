@@ -119,12 +119,14 @@
             </ion-item-divider>
             <ion-item *ngFor="let learner of session.participants; let index = index;">
                 <ion-label style="border: none;" class="listItemButton">
-                    {{learner.person.firstName}} {{learner.person.lastName}}
-                    <div *ngIf="learner.score >= 0" [ngClass]="{'testPass': learner.pass, 'testFail': !learner.pass}" style="margin-top: 5px;">
+                    {{learner.person.firstName}} {{learner.person.lastName}} {{learner.canPass}}
+                    <div *ngIf="learner.score >= 0" 
+                        [ngClass]="{ 'testPass': learner.pass, 'testWIP': (!learner.pass && learner.canPass), 'testFail': (!learner.pass && !learner.canPass)}"
+                        style="margin-top: 5px;">
                         {{"session-play."+(learner.pass ? 'PASS' : 'FAIL')|translate}}&nbsp;
                         <span>{{"session-play.answers"|translate}}:{{learner.answeredQuestions}}/{{course.test.nbQuestion}}, 
                             {{"session-play.rights"|translate}}:{{learner.score}}/{{course.test.nbQuestion}} ({{learner.percent}}%), 
-                            {{"session-play.required"|translate}}:{{learner.requiredScore}}</span>
+                            {{"session-play.required"|translate}}:{{learner.requiredScore}}/{{course.test.nbQuestion}}</span>
                     </div>
                 </ion-label>
             </ion-item>

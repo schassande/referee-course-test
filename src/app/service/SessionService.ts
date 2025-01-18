@@ -148,9 +148,12 @@ export class SessionService extends RemotePersistentDataService<Session> {
     testResult.requiredScore = course.test.requiredScore;
     testResult.percent = 0;
     testResult.pass = true;
+    testResult.canPass = true;
     testResult.answeredQuestions = 0;
     testResult.seriesResult = [];
     testResult.failedQuestionIds = [];
+    
+    let nbMissingAnswer = 0;
     course.test.series.forEach(serie => {
       const serieResult: ParticipantResult = {
         score: 0,
@@ -162,9 +165,13 @@ export class SessionService extends RemotePersistentDataService<Session> {
       };
       let nbSelectedQuestion = 0;
       serie.questions.forEach(question => {
-        if (this.checkQuestionAnswer(course, session, question, learnerAnswers,
-                                     serieResult, testResult.failedQuestionIds).questionSelected) {
+        const ac = this.checkQuestionAnswer(course, session, question, learnerAnswers,
+          serieResult, testResult.failedQuestionIds);
+        if (ac.questionSelected) {
           nbSelectedQuestion ++;
+          if (ac.failCode === 101) {
+            nbMissingAnswer++;
+          }
         }
       });
       serieResult.pass = serieResult.score >= serie.requiredScore;
@@ -180,6 +187,8 @@ export class SessionService extends RemotePersistentDataService<Session> {
         + ', answeredQuestions=' + testResult.answeredQuestions);
     });
     testResult.pass = testResult.pass && (testResult.score >= course.test.requiredScore);
+    console.log('canPass', course.test.nbQuestion, testResult.failedQuestionIds.length, course.test.requiredScore, nbMissingAnswer)
+    testResult.canPass = testResult.pass || ((testResult.score+nbMissingAnswer) >= course.test.requiredScore);
     testResult.percent = Math.round(testResult.score * 100 / session.questionIds.length);
     this.logger.debug(() => '=> Test result: score=' + testResult.score + ', pass=' + testResult.pass
       + ', percent=' + testResult.percent);
@@ -404,6 +413,7 @@ export class SessionService extends RemotePersistentDataService<Session> {
         person: this.userService.userToPersonRef(learner),
         questionAnswerIds: [],
         pass: false,
+        canPass: true,
         score: -1,
         requiredScore: -1,
         maxScore: 0,

@@ -170,6 +170,7 @@ export interface TestParticipantResult extends ParticipantResult {
 export interface SessionParticipant extends TestParticipantResult {
   /** The user */
   person: PersonRef;
+  canPass: boolean;
   /** The answerq of the questions */
   questionAnswerIds: string[];
   /** List of the question id having a wrong answer from the participant */

@@ -200,6 +200,7 @@ export class SessionEditComponent implements OnInit {
         person: this.userService.userToPersonRef(user),
         questionAnswerIds: [],
         pass: false,
+        canPass: true,
         score: -1,
         requiredScore: -1,
         maxScore: 0,

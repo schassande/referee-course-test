@@ -145,7 +145,7 @@
                     {{learner.person.firstName}} {{learner.person.lastName}}
                     <div *ngIf="learner.score >= 0" [ngClass]="{'testPass': learner.pass, 'testFail': !learner.pass}" style="margin-top: 5px;">
                         <span>{{'session-edit.' + (learner.pass ? 'PASS' : 'FAIL') |translate}}</span>&nbsp;
-                        <span>Score:{{learner.score}}/{{learner.maxScore}} ({{learner.percent}}%), Req:{{learner.requiredScore}}, #Q:{{course.test.nbQuestion}}</span>
+                        <span>Score:{{learner.score}}/{{learner.maxScore}} ({{learner.percent}}%), Req:{{learner.requiredScore}}/{{course.test.nbQuestion}}</span>
                     </div>
                 </ion-label>
                 <ion-icon *ngIf="learner.score >= 0 && learner.pass && course.test.certificateTemplateUrl" slot="end" name="medal-outline" (click)="sendCertificate(learner, index)"></ion-icon>
