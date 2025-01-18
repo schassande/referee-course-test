@@ -14,6 +14,7 @@ import { SessionAnalyseComponent } from './session-analyse/session-analyse.compo
 import { SessionLearnerAnalyseComponent } from './session-learner-analyse/session-learner-analyse.component';
 import { HttpClientModule } from '@angular/common/http';
 import { TranslateModule } from '@ngx-translate/core';
+import { LearnerResultPipePipe } from './learner-result-pipe.pipe';
 
 @NgModule({
     imports: [CommonModule, FormsModule, IonicModule, 
@@ -27,7 +28,8 @@ import { TranslateModule } from '@ngx-translate/core';
         SessionListComponent,
         SessionPlayComponent,
         SessionAnalyseComponent,
-        SessionLearnerAnalyseComponent
+        SessionLearnerAnalyseComponent,
+        LearnerResultPipePipe
     ]
 })
 export class SessionModule {}

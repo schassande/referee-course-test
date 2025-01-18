@@ -140,7 +140,7 @@
                     <ion-icon name="add"></ion-icon>
                 </ion-button>
             </ion-item-divider>
-            <ion-item *ngFor="let learner of session.participants; let index = index;">
+            <ion-item *ngFor="let learner of session.participants | learnerResultPipe; let index = index;">
                 <ion-label style="border: none;" class="listItemButton">
                     {{learner.person.firstName}} {{learner.person.lastName}}
                     <div *ngIf="learner.score >= 0" [ngClass]="{'testPass': learner.pass, 'testFail': !learner.pass}" style="margin-top: 5px;">

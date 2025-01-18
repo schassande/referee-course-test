@@ -117,7 +117,7 @@
                     <ion-spinner name="bubbles" *ngIf="refreshingStat"></ion-spinner>
                 </ion-button>
             </ion-item-divider>
-            <ion-item *ngFor="let learner of session.participants; let index = index;">
+            <ion-item *ngFor="let learner of session.participants | learnerResultPipe; let index = index;">
                 <ion-label style="border: none;" class="listItemButton">
                     {{learner.person.firstName}} {{learner.person.lastName}} {{learner.canPass}}
                     <div *ngIf="learner.score >= 0" 
