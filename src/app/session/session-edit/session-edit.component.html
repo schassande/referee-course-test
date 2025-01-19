@@ -148,7 +148,7 @@
                         <span>Score:{{learner.score}}/{{learner.maxScore}} ({{learner.percent}}%), Req:{{learner.requiredScore}}/{{course.test.nbQuestion}}</span>
                     </div>
                 </ion-label>
-                <ion-icon *ngIf="learner.score >= 0 && learner.pass && course.test.certificateTemplateUrl" slot="end" name="medal-outline" (click)="sendCertificate(learner, index)"></ion-icon>
+                <span *ngIf="learner.score >= 0 && learner.pass && course.test.certificateTemplateUrl"><ion-icon slot="end" name="medal-outline" (click)="sendCertificate(learner, index)">1</ion-icon><sup>{{ learner.certificateSent }}</sup></span>
                 <ion-icon *ngIf="!readonly && (isTeacher || isAdmin) && session.status !== 'CLOSED'" slot="end" name="trash" (click)="deleteLearner(learner, index)"></ion-icon>
                 <ion-icon *ngIf="(isTeacher || isAdmin) && !learner.pass && (session.status === 'CORRECTION' || session.status === 'CLOSED')" slot="end" name="clipboard-outline" routerLink="/session/analyse/{{sessionId}}/learner/{{learner.person.personId}}"></ion-icon>
             </ion-item>

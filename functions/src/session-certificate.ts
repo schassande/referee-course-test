@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { User, Session, SessionParticipant, Course } from './model';
+import { User, Session, SessionParticipant, Course, CertifcateSent } from './model';
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import * as fs from 'fs';
@@ -87,10 +87,13 @@ async function sendCertificateInternal(res:any, sessionId:string, learnerId: str
             return;
         }
         const email = await buildEmail(session, learner, teachers, certificateFile);
-        return mailer.sendMail(email, res).then(() => {
+        return mailer.sendMail(email, res).then(async () => {
             console.log('Certificate email sent to ' + email.to + '.');
             // delete file
             fs.unlinkSync(certificateFile);
+            //Remind Certificate sent
+            await certificateSent(session, part);
+
             res.status(200).send({ error: null, data: email})
         });
     } catch(error) {
@@ -250,6 +253,26 @@ async function getSession(sessionId: string): Promise<Session> {
     }
     // console.log('session=' + JSON.stringify(session, null, 2));
     return session;
+}
+async function certificateSent(session: Session, part: SessionParticipant) {
+    const id = session.id + '_' + part.person.personId;
+    const entry = await firestore.doc(`CertifcateSent/${id}`).get();
+    let data: CertifcateSent = entry.data() as unknown as CertifcateSent;
+    if (!entry.exists) {
+        data = {
+            id,
+            sessionId: session.id,
+            userId: part.person.personId,
+            certificateSent: 0,
+            version: 0,
+            creationDate: new Date,
+            lastUpdate: new Date(),
+            dataStatus: 'CLEAN',
+            dataRegion: session.dataRegion
+        };
+    }
+    data.certificateSent++;
+    await firestore.doc(`CertifcateSent/${id}`).set(data);
 }
 
 async function getCourse(courseId: string): Promise<Course> {

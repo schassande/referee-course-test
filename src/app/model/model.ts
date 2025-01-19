@@ -191,6 +191,12 @@ export interface ParticipantQuestionAnswer extends RootNode {
   /** time stamp of the response */
   responseTime: Date;
 }
+export interface CertifcateSent extends RootNode{
+    id: string;
+    sessionId: string;
+    userId: string;
+    certificateSent: number;
+}
 
 export type AuthProvider = 'EMAIL' | 'GOOGLE' | 'FACEBOOK';
 export type AppRole = 'TEACHER' | 'LEARNER' | 'ADMIN';

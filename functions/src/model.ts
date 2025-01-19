@@ -187,6 +187,13 @@ export interface ParticipantQuestionAnswer extends RootNode {
   responseTime: Date;
 }
 
+export interface CertifcateSent extends RootNode{
+  id: string;
+  sessionId: string;
+  userId: string;
+  certificateSent: number;
+}
+
 export type AuthProvider = 'EMAIL' | 'GOOGLE' | 'FACEBOOK';
 export type AppRole = 'TEACHER' | 'LEARNER' | 'ADMIN';
 export type AccountStatus = 'VALIDATION_REQUIRED' | 'ACTIVE' | 'LOCKED' | 'DELETED';

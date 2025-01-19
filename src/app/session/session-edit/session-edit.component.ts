@@ -5,7 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { forkJoin, lastValueFrom, Observable, of, Subject } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { logSession } from 'src/app/logging-config';
-import { Course, Session, SessionParticipant, SharedWith, User } from 'src/app/model/model';
+import { CertifcateSent, Course, Session, SessionParticipant, SharedWith, User } from 'src/app/model/model';
 import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
 import { CourseService } from 'src/app/service/CourseService';
 import { DateService } from 'src/app/service/DateService';
@@ -17,6 +17,7 @@ import { Category } from 'typescript-logging';
 import { UserSelectorComponent } from './../../main/widget/user-selector-component';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { TranslateService } from '@ngx-translate/core';
+import { CertifcateSentService } from 'src/app/service/CertifcateSentService';
 
 const logger = new Category('edit', logSession);
 
@@ -40,6 +41,7 @@ export class SessionEditComponent implements OnInit {
   constructor(
     public alertCtrl: AlertController,
     private clipboard: Clipboard,
+    private certifcateSentService: CertifcateSentService,
     private connectedUserService: ConnectedUserService,
     private courseService: CourseService,
     public dateService: DateService,
@@ -83,7 +85,8 @@ export class SessionEditComponent implements OnInit {
     console.log('role=', this.connectedUserService.getCurrentUser().role);
     this.loadParams().pipe(
       mergeMap(() => this.loadCourses()),
-      mergeMap(() => this.loadSession())
+      mergeMap(() => this.loadSession()),
+      mergeMap(() => this.loadCertificateSents())
     ).subscribe();
   }
   copySession() {
@@ -108,6 +111,24 @@ export class SessionEditComponent implements OnInit {
     return this.sessionId ? this.loadSessionFromId() : this.createNewSession();
   }
 
+  loadCertificateSents(): Observable<any> {
+    return this.certifcateSentService.getCertificateSentsBySession(this.sessionId).pipe(
+      map((rcs) => {
+        if (rcs.data) {
+          console.log(rcs.data.length, 'certificate(s) sent');
+          rcs.data.forEach(cs => {
+            // cs.userId
+            const ps = this.session.participants.filter(p => p.person.personId === cs.userId);
+            if (ps.length > 0) {
+              (ps[0] as any).certificateSent = cs.certificateSent;
+            }
+          })
+        } else {
+          console.log('No certificate sent');
+        }
+      })
+    );
+  }
   private loadSessionFromId(): Observable<any> {
     logger.debug(() => 'load session by id: ' + this.sessionId);
     this.loading = true;
