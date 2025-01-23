@@ -36,7 +36,15 @@
                 <ion-select-option *ngFor="let y of years" value="{{y}}">{{y}}</ion-select-option>
             </ion-select>
         </ion-item>
-        <ion-item>
+        <ion-item *ngIf="preferences.showIndividual">
+            <ion-select label="Exam status" [(ngModel)]="preferences.examStatus" (ngModelChange)="searchSessions()" interface="action-sheet">
+                <ion-select-option value="ALL">{{ "session.status.any" | translate}}</ion-select-option>
+                <ion-select-option value="FAIL">FAIL</ion-select-option>
+                <ion-select-option value="SUCCESS">SUCCESS</ion-select-option>
+                <ion-select-option value="WIP">WIP</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item *ngIf="!preferences.showIndividual">
             <ion-select label="Status" [(ngModel)]="preferences.status" (ngModelChange)="searchSessions()" interface="action-sheet">
                 <ion-select-option value="">{{ "session.status.any" | translate}}</ion-select-option>
                 <ion-select-option value="REGISTRATION">{{ "session.status.REGISTRATION" | translate}}</ion-select-option>

@@ -5,10 +5,10 @@ import { DateService } from 'src/app/service/DateService';
 import { AlertController, NavController } from '@ionic/angular';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { SessionService } from 'src/app/service/SessionService';
-import { Session, SessionStatus, User } from 'src/app/model/model';
+import { ExamStatus, Session, SessionStatus, User } from 'src/app/model/model';
 import * as moment from 'moment';
 import { AppSettingsService } from 'src/app/service/AppSettingsService';
-import { map } from 'rxjs';
+import { map, mergeMap } from 'rxjs';
 
 
 const logger = new Category('list', logSession);
@@ -32,6 +32,7 @@ export class SessionListComponent implements OnInit {
     showIndividual: false,
     year: '',
     status: null as SessionStatus,
+    examStatus: 'ALL'
   }
   constructor(
     public alertCtrl: AlertController,
@@ -67,6 +68,7 @@ export class SessionListComponent implements OnInit {
     if (this.preferences.showIndividual  === undefined) this.preferences.showIndividual = false;
     if (this.preferences.year === undefined) this.preferences.year = '';
     if (this.preferences.status === undefined) this.preferences.status = null;
+    if (this.preferences.examStatus === undefined) this.preferences.examStatus = 'ALL';
   }
   onSearchBarInput() {
     this.searchSessions();
@@ -74,15 +76,26 @@ export class SessionListComponent implements OnInit {
   searchSessions(forceServer: boolean = false, event: any = null) {
     this.appSettingsService.setPagePreferences(this.PAGE_KEY, this.preferences).subscribe();
     this.sessionService.search(this.preferences.searchInput, this.preferences.showIndividual, Number.parseInt(this.preferences.year, 10), this.preferences.status,
-      forceServer ? 'server' : 'default').subscribe((rsession) => {
-      this.sessions = this.sessionService.sortSessionByStartDate(rsession.data, true)
-        .map(session => {
+      forceServer ? 'server' : 'default').pipe(
+        map((rsession) => this.sessionService.sortSessionByStartDate(rsession.data, true)),
+        map((sessions: Session[]) => {
+          if (this.preferences.examStatus === 'ALL' || !this.preferences.showIndividual) {
+            return sessions;
+          } else {
+            return sessions.filter(s => s.participants.length > 1
+              || (this.preferences.examStatus === 'SUCCESS' && s.participants[0]!.pass)
+              || (this.preferences.examStatus === 'FAIL' && !s.participants[0]!.pass)
+              || (this.preferences.examStatus === 'WIP' && s.participants[0]!.canPass)
+            );
+          }
+        }),
+        map((sessions) => sessions.map(session => {
           // tslint:disable-next-line:no-string-literal
           session['isTeacher'] = session.teacherIds.indexOf(this.currentUser.id) >= 0;
           return session;
-        });
-      // console.log('Session loaded.')
-    });
+        })),
+        map(sessions => this.sessions = sessions)
+    ).subscribe();
   }
 
   sessionSelected(session: Session) {

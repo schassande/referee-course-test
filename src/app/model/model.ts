@@ -112,6 +112,8 @@ export interface Answer extends Translatable {
 
 export type SessionStatus = 'REGISTRATION' | 'STARTED' | 'STOPPED' | 'CORRECTION' | 'CLOSED';
 
+export type ExamStatus = 'ALL' |'FAIL' | 'SUCCESS' | 'WIP';
+
 
 /** A session of a course */
 export interface Session extends RootNode {
