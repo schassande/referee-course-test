@@ -47,8 +47,8 @@
                 <ion-label innerHtml="{{question.text}}" class="question"></ion-label>
             </ion-item>
             <ion-radio-group name="question" [(ngModel)]="answerValue" *ngIf="!question.questionType || question.questionType === 'UNIQUE'">
-                <ion-item *ngFor="let answer of question.answers; let index = index;" (click)="answerSelected(index)" [ngClass]="{'rightAnswer': showRightAnswer && answer.right}">
-                    <span class="answer">{{answerLetters[index]}} - <span innerHtml="{{answer.text}}"></span></span>
+                <ion-item *ngFor="let answer of question.answers; let index = index;" (click)="answerSelected(index)" [ngClass]="{'rightAnswer': showRightAnswer && answer.right, selectedAnswer : answerValue && answerValue === index.toString()}">
+                    <span class="answer" [ngClass]="{'selectedAnswer' : answerValue && answerValue === index.toString()}">{{answerLetters[index]}} - <span innerHtml="{{answer.text}}"></span></span>                    
                     <ion-icon *ngIf="sessionExpired && answerValue && answerValue === index.toString()" slot="end" name="radio-button-on-outline"></ion-icon>
                     <ion-radio label=" " *ngIf="!sessionExpired && !showRightAnswer" slot="end" value="{{index}}"></ion-radio>
                 </ion-item>
@@ -119,7 +119,7 @@
             </ion-item-divider>
             <ion-item *ngFor="let learner of session.participants | learnerResultPipe; let index = index;">
                 <ion-label style="border: none;" class="listItemButton">
-                    {{learner.person.firstName}} {{learner.person.lastName}} {{learner.canPass}}
+                    {{learner.person.firstName}} {{learner.person.lastName}}
                     <div *ngIf="learner.score >= 0" 
                         [ngClass]="{ 'testPass': learner.pass, 'testWIP': (!learner.pass && learner.canPass), 'testFail': (!learner.pass && !learner.canPass)}"
                         style="margin-top: 5px;">
