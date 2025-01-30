@@ -1,19 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { User, Session, SessionParticipant, Course, CertifcateSent } from './model';
-import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
+import { onRequest } from "firebase-functions/v2/https";
+import * as firestoreModule from "firebase-admin/firestore";
 import * as fs from 'fs';
 import * as os from 'os';
 import * as cors from 'cors';
 import * as express from 'express';
-import * as mailer          from './mailer';
-import pdf = require('html-pdf');
+import * as mailer from './mailer';
+import * as pdf from 'html-pdf';
 
 
-import moment = require('moment');
-import path = require('path');
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const firestore = admin.firestore();
+import * as moment from 'moment';
+import * as path from 'path';
+const firestore = firestoreModule.getFirestore();
 
 const fileType = 'pdf';
 
@@ -23,12 +22,11 @@ const app = express();
 app.use(cors({ origin: true }));
 
 // Expose Express API as a single Cloud Function:
-export const sendCertificate = functions.https.onRequest(app);
+export const sendCertificate = onRequest(app);
 // app.get('/', async (req:any, res:any) => {
 //     return sendCertificateInternal(res, req.params.sessionId, req.params.learnerId);
 // });
 // build multiple CRUD interfaces:
-// export const sendCertificate = functions.https.onRequest(async (req, res) => {
 app.post('/', async (req:any, res:any) => {
     if (!req.body || !req.body.data) {
         console.log('No body content', req.body);
@@ -120,7 +118,7 @@ async function generateCertificate(participant: SessionParticipant,
     html = replaceImages(html);
     const outputFile = path.join(tempLocalDir, `Exam_Certificate_${session.id}_${learner.id}_${new Date().getTime()}.${fileType}`);
 
-    const config = {
+    const config: pdf.CreateOptions = {
         "format": "A4",
         "height": "21cm",        // allowed units: mm, cm, in, px
         "width": "29.7cm",
@@ -132,7 +130,7 @@ async function generateCertificate(participant: SessionParticipant,
             env: {
               OPENSSL_CONF: '/dev/null',
             }
-        }
+        } as any
     };
     return new Promise<string>((resolve, reject) => {
         try {

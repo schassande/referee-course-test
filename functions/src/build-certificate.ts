@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as functions from 'firebase-functions';
+import { onRequest } from "firebase-functions/v2/https";
 import * as fs from 'fs';
 import * as cors from 'cors';
 import * as express from 'express';
-import pdf = require('html-pdf');
+import * as pdf  from 'html-pdf';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const fileType = 'pdf';
@@ -27,7 +27,7 @@ interface CertificateData {
 
 const app = express();
 app.use(cors({ origin: true }));
-export const buildCertificate = functions.https.onRequest(app);
+export const buildCertificate = onRequest(app);
 app.post('/', async (req:any, res:any) => {
     const data: CertificateData = req.body as CertificateData;
     if (!data 
@@ -77,19 +77,19 @@ async function generateCertificate(data: CertificateData): Promise<string> {
         .replace('${teacher}', data.teacher.firstName + ' ' + data.teacher.lastName)
         .replace('${awardDate}', data.certificate.awardDate);
     html = replaceImages(html);
-    const config = {
-        "format": "A4",
-        "height": "21cm",        // allowed units: mm, cm, in, px
-        "width": "29.7cm",
-        "orientation": "landscape",
-        "border": "0",
-        "type": fileType,
-        "zoomFactor": "1",
+    const config: pdf.CreateOptions = {
+        'format': 'A4',
+        'height': '21cm',        // allowed units: mm, cm, in, px
+        'width': '29.7cm',
+        'orientation': 'landscape',
+        'border': '0',
+        'type': fileType,
+        'zoomFactor': '1',
         childProcessOptions: { // workaround of a bug on firebase
             env: {
               OPENSSL_CONF: '/dev/null',
             }
-        }
+        } as any
     };
     return new Promise<string>((resolve, reject) => {
         try {
@@ -100,7 +100,7 @@ async function generateCertificate(data: CertificateData): Promise<string> {
                     reject(err);
                 } else {
                     console.log('PDF generated successfully:');
-                    resolve(buffer);
+                    resolve(buffer.toString('base64'));
                 }
               });
         } catch (error) {

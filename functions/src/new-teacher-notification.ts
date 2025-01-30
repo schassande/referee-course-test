@@ -1,21 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { User } from './model';
-import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
+import { onRequest } from "firebase-functions/v2/https";
+import * as firestoreModule from "firebase-admin/firestore";
 import * as cors from 'cors';
 import * as express from 'express';
 import * as mailer          from './mailer';
 
-const firestore = admin.firestore();
-
-const gmailEmail = functions.config().gmail.email;
+const gmailEmail = 'coachreferee@gmail.com'
+const firestore = firestoreModule.getFirestore();
 
 const app = express();
 // Automatically allow cross-origin requests
 app.use(cors({ origin: true }));
 
 // Expose Express API as a single Cloud Function:
-export const notifyNewTeacher = functions.https.onRequest(app);
+export const notifyNewTeacher = onRequest(app);
 
 // build multiple CRUD interfaces:
 // export const sendCertificate = functions.https.onRequest(async (req, res) => {

@@ -1,4 +1,7 @@
-import * as functions from 'firebase-functions';
+import { onSchedule } from "firebase-functions/v2/scheduler";
+import { onDocumentCreated } from "firebase-functions/v2/firestore";
+import * as firestoreModule from "firebase-admin/firestore";
+
 import * as admin from 'firebase-admin';
 import * as promisePool from 'es6-promise-pool';
 import { User } from './model';
@@ -6,7 +9,7 @@ import * as mailer          from './mailer';
 const PromisePool = promisePool.default;
 
 admin.initializeApp();
-const firestore = admin.firestore();
+const firestore = firestoreModule.getFirestore();
 
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
@@ -21,9 +24,9 @@ const firestore = admin.firestore();
  * Configure the email transport using the default SMTP transport and a GMail account.
  * Configure the `gmail.email` and `gmail.password` Google Cloud environment variables.
  */
-export const sendEmailConfirmation = functions.firestore.document('User/{uid}').onCreate(async (snap) => {
+export const sendEmailConfirmation = onDocumentCreated('User/{uid}', async (snap) => {
   // get user detail
-  const user: User = snap.data() as User;
+  const user: User = snap.data.data as unknown as User;
   const email = user.email;
   const firstName = user.firstName;
   const lastName = user.lastName;
@@ -64,7 +67,7 @@ const MAX_CONCURRENT = 3;
 /**
  * function deleting unused accounts.
  */
-export const accountCleanup = functions.pubsub.schedule('every day 00:00').onRun(async context => {
+export const accountCleanup = onSchedule('every day 00:00', async context => {
   console.log('Scheduled Function accountCleanup begin: ' + context);
   // Fetch all user details.
   const inactiveUsers: UserToDelete[] = (await getInactiveUsers()).filter(u2d => u2d.toDelete);

@@ -1,9 +1,8 @@
 import { User, Session, SessionParticipant, Course } from './model';
 import * as fs from 'fs';
 
-import path = require('path');
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-import pdf = require('html-pdf');
+import * as path from 'path';
+import * as pdf from 'html-pdf';
 
 const _learner: User = {
     "firstName": "Sébastien",
@@ -469,7 +468,7 @@ async function generateCertificate2(participant: SessionParticipant,
     html = replaceImages(html);
     
     const outputFile = path.join(tempLocalDir, `Exam_Certificate_${session.id}_${learner.id}_${new Date().getTime()}.${fileType}`);
-    const config = {
+    const config: pdf.CreateOptions = {
         "format": "A4",
         "height": "21cm",        // allowed units: mm, cm, in, px
         "width": "29.7cm", 
@@ -478,11 +477,12 @@ async function generateCertificate2(participant: SessionParticipant,
         "border": "0"
     };
     try {
-        return pdf.create(html, config).toFile(outputFile, (err, res) => {
+        pdf.create(html, config).toFile(outputFile, (err, res) => {
             if (err) return console.log(err);
             console.log('PDF generated successfully:', res);
             return outputFile;
           });
+        return outputFile;
     } catch (error) {
         console.error('Error fetching URL:', error);
         return null;
