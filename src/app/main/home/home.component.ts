@@ -3,15 +3,16 @@ import { Category } from 'typescript-logging';
 import { UserService } from 'src/app/service/UserService';
 import { Component, OnInit, LOCALE_ID, Inject, ViewChild } from '@angular/core';
 import { NavController, AlertController, IonSegment } from '@ionic/angular';
-import { map } from 'rxjs/operators';
+import { catchError, map, mergeMap } from 'rxjs/operators';
 import { Session, User, Course, SessionParticipant } from 'src/app/model/model';
 import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
 import { CourseService } from 'src/app/service/CourseService';
 import { DateService } from 'src/app/service/DateService';
 import { SessionService } from 'src/app/service/SessionService';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { ToolService } from 'src/app/service/ToolService';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslationService } from 'src/app/service/TranslationService';
+import { ResponseWithData } from 'src/app/service/response';
 
 const logger = new Category('home', logApp);
 
@@ -48,7 +49,7 @@ export class HomeComponent implements OnInit {
       private navController: NavController,
       private sessionService: SessionService,
       private toolService: ToolService,
-      public translate: TranslateService,
+      public translate: TranslationService,
       private userService: UserService,
       @Inject(LOCALE_ID) public localeId: string) {
   }
@@ -133,36 +134,55 @@ export class HomeComponent implements OnInit {
       }
     });
   }
-  runInstantSession() {
+  async runInstantSession() {
     const course: Course = this.individualCourses.find(c => c.id === this.individualCourseId);
     const teacher: User = this.teachers.find(u => u.id === this.teacherId);
     if (!course && !teacher) {
       return;
     }
-    const session: Session = this.sessionService.newSession(course, teacher, this.currentUser.dataRegion);
-     // run immediately automatically
-    session.autoPlay = true;
-    session.status = 'STARTED';
-    session.participantIds.push(this.currentUser.id);
-    const participant: SessionParticipant = {
-      person: this.userService.userToPersonRef(this.currentUser),
-      questionAnswerIds: [],
-      answeredQuestions: 0,
-      seriesResult: [],
-      pass: false,
-      canPass: true,
-      score: -1,
-      requiredScore: course.test.requiredScore,
-      maxScore: 0,
-      percent: -1,
-      failedQuestionIds: []
-    };
-    session.participants.push(participant);
-    this.sessionService.save(session).subscribe((rsess) => {
-      if (rsess.data) {
-        this.navController.navigateRoot(`/session/play/${rsess.data.id}`);
-      }
-    });
+    this.sessionService.findLearnerSessions().pipe(
+      mergeMap((rsessions) => {
+        const indivSessions = rsessions.data.filter(s => s.courseId === course.id && s.autoPlay);
+        if (indivSessions.filter(s => this.dateService.isToday(s.startDate)).length >= this.sessionService.MAX_INDIV_SESSIONS_PER_DAY) {
+          this.translate.alert('home.maxIndivSessionsPerDay', {value: this.sessionService.MAX_INDIV_SESSIONS_PER_DAY});
+          throw new Error();
+
+        } else if (indivSessions.filter(s => this.dateService.isLastDays(s.startDate, 7)).length >= this.sessionService.MAX_INDIV_SESSIONS_PER_WEEK) {
+          this.translate.alert('home.maxIndivSessions7Days', {value: this.sessionService.MAX_INDIV_SESSIONS_PER_WEEK});
+          throw new Error();
+
+        } else {
+          const session: Session = this.sessionService.newSession(course, teacher, this.currentUser.dataRegion);
+          // run immediately automatically
+          session.autoPlay = true;
+          session.status = 'STARTED';
+          session.participantIds.push(this.currentUser.id);
+          const participant: SessionParticipant = {
+            person: this.userService.userToPersonRef(this.currentUser),
+            questionAnswerIds: [],
+            answeredQuestions: 0,
+            seriesResult: [],
+            pass: false,
+            canPass: true,
+            score: -1,
+            requiredScore: course.test.requiredScore,
+            maxScore: 0,
+            percent: -1,
+            failedQuestionIds: []
+          };
+          session.participants.push(participant);
+          return this.sessionService.save(session);
+        } 
+      }),
+      map(rsess => {
+        if (rsess.data) {
+          this.navController.navigateRoot(`/session/play/${rsess.data.id}`);
+        } else {
+          this.translate.alert('error', rsess.error);
+        }
+      }),
+      catchError(err => '')
+    ).subscribe()
   }
   getSessionResult(session: Session): string {
     const sIdx = session.participantIds.indexOf(this.currentUser.id);

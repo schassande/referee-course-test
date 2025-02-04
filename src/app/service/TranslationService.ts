@@ -8,6 +8,7 @@ import { ConnectedUserService } from './ConnectedUserService';
 import { Injectable } from '@angular/core';
 import { RemotePersistentDataService } from './RemotePersistentDataService';
 import { Translation, Translatable, DataRegion } from './../model/model';
+import { TranslateService as TranslateServiceNGX } from '@ngx-translate/core';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,7 @@ export class TranslationService extends RemotePersistentDataService<Translation>
       appSettingsService: AppSettingsService,
       private connectedUserService: ConnectedUserService,
       private alertCtrl: AlertController,
+      private ts: TranslateServiceNGX
     ) {
       super(appSettingsService, db, toastController);
   }
@@ -79,5 +81,13 @@ export class TranslationService extends RemotePersistentDataService<Translation>
         return res;
       })
     );
+  }
+  public alert(key: string, params:Object=null): void {
+    this.ts.get(key, params).pipe(
+      map(msg => {
+        this.alertCtrl.create({ message: msg}).then(a => a.present());
+        return msg;
+      })
+    ).subscribe();
   }
 }

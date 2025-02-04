@@ -1,4 +1,5 @@
 {
+    "error": "An error occurs: {{value}}",
     "cancel": "Cancel",
     "course" : {
         "edit" : {
@@ -33,7 +34,9 @@
             "teacher": "Teacher"
         },
         "install-on-device": "Install on device",
-        "connected-as": "Connected as"
+        "connected-as": "Connected as",
+        "maxIndivSessionsPerDay": "You have already launched {{value}} individual sessions today. Please try again tomorrow.",
+        "maxIndivSessions7Days": "You have already launched {{value}} individual sessions over last 7 days. Please try again later."
     },
     "menu": {
         "home": "Home",

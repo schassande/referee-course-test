@@ -25,6 +25,10 @@ export class DateService {
     return this.compareDate(day, new Date()) === 0;
   }
 
+  public isLastDays(day: Date, nbDay: number): boolean {
+    return day.getTime() > (new Date().getTime() - (nbDay * 24 * 60 * 60 * 1000));
+  }
+
   public date2string(aDate: Date) {
     return aDate.getFullYear()
       + DATE_SEP + this.to2Digit(aDate.getMonth() + 1)

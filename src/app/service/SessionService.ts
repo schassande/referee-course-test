@@ -22,6 +22,8 @@ import { SessionStatus } from 'functions/src/model';
   providedIn: 'root'
 })
 export class SessionService extends RemotePersistentDataService<Session> {
+  public readonly MAX_INDIV_SESSIONS_PER_DAY = 5;
+  public readonly MAX_INDIV_SESSIONS_PER_WEEK = 10;
 
   constructor(
       readonly db: Firestore,

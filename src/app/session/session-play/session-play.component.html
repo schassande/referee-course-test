@@ -124,9 +124,10 @@
                         [ngClass]="{ 'testPass': learner.pass, 'testWIP': (!learner.pass && learner.canPass), 'testFail': (!learner.pass && !learner.canPass)}"
                         style="margin-top: 5px;">
                         {{"session-play."+(learner.pass ? 'PASS' : 'FAIL')|translate}}&nbsp;
-                        <span>{{"session-play.answers"|translate}}:{{learner.answeredQuestions}}/{{course.test.nbQuestion}}, 
-                            {{"session-play.rights"|translate}}:{{learner.score}}/{{course.test.nbQuestion}} ({{learner.percent}}%), 
-                            {{"session-play.required"|translate}}:{{learner.requiredScore}}/{{course.test.nbQuestion}}</span>
+                        <span>{{"session-play.answers"|translate}}:{{learner.answeredQuestions}}/{{course.test.nbQuestion}},</span> 
+                        <span>{{"session-play.rights"|translate}}:{{learner.score}}/{{course.test.nbQuestion}} ({{learner.percent}}%),</span>
+                        <span>{{"session-play.required"|translate}}:{{learner.requiredScore}}/{{course.test.nbQuestion}}</span>
+                        <span ngIf="!learner.pass">Error: {{learner.failedQuestionIds.join(',')}}</span>
                     </div>
                 </ion-label>
             </ion-item>
