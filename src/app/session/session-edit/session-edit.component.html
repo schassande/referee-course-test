@@ -30,21 +30,15 @@
                 </ion-select>
             </ion-item>
             <ion-item>
-                <ion-grid fixed="true">
+                <ion-grid fixed="true" size="12">
                     <ion-row>
-                        <ion-col size="6">
+                        <ion-col sizeXs="12" sizeSm="12" sizeMd="6" sizeLg="6">
                             <ion-input label="{{'session-edit.code'|translate}}" labelPlacement="fixed" type="text" [(ngModel)]="session.keyCode" [readonly]="true" style="text-align: center;"></ion-input>        
                         </ion-col>
-                        <ion-col size="6">
+                        <ion-col sizeXs="12" sizeSm="12" sizeMd="6" sizeLg="6">
                             <ion-input label="{{'session-edit.status'|translate}}" labelPlacement="fixed" type="text" [(ngModel)]="session.status" [readonly]="true" style="text-align: center;"></ion-input>
                         </ion-col>
-                    </ion-row>
-                </ion-grid>
-            </ion-item>
-            <ion-item>
-                <ion-grid fixed="true">
-                    <ion-row>
-                        <ion-col size="6">
+                        <ion-col sizeXs="12" sizeSm="12" sizeMd="6" sizeLg="6">
                             <div button="true" id="open-startdate-input">
                                 <ion-input readonly="true"  label="{{'session-edit.start-date'|translate}}" labelPlacement="fixed" type="text" [value]="startDate" style="text-align: center;"></ion-input>
                                 <ion-popover *ngIf="session.status !== 'CLOSED'" trigger="{{readonly ? undefined : 'open-startdate-input'}}" side="bottom" alignment="center" #popupStartDate>
@@ -54,7 +48,7 @@
                                 </ion-popover>
                             </div>
                         </ion-col>
-                        <ion-col size="6">
+                        <ion-col sizeXs="12" sizeSm="12" sizeMd="6" sizeLg="6">
                             <div button="true" id="open-expiredate-input" *ngIf="session.status !== 'REGISTRATION'">
                                 <ion-input readonly="true"  label="{{'session-edit.expire-date'|translate}}" labelPlacement="fixed" type="text" [value]="expireDate" style="text-align: center;"></ion-input>
                                 <ion-popover *ngIf="session.status !== 'CLOSED'" trigger="{{readonly? undefined : 'open-expiredate-input'}}" side="bottom" alignment="center" #popupExpireDate>

@@ -16,6 +16,7 @@
         "page-title" : "Online tests",
         "teacher-list-sessions": "Your sessions as teacher",
         "learner-list-sessions": "Your personal tests",
+        "teacher-list-sessions-all": "All sessions",
         "group-session-exam" : {
             "title": "Create a group session",
             "description": "To start an exam for a group of participants, please select the test name.",

@@ -1,8 +1,8 @@
 import { logApp } from 'src/app/logging-config';
 import { Category } from 'typescript-logging';
 import { UserService } from 'src/app/service/UserService';
-import { Component, OnInit, LOCALE_ID, Inject } from '@angular/core';
-import { NavController, AlertController } from '@ionic/angular';
+import { Component, OnInit, LOCALE_ID, Inject, ViewChild } from '@angular/core';
+import { NavController, AlertController, IonSegment } from '@ionic/angular';
 import { map } from 'rxjs/operators';
 import { Session, User, Course, SessionParticipant } from 'src/app/model/model';
 import { ConnectedUserService } from 'src/app/service/ConnectedUserService';
@@ -37,6 +37,8 @@ export class HomeComponent implements OnInit {
   teachers: User[] = [];
   teacherId: string;
   isTeacher = false;
+  currentRole = 'learner'
+  @ViewChild(IonSegment) roleSelector: IonSegment;
 
   constructor(
       private alertCtrl: AlertController,
@@ -239,5 +241,9 @@ export class HomeComponent implements OnInit {
     } else {
       this.navController.navigateRoot('/session/play/' +  session.id);
     }
+  }
+
+  roleSelected(selected = this.roleSelector.value) {
+    this.currentRole = selected as string;
   }
 }

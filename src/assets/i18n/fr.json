@@ -16,6 +16,7 @@
         "page-title" : "Examens en ligne",
         "teacher-list-sessions": "Vos sessions en tant que formateur",
         "learner-list-sessions": "Vos sessions",
+        "teacher-list-sessions-all": "Toutes sessions",
         "group-session-exam" : {
             "title": "Creer une session de groupe",
             "description": "Pour démarrer un test pour un groupe de participants, selectionner un test.",
@@ -26,8 +27,8 @@
             "code": "CODE"
         },
         "individual-online-exam": {
-            "title": "Individual online instant exam",
-            "description": "To run immediately a new individual online test, please select the test name and the teacher who will validate the examen.",
+            "title": "Session individuelle instantanée",
+            "description": "Pour lancer immediatement une session individuelle, sélectionner le nom du test et le nom d'un formateur.",
             "course": "Examen",
             "teacher": "Formateur"
         },

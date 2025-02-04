@@ -5,10 +5,18 @@
         <ion-buttons slot="end">
             <ion-menu-button autoHide="false" menu="main"></ion-menu-button>
         </ion-buttons>
-    </ion-toolbar>
+        </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ion-card *ngIf="teacherSessions && teacherSessions.length" style='--background: lightgrey;'>
+    <ion-segment value="learner" [ngModel]="currentRole" (ionChange)="roleSelected()" *ngIf="isTeacher">
+        <ion-segment-button value="learner">
+          <ion-label>Learner</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="teacher">
+          <ion-label>Teacher</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    <ion-card *ngIf="currentRole==='teacher' && teacherSessions && teacherSessions.length" style='--background: lightgrey;'>
         <ion-card-header>
             <ion-card-title>{{ "home.teacher-list-sessions" | translate}}</ion-card-title>
         </ion-card-header>
@@ -26,13 +34,30 @@
                 </ion-label>
             </ion-item>
             <div style="text-align: right; margin-top: 10px;">
-                <ion-button shape="round" class="instantButton" routerLink="/session/create">
-                    <ion-icon name="add-outline"></ion-icon>
+                <a routerLink="/session/list">{{ 'home.teacher-list-sessions-all' | translate }}</a>
+            </div>
+        </ion-card-content>
+    </ion-card>
+    <ion-card *ngIf="currentRole==='teacher' && isTeacher && groupCourses && groupCourses.length" style='--background: lightgrey;'>
+        <ion-card-header>
+            <ion-card-title>{{ "home.group-session-exam.title" | translate }}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+            <p>{{ "home.group-session-exam.description" | translate }}</p>
+            <ion-list style="margin: 20px 0 20px 20px;">
+                <ion-select label="{{ 'home.group-session-exam.course' | translate }}" labelPlacement="floating" [(ngModel)]="groupCourseId" class="instantSelect" interface="action-sheet">
+                    <ion-select-option *ngFor="let course of groupCourses" value="{{course.id}}"><span style="padding: 5px;">{{course.name}}</span></ion-select-option>
+                </ion-select>
+            </ion-list>
+            <div style="text-align: right;">
+                <ion-button (click)="createGroupSession()" shape="round" class="instantButton">
+                    <ion-icon name="arrow-forward-outline"></ion-icon>
                 </ion-button>
             </div>
         </ion-card-content>
     </ion-card>
-    <ion-card *ngIf="learnerSessions && learnerSessions.length" style='--background: lightgrey;'>
+
+    <ion-card *ngIf="currentRole==='learner' && learnerSessions && learnerSessions.length" style='--background: lightgrey;'>
         <ion-card-header>
             <ion-card-title>{{ "home.learner-list-sessions" | translate }}</ion-card-title>
         </ion-card-header>
@@ -47,25 +72,7 @@
             </ion-list>
         </ion-card-content>
     </ion-card>
-    <ion-card *ngIf="isTeacher && groupCourses && groupCourses.length" style='--background: lightgrey;'>
-        <ion-card-header>
-            <ion-card-title>{{ "home.group-session-exam.title" | translate }}</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-            <p>{{ "home.group-session-exam.description" | translate }}</p>
-            <ion-list style="margin: 20px 0 20px 20px;">
-                <ion-select label="{{ 'home.group-session-exam.course' | translate }}" labelPlacement="fixed" [(ngModel)]="groupCourseId" class="instantSelect" interface="action-sheet">
-                    <ion-select-option *ngFor="let course of groupCourses" value="{{course.id}}"><span style="padding: 5px;">{{course.name}}</span></ion-select-option>
-                </ion-select>
-            </ion-list>
-            <div style="text-align: right;">
-                <ion-button (click)="createGroupSession()" shape="round" class="instantButton">
-                    <ion-icon name="arrow-forward-outline"></ion-icon>
-                </ion-button>
-            </div>
-        </ion-card-content>
-    </ion-card>
-    <ion-card style='--background: lightgrey;'>
+    <ion-card style='--background: lightgrey;' *ngIf="currentRole==='learner'">
         <ion-card-header>
             <ion-card-title>{{ "home.register-session.title" | translate }}</ion-card-title>
         </ion-card-header>
@@ -81,7 +88,7 @@
             </div>
         </ion-card-content>
     </ion-card>
-    <ion-card *ngIf="individualCourses && individualCourses.length" style='--background: lightgrey;'>
+    <ion-card *ngIf="currentRole==='learner' && individualCourses && individualCourses.length" style='--background: lightgrey;'>
         <ion-card-header>
             <ion-card-title>{{ "home.individual-online-exam.title" | translate }}</ion-card-title>
         </ion-card-header>
@@ -89,12 +96,12 @@
             <p>{{ "home.individual-online-exam.description" | translate }}</p>
             <ion-list style="margin: 20px 0 20px 20px;">
                 <ion-item>
-                    <ion-select label="{{ 'home.individual-online-exam.course' | translate }}" labelPlacement="fixed" [(ngModel)]="individualCourseId" class="instantSelect" interface="action-sheet">
+                    <ion-select label="{{ 'home.individual-online-exam.course' | translate }}" labelPlacement="floating" [(ngModel)]="individualCourseId" class="instantSelect" interface="action-sheet">
                         <ion-select-option *ngFor="let course of individualCourses" value="{{course.id}}"><span style="padding: 5px;">{{course.name}}</span></ion-select-option>
                     </ion-select>
                 </ion-item>
                 <ion-item>
-                    <ion-select label="{{ 'home.individual-online-exam.teacher' | translate }}" labelPlacement="fixed" [(ngModel)]="teacherId" class="instantSelect" interface="action-sheet">
+                    <ion-select label="{{ 'home.individual-online-exam.teacher' | translate }}" labelPlacement="floating" [(ngModel)]="teacherId" class="instantSelect" interface="action-sheet">
                         <ion-select-option *ngFor="let teacher of teachers" value="{{teacher.id}}"><span style="padding: 5px;">{{teacher.firstName}} {{teacher.lastName}}</span></ion-select-option>
                     </ion-select>
                 </ion-item>
@@ -106,6 +113,7 @@
             </div>
         </ion-card-content>
     </ion-card>
+
     <div style="text-align: center; margin: 10px auto;" *ngIf="showInstallBtn">
         <ion-button (click)="addToHome()">{{ 'home.install-on-device' | translate }}</ion-button>
     </div>
