@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { onRequest } from "firebase-functions/v2/https";
+import { onRequest, Request } from "firebase-functions/v2/https";
 import * as fs from 'fs';
 import * as cors from 'cors';
 import * as express from 'express';
@@ -8,7 +8,7 @@ import * as pdf  from 'html-pdf';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const fileType = 'pdf';
 type CertificateType = 'REFEREE_L0' | 'REFEREE_L1' | 'REFEREE_L2_EXAM' | 'REFEREE_L2';
-interface CertificateData {
+export interface CertificateData {
     learner : {
         firstName: string;
         lastName: string;
@@ -28,7 +28,8 @@ interface CertificateData {
 const app = express();
 app.use(cors({ origin: true }));
 export const buildCertificate = onRequest(app);
-app.post('/', async (req:any, res:any) => {
+
+app.post('/', async (req:Request, res:express.Response) => {
     const data: CertificateData = req.body as CertificateData;
     if (!data 
         || !data.learner || (!data.learner.firstName && !data.learner.lastName)
@@ -41,7 +42,36 @@ app.post('/', async (req:any, res:any) => {
     }
     return buildCertificateInternal(res, data);
 });
-async function buildCertificateInternal(res:any, data: CertificateData): Promise<any> {
+
+app.get('/', async (req:Request, res:express.Response) => {
+    const query = req.query || {};
+    const data: CertificateData = {
+        learner: {
+            firstName: query.learnerFirstName as string,
+            lastName: query.learnerLastName as string
+        },
+        teacher: {
+            firstName: query.teacherFirstName as string,
+            lastName: query.teacherLastName as string
+        },
+        certificate: {
+            type: query.certificateType as CertificateType,
+            awardDate: query.awardDate as string,
+            score: query.score as string
+        }   
+    };
+    if (!data 
+        || !data.learner || (!data.learner.firstName && !data.learner.lastName)
+        || !data.teacher || (!data.teacher.firstName && !data.teacher.lastName)
+        || !data.certificate || !data.certificate.type || !data.certificate.awardDate
+        ) {
+        console.log('Missing parameters', data);
+        res.status(400).send({ error: { code: 1, error: 'Missing parameters'}, data: null});
+        return;
+    }
+    return buildCertificateInternal(res, data);
+});
+async function buildCertificateInternal(res:express.Response, data: CertificateData): Promise<any> {
     console.log('data=' + JSON.stringify(data));
     data.certificate.templateUrl = getCertificateUrlFromType(data.certificate.type);
     if (!fs.existsSync(data.certificate.templateUrl)) {
@@ -53,22 +83,22 @@ async function buildCertificateInternal(res:any, data: CertificateData): Promise
         return;
     }
     try {
-        const certificateFile = await generateCertificate(data);
+        const certificateFile:Buffer = await generateCertificate(data);
         if (!certificateFile) {
             res.status(500).send({ error: { code: 11, error: 'Problem of generation'}, data: null});
             return;
         }
-        const fileName = data.certificate.type + '_'+data.learner.firstName+'_'+data.learner.lastName+'.'+fileType;
+        const fileName = 'Certificate_' + data.certificate.type + '_'+data.learner.firstName+'_'+data.learner.lastName+'.'+fileType;
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader("Content-Disposition", "attachment; filename=" + encodeURIComponent(fileName));
-        res.status(200).send(certificateFile)
+        console.log('Sending certificate file as response: ' + fileName, certificateFile.length);
+        res.status(200).send(certificateFile);
     } catch(error) {
-      console.error('There was an error while sending the email:', error);
-      res.status(500).send({ error: { code: 10, error: 'Problem when sending the email'}, data: null});
+      console.error('There was an error while pdf generation:', error);
+      res.status(500).send({ error: { code: 10, error: 'Problem while pdf generation'}, data: null});
     }
 }
-
-async function generateCertificate(data: CertificateData): Promise<string> {
+export async function generateCertificate(data: CertificateData): Promise<Buffer> {
     console.log('Template: "'+ data.certificate.templateUrl+'"');
     const template = fs.readFileSync(data.certificate.templateUrl, 'utf8');    
     let html = template
@@ -91,7 +121,7 @@ async function generateCertificate(data: CertificateData): Promise<string> {
             }
         } as any
     };
-    return new Promise<string>((resolve, reject) => {
+    return new Promise<Buffer>((resolve, reject) => {
         try {
             console.log('Creating certificate in a buffer');
             return pdf.create(html, config).toBuffer((err, buffer) => {
@@ -100,7 +130,7 @@ async function generateCertificate(data: CertificateData): Promise<string> {
                     reject(err);
                 } else {
                     console.log('PDF generated successfully:');
-                    resolve(buffer.toString('base64'));
+                    resolve(buffer);
                 }
               });
         } catch (error) {
@@ -109,7 +139,7 @@ async function generateCertificate(data: CertificateData): Promise<string> {
         }
     });
 }
-function getCertificateUrlFromType(type: CertificateType): string {
+export function getCertificateUrlFromType(type: CertificateType): string {
     return 'src/certificate_europe_'+type+'.html'
 }
 function isOSWindows(): boolean { return /^win/.test(process.platform); }
