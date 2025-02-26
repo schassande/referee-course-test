@@ -6,6 +6,7 @@ import {  buildCertificate as _buildCertificate } from './build-certificate';
 import {  sendCertificate as _sendCertificate } from './session-certificate';
 import {  notifyNewTeacher as _notifyNewTeacher } from './new-teacher-notification';
 import {  askToBecomeTeacher as _askToBecomeTeacher } from './ask-become-teacher';
+import {  sessionApi as _sessionApi } from './session-api';
 
 ////////////////////////////////////////////////////////////
 ////////// Export the function about the user //////////////
@@ -16,3 +17,4 @@ export const buildCertificate = _buildCertificate;
 export const sendCertificate = _sendCertificate;
 export const notifyNewTeacher = _notifyNewTeacher;
 export const askToBecomeTeacher = _askToBecomeTeacher;
+export const sessionApi = _sessionApi;
