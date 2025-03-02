@@ -127,7 +127,7 @@
                         <span>{{"session-play.answers"|translate}}:{{learner.answeredQuestions}}/{{course.test.nbQuestion}},</span> 
                         <span>{{"session-play.rights"|translate}}:{{learner.score}}/{{course.test.nbQuestion}} ({{learner.percent}}%),</span>
                         <span>{{"session-play.required"|translate}}:{{learner.requiredScore}}/{{course.test.nbQuestion}}</span>
-                        <span ngIf="!learner.pass">Error: {{learner.failedQuestionIds.join(',')}}</span>
+                        <span *ngIf="!learner.pass">Error: {{learner.failedQuestionIds.join(',')}}</span>
                     </div>
                 </ion-label>
             </ion-item>
