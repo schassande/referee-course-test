@@ -12,6 +12,7 @@ import * as pdf from 'html-pdf';
 
 import * as moment from 'moment';
 import * as path from 'path';
+import { secrets } from './secrets';
 const firestore = firestoreModule.getFirestore();
 
 const fileType = 'pdf';
@@ -22,7 +23,7 @@ const app = express();
 app.use(cors({ origin: true }));
 
 // Expose Express API as a single Cloud Function:
-export const sendCertificate = onRequest(app);
+export const sendCertificate = onRequest({secrets}, app);
 // app.get('/', async (req:any, res:any) => {
 //     return sendCertificateInternal(res, req.params.sessionId, req.params.learnerId);
 // });
@@ -207,6 +208,7 @@ function buildEmail(session: Session,
   // Building Email message.
   const mailOptions = {
     to: learner.email,
+    cc: teachers.map(teacher => teacher.email).join(','),
     subject: `${session.courseName} Exam passed : Congratulations !`,
     html : `Hi ${learner.firstName} ${learner.lastName},<br>
 <p>Congratulation ! You passed the ${session.courseName} exam. The certificate is joined to this email.<br>
@@ -216,7 +218,8 @@ Best regards,<br>
 CoachReferee Examinator`,
     attachments: [ { 
         content : mailer.fileToBase64(certificateFile), 
-        filename: `Certificate ${session.courseName} ${learner.firstName} ${learner.lastName}.${fileType}`
+        filename: `Certificate ${session.courseName} ${learner.firstName} ${learner.lastName}.${fileType}`,
+        encoding: 'base64'
     }]
   };
   // console.log('Email message: ' + JSON.stringify(mailOptions, null, 2));

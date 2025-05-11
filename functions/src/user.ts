@@ -21,8 +21,7 @@ const firestore = firestoreModule.getFirestore();
 
 /**
  * Function sending an email to confirm a subscription.
- * Configure the email transport using the default SMTP transport and a GMail account.
- * Configure the `gmail.email` and `gmail.password` Google Cloud environment variables.
+ * Configure the email transport using the default SMTP transport.
  */
 export const sendEmailConfirmation = onDocumentCreated('User/{uid}', async (snap) => {
   // get user detail

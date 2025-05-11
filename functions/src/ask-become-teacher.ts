@@ -1,3 +1,4 @@
+import { secrets } from './secrets';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { onRequest } from "firebase-functions/v2/https";
 import * as firestoreModule from "firebase-admin/firestore";
@@ -9,14 +10,12 @@ import * as mailer          from './mailer';
 
 const firestore = firestoreModule.getFirestore();
 
-const gmailEmail = 'coachreferee@gmail.com'
-
 const app = express();
 // Automatically allow cross-origin requests
 app.use(cors({ origin: true }));
 
 // Expose Express API as a single Cloud Function:
-export const askToBecomeTeacher = onRequest(app);
+export const askToBecomeTeacher = onRequest({secrets}, app);
 
 // build multiple CRUD interfaces:
 app.post('/', async (req:any, res:any) => {
@@ -62,8 +61,8 @@ function buildEmail(learner: User, teacher: User) {
   // Building Email message.
   const mailOptions = {
     to: teacher.email,
-    cc: learner.email + ',' + gmailEmail,
-    bcc: gmailEmail,
+    cc: learner.email + ',' + mailer.emailAddress,
+    bcc: mailer.emailAddress,
     subject: `Referee Exam App: Grant a new teacher?`,
     html : `Hi ${teacher.firstName} ${teacher.lastName},<br>
 <p>${learner.firstName} ${learner.lastName} asks you to grant him/her as teacher in the referee exam web application.<br>

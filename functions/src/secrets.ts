@@ -1,0 +1,1 @@
+export const secrets = ['SMTP_EMAIL_PASSWORD'];

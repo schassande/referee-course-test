@@ -1,19 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as sgMail from '@sendgrid/mail';
 import * as fs from 'fs';
-const a = 'SG.Dr3emM2vRhONd' 
-    + 'QlPuawK_Q.z30o_' + ''
-    + '0HhmF4TZzuYiGYSGTtLJ'
-    +'75U9syUPezPMO__oCE';
-sgMail.setApiKey(a);
-
+import * as nodemailer from 'nodemailer';
+export const emailAddress = 'admin@coachreferee.com';
 
 export function sendMail(email: any, response?: any): Promise<void> { 
-    email.from = 'CoachReferee <no-reply@coachreferee.com>';
-    email.replyTo = 'CoachReferee <coachreferee@gmail.com>';
-    console.log('sendEmail: ' + JSON.stringify(email));
+    console.log('email account password: ' + process.env.SMTP_EMAIL_PASSWORD)
+    // Configuration de l'email OVH
+    const transporter = nodemailer.createTransport({
+        host: "ssl0.ovh.net",
+        port: 465,
+        secure: true,
+        auth: {
+          user: emailAddress,
+          pass: process.env.SMTP_EMAIL_PASSWORD,
+        },
+    });
+    // Set/Force sender and replyTo
+    email.from = 'CoachReferee <'+emailAddress+'>';
+    email.replyTo = 'CoachReferee <'+emailAddress+'>';
 
-    return sgMail.send(email)
+    console.log('sendEmail: ' + JSON.stringify(email));
+    return transporter.sendMail(email)
         .then(() => {
             console.log('Email sent')
             if (response) {

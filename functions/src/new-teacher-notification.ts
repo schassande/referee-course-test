@@ -1,3 +1,4 @@
+import { secrets } from './secrets';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { User } from './model';
 import { onRequest } from "firebase-functions/v2/https";
@@ -6,7 +7,6 @@ import * as cors from 'cors';
 import * as express from 'express';
 import * as mailer          from './mailer';
 
-const gmailEmail = 'coachreferee@gmail.com'
 const firestore = firestoreModule.getFirestore();
 
 const app = express();
@@ -14,7 +14,7 @@ const app = express();
 app.use(cors({ origin: true }));
 
 // Expose Express API as a single Cloud Function:
-export const notifyNewTeacher = onRequest(app);
+export const notifyNewTeacher = onRequest({secrets}, app);
 
 // build multiple CRUD interfaces:
 // export const sendCertificate = functions.https.onRequest(async (req, res) => {
@@ -59,7 +59,7 @@ function buildEmail(teacher: User) {
   // Building Email message.
   const mailOptions = {
     to: teacher.email,
-    cc: gmailEmail,
+    cc: mailer.emailAddress,
     subject: `Referee Exam App: Granted as teacher`,
     html : `Hi ${teacher.firstName} ${teacher.lastName},<br>
 <p>You have been granted as teacher in the referee exam web application.<br>
