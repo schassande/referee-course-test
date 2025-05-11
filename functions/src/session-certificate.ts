@@ -58,7 +58,11 @@ async function sendCertificateInternal(res:any, sessionId:string, learnerId: str
         res.status(500).send({ error: { code: 99, error: 'Technical server error'}, data: null});
         return;
     }
-    const teachers: User[] = [await getUser(session.teacherIds[0])];
+    const teachers: User[] = []
+    session.teacherIds.forEach(async (teacherId) => {
+        const teacher = await getUser(teacherId);
+        if (teacher) teachers.push(teacher);
+    });
     const course: Course = await getCourse(session.courseId);
     if (!course) {
         console.log('Course has not been found! ' + session.courseId);
