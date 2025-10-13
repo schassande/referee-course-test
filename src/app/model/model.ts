@@ -277,6 +277,7 @@ export const COUNTRIES: string[][] = [
   ['Australia	', 'Australia'],
   ['Austria', 'Austria'],
   ['Belgium', 'Belgium'],
+  ['Bulgaria', 'Bulgaria'],
   ['Canada', 'Canada'],
   ['Chile', 'Chile'],
   ['China', 'China'],
@@ -324,7 +325,10 @@ export const LANGUAGES: string[][] = [
   ['DE', 'Deutsch'],
   ['ES', 'Spanish'],
   ['IT', 'Italian'],
-  ['PO', 'Portuguese']
+  ['PO', 'Portuguese'],
+  ['BU', 'Bulgarian'],
+  ['CH', 'Chinese'],
+  ['JA', 'Japanese']  
 ];
 
 export const CONSTANTES =  {
