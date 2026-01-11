@@ -36,7 +36,11 @@
         "install-on-device": "Install on device",
         "connected-as": "Connected as",
         "maxIndivSessionsPerDay": "You have already launched {{value}} individual sessions today. Please try again tomorrow.",
-        "maxIndivSessions7Days": "You have already launched {{value}} individual sessions over last 7 days. Please try again later."
+        "maxIndivSessions7Days": "You have already launched {{value}} individual sessions over last 7 days. Please try again later.",
+        "segment" : {
+            "teacher": "Teacher",
+            "learner": "Learner"
+        }
     },
     "menu": {
         "home": "Home",
@@ -109,7 +113,8 @@
             "sending-certificate": "Sending certificate by email...",
             "error-certificate": "Certificate error.",
             "certificate-sent": "Certificate sent."
-        }
+        },
+        "list-of-questions": "List of questions"
     },
     "session-learner-analyse":{
         "course": "Test",

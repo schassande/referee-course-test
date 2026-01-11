@@ -41,5 +41,6 @@ export class AppComponent implements OnInit {
   }
   public switchLanguage(lang: SupportedLanguages) {
     this.i18N.switchTo(lang);
+    this.menu.close();
   }
 }

@@ -314,7 +314,7 @@ export class SessionService extends RemotePersistentDataService<Session> {
       participants: [],
       participantIds: [],
       questionIds: [],
-      randomQuestions: course.allowedAlone
+      randomQuestions: false
     };
     this.selectQuestions(session, course);
     return session;

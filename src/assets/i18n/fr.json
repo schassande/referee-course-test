@@ -35,8 +35,12 @@
         },
         "install-on-device": "Installer sur le périphérique",
         "connected-as": "Connecté en tant que",
-        "maxIndivSessionsPerDay": "You have already launched {{value}} individual sessions today. Please try again tomorrow.",
-        "maxIndivSessions7Days": "You have already launched {{value}} individual sessions over last 7 days. Please try again later."
+        "maxIndivSessionsPerDay": "Vous avez déjà lancé {{value}} sessions individuelles aujourd'hui. Veuillez réessayer demain.",
+        "maxIndivSessions7Days": "Vous avez déjà lancé {{value}} sessions individuelles au cours des 7 derniers jours. Veuillez réessayer plus tard.",
+        "segment" : {
+            "teacher": "Formateur",
+            "learner": "Apprenant"
+        }
     },
     "menu": {
         "home": "Accueil",
@@ -109,7 +113,8 @@
             "sending-certificate": "Envoi du diplome par email...",
             "error-certificate": "Erreur d'envoi du diplome.",
             "certificate-sent": "Diplome envoyé."
-        }
+        },
+        "list-of-questions": "Liste des questions"
     },
     "session-learner-analyse":{
         "course": "Examen",

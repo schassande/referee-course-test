@@ -10,13 +10,13 @@
 <ion-content>
     <ion-segment value="learner" [ngModel]="currentRole" (ionChange)="roleSelected()" *ngIf="isTeacher">
         <ion-segment-button value="learner">
-          <ion-label>Learner</ion-label>
+          <ion-label>{{ 'home.segment.learner' | translate }}</ion-label>
         </ion-segment-button>
         <ion-segment-button value="teacher">
-          <ion-label>Teacher</ion-label>
+          <ion-label>{{ 'home.segment.teacher' | translate }}</ion-label>
         </ion-segment-button>
       </ion-segment>
-    <ion-card *ngIf="currentRole==='teacher' && teacherSessions && teacherSessions.length" style='--background: lightgrey;'>
+    <ion-card *ngIf="currentRole==='teacher' && teacherSessions && teacherSessions.length" class="home-card">
         <ion-card-header>
             <ion-card-title>{{ "home.teacher-list-sessions" | translate}}</ion-card-title>
         </ion-card-header>
@@ -38,7 +38,7 @@
             </div>
         </ion-card-content>
     </ion-card>
-    <ion-card *ngIf="currentRole==='teacher' && isTeacher && groupCourses && groupCourses.length" style='--background: lightgrey;'>
+    <ion-card *ngIf="currentRole==='teacher' && isTeacher && groupCourses && groupCourses.length"  class="home-card">
         <ion-card-header>
             <ion-card-title>{{ "home.group-session-exam.title" | translate }}</ion-card-title>
         </ion-card-header>
@@ -57,7 +57,7 @@
         </ion-card-content>
     </ion-card>
 
-    <ion-card *ngIf="currentRole==='learner' && learnerSessions && learnerSessions.length" style='--background: lightgrey;'>
+    <ion-card *ngIf="currentRole==='learner' && learnerSessions && learnerSessions.length"  class="home-card">
         <ion-card-header>
             <ion-card-title>{{ "home.learner-list-sessions" | translate }}</ion-card-title>
         </ion-card-header>
@@ -72,7 +72,7 @@
             </ion-list>
         </ion-card-content>
     </ion-card>
-    <ion-card style='--background: lightgrey;' *ngIf="currentRole==='learner'">
+    <ion-card *ngIf="currentRole==='learner'" class="home-card">
         <ion-card-header>
             <ion-card-title>{{ "home.register-session.title" | translate }}</ion-card-title>
         </ion-card-header>
@@ -88,7 +88,7 @@
             </div>
         </ion-card-content>
     </ion-card>
-    <ion-card *ngIf="currentRole==='learner' && individualCourses && individualCourses.length" style='--background: lightgrey;'>
+    <ion-card *ngIf="currentRole==='learner' && individualCourses && individualCourses.length"  class="home-card">
         <ion-card-header>
             <ion-card-title>{{ "home.individual-online-exam.title" | translate }}</ion-card-title>
         </ion-card-header>
